@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: TeamSsc
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/trello
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+      database-platform: org.hibernate.dialect.MySQLDialect
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+#        generate_statistics: true
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+  token:
+    expiration: 1800000
+  refresh:
+    token:
+      expiration: 1209600000
+
+logging:
+  level:
+    org.springframework: DEBUG
+server:
+  port: 8080
