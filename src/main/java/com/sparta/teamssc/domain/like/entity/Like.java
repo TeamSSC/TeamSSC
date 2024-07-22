@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.like.entity;
 
 import com.sparta.teamssc.domain.board.entity.Board;
+import com.sparta.teamssc.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

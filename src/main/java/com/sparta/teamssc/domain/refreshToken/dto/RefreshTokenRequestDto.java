@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.refreshToken.dto;
 
+import com.sparta.teamssc.domain.user.entity.User;
 import lombok.Getter;
 
 @Getter
