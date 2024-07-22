@@ -4,6 +4,7 @@ import com.sparta.teamssc.domain.auth.dto.request.SignupRequest;
 import com.sparta.teamssc.domain.auth.entity.LoginRequest;
 import com.sparta.teamssc.domain.auth.entity.LoginResponse;
 import com.sparta.teamssc.domain.auth.util.JwtUtil;
+import com.sparta.teamssc.domain.refreshToken.service.RefreshTokenService;
 import com.sparta.teamssc.domain.role.entity.Role;
 import com.sparta.teamssc.domain.role.userRole.UserRole;
 import com.sparta.teamssc.domain.user.entity.User;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -46,19 +48,19 @@ public class UserServiceImpl implements UserService {
     public LoginResponse login(LoginRequest loginRequest) {
         User user = getUserByEmail(loginRequest.getEmail());
 
-
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
         String accessToken = jwtUtil.createAccessToken(user.getEmail());
-        String refreshToken = jwtUtil.createRefreshToken(user.getEmail());
+        String refreshTokenString = jwtUtil.createRefreshToken(user.getEmail());
 
-       // user.updateRefreshToken(refreshToken);
+        refreshTokenService.updateRefreshToken(user, refreshTokenString);
+
         user.login();
         userRepository.save(user);
 
-        return new LoginResponse(accessToken, refreshToken);
+        return new LoginResponse(accessToken, refreshTokenString);
     }
 
     @Override
