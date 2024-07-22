@@ -1,6 +1,8 @@
 package com.sparta.teamssc.domain.user.service;
 
 import com.sparta.teamssc.domain.auth.dto.request.SignupRequest;
+import com.sparta.teamssc.domain.auth.entity.LoginRequest;
+import com.sparta.teamssc.domain.auth.entity.LoginResponse;
 import com.sparta.teamssc.domain.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.role.entity.Role;
 import com.sparta.teamssc.domain.role.userRole.UserRole;
@@ -39,7 +41,30 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Transactional
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        User user = getUserByEmail(loginRequest.getEmail());
 
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+
+        String accessToken = jwtUtil.createAccessToken(user.getEmail());
+        String refreshToken = jwtUtil.createRefreshToken(user.getEmail());
+
+       // user.updateRefreshToken(refreshToken);
+        user.login();
+        userRepository.save(user);
+
+        return new LoginResponse(accessToken, refreshToken);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
 
     private void inValidPassword(String password) {
         if (!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*])[a-zA-Z\\d!@#$%^&*]{10,}$")) {

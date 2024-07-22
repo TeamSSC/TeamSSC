@@ -10,4 +10,8 @@ public interface UserService {
     void signup(SignupRequest signupRequest);
 
     // 로그인
+    LoginResponse login(LoginRequest loginRequest);
+
+    // 이메일로 사용자가져오기
+    User getUserByEmail(String email);
 }

@@ -64,4 +64,10 @@ public class User extends BaseEntity {
         this.username = username;
         this.status = status;
     }
+
+    public void login() {
+        this.status = UserStatus.ACTIVE;
+    }
+
+
 }
