@@ -1,6 +1,5 @@
-package com.sparta.teamssc.domain.userTeamMatches.entity;
+package com.sparta.teamssc.domain.user.refreshToken.entity;
 
-import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,25 +9,23 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "user_team_matches")
-public class UserTeamMatches {
+@Table(name = "refresh_token")
+public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JoinColumn(name = "user_id", nullable = false)
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JoinColumn(name = "team_id", nullable = false)
-    @ManyToOne
-    private Team team;
+    @Column(name = "token", nullable = false)
+    private String refreshToken;
 
     @Builder
-    public UserTeamMatches(User user, Team team) {
+    public RefreshToken (User user, String refreshToken) {
         this.user = user;
-        this.team = team;
+        this.refreshToken = refreshToken;
     }
-
 }
