@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.refreshToken.entity;
 
+import com.sparta.teamssc.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,4 +29,7 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
     }
 
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

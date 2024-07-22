@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.userTeamMatches.entity;
 
 import com.sparta.teamssc.domain.team.entity.Team;
+import com.sparta.teamssc.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,11 +1,13 @@
 package com.sparta.teamssc.domain.board.entity;
 
 import com.sparta.teamssc.domain.common.entity.BaseEntity;
-import com.sparta.teamssc.domain.track.entity.Track;
+import com.sparta.teamssc.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.sound.midi.Track;
 
 @Entity
 @Getter
@@ -23,16 +25,16 @@ public class Board extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JoinColumn(name = "track_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Track track;
-
-    @Builder
-    public Board(String title, String content, User user, Track track) {
-        this.title = title;
-        this.content = content;
-        this.user = user;
-        this.track = track;
-    }
+//    @JoinColumn(name = "track_id", nullable = false)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private Track track;
+//
+//    @Builder
+//    public Board(String title, String content, User user, Track track) {
+//        this.title = title;
+//        this.content = content;
+//        this.user = user;
+//        this.track = track;
+//    }
 
 }

@@ -1,10 +1,11 @@
 package com.sparta.teamssc.domain.team.entity;
 
-import com.sparta.teamssc.domain.track.entity.Track;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.sound.midi.Track;
 
 @Entity
 @Getter
@@ -19,14 +20,15 @@ public class Team {
     @Column(name = "team_name", nullable = false)
     private String teamName;
 
-    @JoinColumn(name = "track_id", nullable = false)
-    @ManyToOne
-    private Track track;
-
-    @Builder
-    public Team(String teamName, Track track) {
-        this.teamName = teamName;
-        this.track = track;
-    }
+//
+//    @JoinColumn(name = "track_id", nullable = false)
+//    @ManyToOne
+//    private Track track;
+//
+//    @Builder
+//    public Team(String teamName, Track track) {
+//        this.teamName = teamName;
+//        this.track = track;
+//    }
 
 }
