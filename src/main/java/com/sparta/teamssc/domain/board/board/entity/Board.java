@@ -3,6 +3,7 @@ package com.sparta.teamssc.domain.board.board.entity;
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,12 +27,12 @@ public class Board extends BaseEntity {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private Track track;
 //
-//    @Builder
-//    public Board(String title, String content, User user, Track track) {
-//        this.title = title;
-//        this.content = content;
-//        this.user = user;
+    @Builder
+    public Board(String title, String content, User user/*, Track track*/) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
 //        this.track = track;
-//    }
+    }
 
 }
