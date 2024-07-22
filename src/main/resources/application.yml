@@ -8,7 +8,7 @@ spring:
       max-request-size: 10MB
 
   datasource:
-    url: jdbc:mysql://localhost:3306/trello
+    url: jdbc:mysql://localhost:3306/teamSSC
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,7 +23,6 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
-#        generate_statistics: true
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
