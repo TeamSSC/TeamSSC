@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void signup(SignupRequest signupRequest) {
+
         String password = signupRequest.getPassword();
         String email = signupRequest.getEmail();
 
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
+
         User user = getUserByEmail(loginRequest.getEmail());
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return new LoginResponse(accessToken, refreshTokenString, user.getUsername());
+
     }
 
     @Override
@@ -67,22 +70,28 @@ public class UserServiceImpl implements UserService {
     }
 
     private void inValidPassword(String password) {
+
         if (!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*])[a-zA-Z\\d!@#$%^&*]{10,}$")) {
             throw new IllegalArgumentException("비밀번호는 최소 10자 이상이어야 하며, 문자, 숫자, 특수문자를 포함해야 합니다.");
         }
+
     }
 
     private void inValidEmail(String email) {
+
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
         }
+
     }
 
     private User findByUsername(String username) {
+
         if(userRepository.findByUsername(username).isPresent()){
             return userRepository.findByUsername(username).get();
         }
         throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
+
     }
 
 }
