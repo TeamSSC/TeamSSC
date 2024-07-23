@@ -1,7 +1,7 @@
 package com.sparta.teamssc.domain.user.user.service;
 
-import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequest;
-import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequest;
+import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponse;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.service.RefreshTokenService;
@@ -23,17 +23,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void signup(SignupRequest signupRequest) {
+    public void signup(SignupRequestDto signupRequestDto) {
 
-        String password = signupRequest.getPassword();
-        String email = signupRequest.getEmail();
+        String password = signupRequestDto.getPassword();
+        String email = signupRequestDto.getEmail();
 
         inValidPassword(password);
         String encodedPassword = passwordEncoder.encode(password);
         inValidEmail(email);
 
         User user = User.builder()
-                .username(signupRequest.getUsername())
+                .username(signupRequestDto.getUsername())
                 .email(email)
                 .password(encodedPassword)
                 .status(UserStatus.PENDING)
@@ -44,11 +44,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequestDto loginRequestDto) {
 
-        User user = getUserByEmail(loginRequest.getEmail());
+        User user = getUserByEmail(loginRequestDto.getEmail());
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
