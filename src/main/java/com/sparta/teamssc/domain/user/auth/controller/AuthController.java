@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.user.auth.controller;
 
+import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequest;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequest;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponse;
@@ -24,9 +25,13 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<ResponseDto<?>> signup(@RequestBody SignupRequest signupRequest) {
         userService.signup(signupRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseDto.builder()
+                        .message("회원가입에 성공하셨습니다.")
+                        .build());
     }
 
     // 로그인
