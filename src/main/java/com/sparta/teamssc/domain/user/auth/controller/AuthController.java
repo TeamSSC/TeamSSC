@@ -1,8 +1,8 @@
 package com.sparta.teamssc.domain.user.auth.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
-import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequest;
-import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequest;
+import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponse;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.user.service.UserService;
@@ -25,8 +25,8 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto<?>> signup(@RequestBody SignupRequest signupRequest) {
-        userService.signup(signupRequest);
+    public ResponseEntity<ResponseDto<?>> signup(@RequestBody SignupRequestDto signupRequestDto) {
+        userService.signup(signupRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.builder()
@@ -38,12 +38,12 @@ public class AuthController {
     /**
      * 로그인
      *
-     * @param loginRequest
+     * @param loginRequestDto
      * @return 헤더에 반환
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse tokens = userService.login(loginRequest); // 로그인 시도 및 토큰 생성
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto) {
+        LoginResponse tokens = userService.login(loginRequestDto); // 로그인 시도 및 토큰 생성
         String accessToken = tokens.getAccessToken();
         String refreshToken = tokens.getRefreshToken();
 
