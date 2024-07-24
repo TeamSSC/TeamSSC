@@ -19,10 +19,19 @@ public class BoardController {
 
     // 게시글 생성
     @PostMapping("/boards")
-    public ResponseEntity<ResponseDto<?>> createBoard(@RequestBody BoardRequestDto requestDto,
+    public ResponseEntity<ResponseDto<String>> createBoard(@ModelAttribute BoardRequestDto requestDto,
                                                       @AuthenticationPrincipal UserDetails userDetails) {
-        ResponseDto<?> responseDto = boardService.createBoard(requestDto, userDetails.getUsername());
-        return ResponseEntity.status(200).body(responseDto);
+
+        boardService.createBoard(requestDto, userDetails.getUsername());
+
+        return ResponseEntity.status(200)
+                .body(ResponseDto.<String>builder()
+                        .message("게시글 생성 성공")
+                        .build());
+
     }
+
+    // 게시글 수정
+
 
 }

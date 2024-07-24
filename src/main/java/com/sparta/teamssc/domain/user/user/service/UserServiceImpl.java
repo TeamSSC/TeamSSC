@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private User findByUsername(String username) {
+    public User findByUsername(String username) {
 
         if(userRepository.findByUsername(username).isPresent()){
             return userRepository.findByUsername(username).get();

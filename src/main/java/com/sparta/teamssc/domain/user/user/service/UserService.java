@@ -14,4 +14,6 @@ public interface UserService {
 
     // 이메일로 사용자가져오기
     User getUserByEmail(String email);
+
+    User findByUsername(String username);
 }
