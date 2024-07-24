@@ -16,5 +16,4 @@ public class LoginResponseDto {
         this.refreshToken = refreshToken;
         this.username = username;
     }
-
 }
