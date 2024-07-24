@@ -22,7 +22,7 @@ public class ImageServiceImpl implements ImageService {
     private String bucketName;
 
     // 파일을 S3에 업로드하고 파일 URL을 반환
-    public String uploadFile(MultipartFile file){
+    public Image uploadFile(MultipartFile file){
         try {
             // 파일 타입 검사
             String contentType = file.getContentType();
@@ -44,7 +44,7 @@ public class ImageServiceImpl implements ImageService {
             Image image = new Image(fileName, fileUrl);
             imageRepository.save(image);
 
-            return fileUrl;
+            return image;
         }
         catch (Exception e) {
             throw new IllegalArgumentException("이미지를 업로드할 수 없습니다. " + e.getMessage());

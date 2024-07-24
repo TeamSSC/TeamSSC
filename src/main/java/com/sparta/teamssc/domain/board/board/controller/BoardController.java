@@ -22,7 +22,7 @@ public class BoardController {
     // 게시글 생성
     @PostMapping("/boards")
     public ResponseEntity<ResponseDto<String>> createBoard(@ModelAttribute BoardRequestDto requestDto,
-                                                      @AuthenticationPrincipal UserDetails userDetails) {
+                                                           @AuthenticationPrincipal UserDetails userDetails) {
 
         boardService.createBoard(requestDto, userDetails.getUsername());
 
@@ -30,7 +30,6 @@ public class BoardController {
                 .body(ResponseDto.<String>builder()
                         .message("게시글 생성 성공")
                         .build());
-
     }
 
     // 게시글 수정
