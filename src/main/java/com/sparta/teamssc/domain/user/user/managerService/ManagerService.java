@@ -8,4 +8,5 @@ public interface ManagerService {
 
     User getUserById(Long userId);
 
+    void signupRefusal(Long userId);
 }

@@ -16,11 +16,29 @@ public class ManagerController {
 
     private final ManagerService managerService;
 
-    @PatchMapping("/approve")
+    /**
+     * 회원가입 승인 메서드
+     * @param userId
+     * @return 바디에 반환
+     */
+    @PatchMapping("/approve/{userId}")
     public ResponseEntity<String> signupApproval(@PathVariable Long userId) {
 
         managerService.signupApproval(userId);
         return ResponseEntity.status(HttpStatus.OK).body("회원가입 승인이 완료 되었습니다.");
+
+    }
+
+    /**
+     * 회원가입 승인 거부 메서드
+     * @param userId
+     * @return 바디에 반환
+     */
+    @PatchMapping("/refusal/{userId}")
+    public ResponseEntity<String> signupRefusal(@PathVariable Long userId) {
+
+        managerService.signupRefusal(userId);
+        return ResponseEntity.status(HttpStatus.OK).body("회원가입이 거부 되었습니다.");
 
     }
 

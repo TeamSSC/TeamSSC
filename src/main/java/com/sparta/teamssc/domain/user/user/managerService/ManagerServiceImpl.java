@@ -12,10 +12,6 @@ public class ManagerServiceImpl implements ManagerService{
 
     private final UserRepository userRepository;
 
-    /**
-     * 회원가입 승인 메서드
-     * @param userId
-     */
     @Override
     @Transactional
     public void signupApproval(Long userId) {
@@ -23,6 +19,16 @@ public class ManagerServiceImpl implements ManagerService{
         User user = getUserById(userId);
 
         user.signupApproval();
+        userRepository.save(user);
+
+    }
+
+    @Override
+    public void signupRefusal(Long userId) {
+
+        User user = getUserById(userId);
+
+        user.signupRefusal();
         userRepository.save(user);
 
     }
