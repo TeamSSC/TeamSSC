@@ -31,7 +31,7 @@ public class JwtUtil {
      * @param username
      * @return
      */
-    public String createAccessToken(String username) {
+    public static String createAccessToken(String username) {
         return generateToken(username, accessTokenExpiration);
     }
 
@@ -41,7 +41,7 @@ public class JwtUtil {
      * @param username
      * @return
      */
-    public String createRefreshToken(String username) {
+    public static String createRefreshToken(String username) {
         return generateToken(username, refreshTokenExpiration);
     }
 

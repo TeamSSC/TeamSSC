@@ -4,6 +4,7 @@ import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
+import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.refreshToken.service.RefreshTokenService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
@@ -20,7 +21,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
-    private final JwtUtil jwtUtil;
 
     @Transactional
     @Override
@@ -49,12 +49,16 @@ public class UserServiceImpl implements UserService {
 
         User user = getUserByEmail(loginRequestDto.getEmail());
 
+        if(user.getStatus() == UserStatus.PENDING) {
+            throw new IllegalArgumentException("아직 승인 받지 않은 회원입니다.");
+        }
+
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
-        String accessToken = jwtUtil.createAccessToken(user.getEmail());
-        String refreshToken = jwtUtil.createRefreshToken(user.getEmail());
+        String accessToken = JwtUtil.createAccessToken(user.getEmail());
+        String refreshToken = JwtUtil.createRefreshToken(user.getEmail());
 
         refreshTokenService.updateRefreshToken(user, refreshToken);
 
@@ -70,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void logout(String username){
+    public void logout(String username) {
 
         User user = findByUsername(username);
 
@@ -79,6 +83,31 @@ public class UserServiceImpl implements UserService {
         refreshTokenService.deleteRefreshToken(user);
 
     }
+
+    @Override
+    public LoginResponseDto tokenRefresh(String refreshToken) {
+
+        RefreshToken currentToken = refreshTokenService.findRefreshToken(refreshToken); // 리프레시 토큰 검색
+
+        if (currentToken == null || !JwtUtil.validateRefreshToken(currentToken.getRefreshToken())) {
+            throw new IllegalArgumentException("다시 로그인 해주세요."); // 리프레시 토큰이 유효하지 않으면 예외 발생
+        }
+        String username = JwtUtil.getUsernameFromToken(refreshToken);
+        User user = findByUsername(username);
+
+        String newAccessToken = JwtUtil.createAccessToken(username); // 새로운 엑세스 토큰 생성
+        String newRefreshToken = JwtUtil.createRefreshToken(username); // 새로운 리프레시 토큰 생성
+
+
+        refreshTokenService.updateRefreshToken(user, newRefreshToken); // 리프레시 토큰 업데이트
+
+        return LoginResponseDto.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .username(username)
+                .build();
+    }
+
 
     @Override
     public User getUserByEmail(String email) {
@@ -103,7 +132,7 @@ public class UserServiceImpl implements UserService {
 
     public User findByUsername(String username) {
 
-        if(userRepository.findByUsername(username).isPresent()){
+        if (userRepository.findByUsername(username).isPresent()) {
             return userRepository.findByUsername(username).get();
         }
         throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");

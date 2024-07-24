@@ -1,11 +1,15 @@
 package com.sparta.teamssc.domain.user.user.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
+import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.role.userRole.UserRole;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -61,6 +65,10 @@ public class User extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
+
+    @ManyToOne
+    @JoinColumn(name = "period_id")
+    private Period period;
 
     @Builder
     public User(String email, String password, String username, UserStatus status) {
