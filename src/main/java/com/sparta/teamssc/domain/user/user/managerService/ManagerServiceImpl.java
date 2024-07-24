@@ -24,6 +24,7 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
+    @Transactional
     public void signupRefusal(Long userId) {
 
         User user = getUserById(userId);
