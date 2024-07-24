@@ -17,4 +17,5 @@ public interface UserService {
 
     void logout(String username);
 
+    User findByUsername(String username);
 }

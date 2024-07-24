@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.track.entity;
 
 import com.sparta.teamssc.domain.period.entity.Period;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,4 +25,9 @@ public class Track {
     // 기수
     @OneToMany(mappedBy = "track")
     private List<Period> periods;
+
+    @Builder
+    public Track(String name) {
+        this.name = name;
+    }
 }

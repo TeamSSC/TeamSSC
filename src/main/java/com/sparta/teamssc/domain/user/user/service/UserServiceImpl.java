@@ -101,6 +101,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
     public User findByUsername(String username) {
 
         if(userRepository.findByUsername(username).isPresent()){
