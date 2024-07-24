@@ -96,6 +96,11 @@ public class TeamServiceImpl implements TeamService {
                 .users(users.stream().map(User::getEmail).collect(Collectors.toList()))
                 .build();
     }
+
+    /**
+     * 팀삭제하기
+     * @param teamId
+     */
     @Transactional
     @Override
     public void deleteTeam(Long teamId) {
