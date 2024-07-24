@@ -8,5 +8,4 @@ public class RefreshTokenRequestDto {
 
     private String refreshToken;
     private User user;
-
 }
