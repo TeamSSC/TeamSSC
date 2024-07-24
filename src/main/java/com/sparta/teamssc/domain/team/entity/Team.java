@@ -4,6 +4,7 @@ import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,4 +43,17 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<User> users; // 팀에 속한 사용자들
+
+
+    @Builder
+    public Team(Period period, String teamName, Section section, String leaderId, String teamDescription) {
+        this.period = period;
+        this.teamName = teamName;
+        this.section = section;
+        this.leaderId = leaderId;
+        this.teamDescription = teamDescription;
+    }
+    public void addUsers(List<User> users) {
+        this.users = users;
+    }
 }
