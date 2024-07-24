@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.user.user.managerController;
 
+import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.user.user.managerService.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,10 +23,12 @@ public class ManagerController {
      * @return 바디에 반환
      */
     @PatchMapping("/approve/{userId}")
-    public ResponseEntity<String> signupApproval(@PathVariable Long userId) {
+    public ResponseEntity<ResponseDto<String>> signupApproval(@PathVariable Long userId) {
 
         managerService.signupApproval(userId);
-        return ResponseEntity.status(HttpStatus.OK).body("회원가입 승인이 완료 되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<String>builder()
+                .message("회원가입이 승인 되었습니다.")
+                .build());
 
     }
 
@@ -35,10 +38,12 @@ public class ManagerController {
      * @return 바디에 반환
      */
     @PatchMapping("/refusal/{userId}")
-    public ResponseEntity<String> signupRefusal(@PathVariable Long userId) {
+    public ResponseEntity<ResponseDto<String>> signupRefusal(@PathVariable Long userId) {
 
         managerService.signupRefusal(userId);
-        return ResponseEntity.status(HttpStatus.OK).body("회원가입이 거부 되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<String>builder()
+                .message("회원가입 승인이 거부 되었습니다.")
+                .build());
 
     }
 
