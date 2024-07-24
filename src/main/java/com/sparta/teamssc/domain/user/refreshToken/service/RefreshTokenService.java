@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.user.refreshToken.service;
 
+import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.user.entity.User;
 
 public interface RefreshTokenService {
@@ -8,4 +9,5 @@ public interface RefreshTokenService {
 
     void deleteRefreshToken(User user);
 
+    RefreshToken findRefreshToken(String refreshToken);
 }
