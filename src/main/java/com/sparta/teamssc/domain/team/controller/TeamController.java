@@ -45,4 +45,15 @@ public class TeamController {
                         .data(teamResponseDto)
                         .build());
     }
+
+    // 팀 삭제하기
+    @DeleteMapping("/{teamId}")
+    public ResponseEntity<ResponseDto<Void>> deleteTeam(@PathVariable Long teamId) {
+        teamService.deleteTeam(teamId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<Void>builder()
+                        .message("팀 삭제에 성공했습니다.")
+                        .data(null)
+                        .build());
+    }
 }

@@ -10,6 +10,7 @@ import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
 import com.sparta.teamssc.domain.team.repository.TeamRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -94,5 +95,12 @@ public class TeamServiceImpl implements TeamService {
                 .leaderId(team.getLeaderId())
                 .users(users.stream().map(User::getEmail).collect(Collectors.toList()))
                 .build();
+    }
+    @Transactional
+    @Override
+    public void deleteTeam(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+        teamRepository.delete(team);
     }
 }
