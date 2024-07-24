@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.track.entity;
 
+import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import java.util.List;
 @Table(name = "track")
 @Getter
 @NoArgsConstructor
-public class Track {
+public class Track extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
