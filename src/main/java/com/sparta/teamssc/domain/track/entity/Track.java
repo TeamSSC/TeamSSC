@@ -1,9 +1,11 @@
 package com.sparta.teamssc.domain.track.entity;
 
-import jakarta.annotation.Nullable;
+import com.sparta.teamssc.domain.period.entity.Period;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "track")
@@ -16,14 +18,10 @@ public class Track {
     @Column(name = "track_id")
     private Long id;
 
-    // 기수
-    @Column(nullable = false)
-    private int batch;
-
     @Column(nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private statusEnum status;
-
+    // 기수
+    @OneToMany(mappedBy = "track")
+    private List<Period> periods;
 }
