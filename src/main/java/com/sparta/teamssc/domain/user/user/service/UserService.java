@@ -16,4 +16,7 @@ public interface UserService {
     User getUserByEmail(String email);
 
     User findByUsername(String username);
+
+    void logout(String username);
+
 }

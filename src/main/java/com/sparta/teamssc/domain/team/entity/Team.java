@@ -1,34 +1,45 @@
 package com.sparta.teamssc.domain.team.entity;
 
+import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.sound.midi.Track;
+import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 기수 아이디
+    @ManyToOne
+    @JoinColumn(name = "period_id", nullable = false)
+    private Period period;
 
-    @Column(name = "team_name", nullable = false)
+    // 팀이름
+    @Column(nullable = true)
     private String teamName;
 
-//
-//    @JoinColumn(name = "track_id", nullable = false)
-//    @ManyToOne
-//    private Track track;
-//
-//    @Builder
-//    public Team(String teamName, Track track) {
-//        this.teamName = teamName;
-//        this.track = track;
-//    }
+    // 소속된 반
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Section section;
 
+    // 팀 리더
+    @Column(nullable = true)
+    private String leaderId ;
+
+    // 팀 소개
+    @Column(nullable = true)
+    private String teamDescription;
+
+    @OneToMany(mappedBy = "team")
+    private List<User> users; // 팀에 속한 사용자들
 }

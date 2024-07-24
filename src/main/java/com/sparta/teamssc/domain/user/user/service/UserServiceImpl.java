@@ -1,8 +1,8 @@
 package com.sparta.teamssc.domain.user.user.service;
 
-import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequest;
-import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequest;
-import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponse;
+import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.service.RefreshTokenService;
 import com.sparta.teamssc.domain.user.user.entity.User;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
@@ -23,17 +24,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void signup(SignupRequest signupRequest) {
+    public void signup(SignupRequestDto signupRequestDto) {
 
-        String password = signupRequest.getPassword();
-        String email = signupRequest.getEmail();
+        String password = signupRequestDto.getPassword();
+        String email = signupRequestDto.getEmail();
 
         inValidPassword(password);
         String encodedPassword = passwordEncoder.encode(password);
         inValidEmail(email);
 
         User user = User.builder()
-                .username(signupRequest.getUsername())
+                .username(signupRequestDto.getUsername())
                 .email(email)
                 .password(encodedPassword)
                 .status(UserStatus.PENDING)
@@ -44,23 +45,38 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
-        User user = getUserByEmail(loginRequest.getEmail());
+        User user = getUserByEmail(loginRequestDto.getEmail());
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
         String accessToken = jwtUtil.createAccessToken(user.getEmail());
-        String refreshTokenString = jwtUtil.createRefreshToken(user.getEmail());
+        String refreshToken = jwtUtil.createRefreshToken(user.getEmail());
 
-        refreshTokenService.updateRefreshToken(user, refreshTokenString);
+        refreshTokenService.updateRefreshToken(user, refreshToken);
 
         user.login();
         userRepository.save(user);
 
-        return new LoginResponse(accessToken, refreshTokenString, user.getUsername());
+        return LoginResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .username(user.getUsername())
+                .build();
+
+    }
+
+    @Override
+    public void logout(String username){
+
+        User user = findByUsername(username);
+
+        user.logout();
+
+        refreshTokenService.deleteRefreshToken(user);
 
     }
 
