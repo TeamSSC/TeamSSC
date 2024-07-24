@@ -1,6 +1,6 @@
-package com.sparta.teamssc.domain.track.entity;
+package com.sparta.teamssc.domain.period.entity;
 
-public enum statusEnum {
+public enum PeriodStatus {
 
     APPLICATION_PERIOD("신청기간인 트랙"),
     IN_PROGRESS("진행중인 트랙"),
@@ -9,7 +9,7 @@ public enum statusEnum {
 
     private final String status;
 
-    statusEnum(String status) {
+    PeriodStatus(String status) {
         this.status = status;
     }
 
