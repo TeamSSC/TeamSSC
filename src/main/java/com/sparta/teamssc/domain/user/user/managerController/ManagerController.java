@@ -29,7 +29,6 @@ public class ManagerController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<String>builder()
                 .message("회원가입이 승인 되었습니다.")
                 .build());
-
     }
 
     /**
@@ -44,7 +43,5 @@ public class ManagerController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<String>builder()
                 .message("회원가입 승인이 거부 되었습니다.")
                 .build());
-
     }
-
 }
