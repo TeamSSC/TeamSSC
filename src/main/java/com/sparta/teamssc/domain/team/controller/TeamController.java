@@ -8,10 +8,7 @@ import com.sparta.teamssc.domain.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +20,7 @@ public class TeamController {
 
     private final TeamService teamService;
 
+    // 팀 생성하기
     @PostMapping()
     public ResponseEntity<ResponseDto<TeamCreateResponseDto>> createTeam(@RequestBody TeamCreateRequestDto teamCreateRequestDto) {
 
@@ -34,5 +32,17 @@ public class TeamController {
                         .data(teamResponseDto)
                         .build());
 
+    }
+
+    // 팀수정하기
+    @PatchMapping("/{teamId}")
+    public ResponseEntity<ResponseDto<TeamCreateResponseDto>> updateTeam(@PathVariable Long teamId,
+                                                                         @RequestBody TeamCreateRequestDto teamCreateRequestDto) {
+        TeamCreateResponseDto teamResponseDto = teamService.updateTeam(teamId, teamCreateRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<TeamCreateResponseDto>builder()
+                        .message("팀 수정에 성공했습니다.")
+                        .data(teamResponseDto)
+                        .build());
     }
 }
