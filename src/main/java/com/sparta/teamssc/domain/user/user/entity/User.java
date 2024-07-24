@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.user.user.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
+import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.role.userRole.UserRole;
 import jakarta.persistence.*;
@@ -56,6 +57,10 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     @Builder
     public User(String email, String password, String username, UserStatus status) {
