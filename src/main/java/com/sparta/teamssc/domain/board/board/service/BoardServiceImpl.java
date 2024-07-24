@@ -30,12 +30,14 @@ public class BoardServiceImpl implements BoardService {
         Board board = Board.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
-                .track(user.getPeriod)
+                .imageUrl(imageUrl)
+//                .period(user.getTeam().getPeriod())
                 .boardType(BoardType.BOARD)
                 .user(user)
                 .build();
 
         boardRepository.save(board);
+
 
     }
 

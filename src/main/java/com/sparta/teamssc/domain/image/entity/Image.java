@@ -15,14 +15,18 @@ public class Image extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String name;
 
     @Column(nullable = false, unique = true)
     private String fileLink;
 
+//    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
+//    private List<BoardImage> boardImages = new ArrayList<>();
+
     @Builder
     public Image(String name, String fileLink) {
+        this.name = name;
         this.fileLink = fileLink;
     }
 

@@ -54,7 +54,7 @@ public class ImageServiceImpl implements ImageService {
     // 파일을 S3에서 삭제하고 데이터베이스에서도 삭제하는 메서드
     public void deleteFile(String fileUrl) {
         try {
-            Image image = imageRepository.findByUrl(fileUrl);
+            Image image = imageRepository.findByFileLink(fileUrl);
             if (image != null) {
                 amazonS3.deleteObject(bucketName, image.getName());
                 imageRepository.delete(image);
