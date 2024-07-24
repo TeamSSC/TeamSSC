@@ -6,9 +6,11 @@ import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
 import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
+import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
 import com.sparta.teamssc.domain.team.repository.TeamRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -63,5 +65,47 @@ public class TeamServiceImpl implements TeamService {
         } catch (Exception e) {
             throw new TeamCreationFailedException("팀 생성에 실패했습니다.");
         }
+    }
+
+    /**
+     * 팀 수정하기
+     * @param teamId
+     * @param teamCreateRequestDto
+     * @return TeamCreateResponseDto
+     */
+    @Override
+    public TeamCreateResponseDto updateTeam(Long teamId, TeamCreateRequestDto teamCreateRequestDto) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+
+        Period period = periodService.getPeriodById(teamCreateRequestDto.getPeriodId());
+        List<User> users = teamCreateRequestDto.getUserEmails().stream()
+                .map(userService::getUserByEmail)
+                .collect(Collectors.toList());
+
+        team.updatePeriod(period);
+        team.updateSection(teamCreateRequestDto.getSection());
+        team.updateUsers(users);
+
+        teamRepository.save(team);
+
+        return TeamCreateResponseDto.builder()
+                .id(team.getId())
+                .leaderId(team.getLeaderId())
+                .users(users.stream().map(User::getEmail).collect(Collectors.toList()))
+                .build();
+    }
+
+    /**
+     * 팀삭제하기
+     * @param teamId
+     */
+    @Transactional
+    @Override
+    public void deleteTeam(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+        teamRepository.delete(team);
     }
 }

@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.team.entity;
 
+import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team {
+public class Team extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,6 +55,26 @@ public class Team {
         this.teamDescription = teamDescription;
     }
     public void addUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public void updatePeriod(Period period) {
+        this.period = period;
+    }
+
+    public void updateTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public void updateTeamDescription(String teamDescription) {
+        this.teamDescription = teamDescription;
+    }
+
+    public void updateSection(Section section) {
+        this.section = section;
+    }
+
+    public void updateUsers(List<User> users) {
         this.users = users;
     }
 }
