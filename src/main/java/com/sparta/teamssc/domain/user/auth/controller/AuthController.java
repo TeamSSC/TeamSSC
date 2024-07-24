@@ -32,7 +32,6 @@ public class AuthController {
                 .body(ResponseDto.<String>builder()
                         .message("회원가입 성공했습니다..")
                         .build());
-
     }
 
     // 로그인
@@ -50,7 +49,6 @@ public class AuthController {
                         .message("로그인 성공했습니다.")
                         .data(userService.login(loginRequestDto))
                         .build());
-
     }
 
     @PostMapping("/users/logout")
@@ -62,7 +60,6 @@ public class AuthController {
                 .body(ResponseDto.<String>builder()
                         .message("로그아웃 성공했습니다.")
                         .build());
-
     }
 
     @PostMapping("/users/token/refresh")
@@ -73,7 +70,6 @@ public class AuthController {
                         .message("재 로그인 성공했습니다.")
                         .data(userService.tokenRefresh(refreshToken))
                         .build());
-
     }
 
 }

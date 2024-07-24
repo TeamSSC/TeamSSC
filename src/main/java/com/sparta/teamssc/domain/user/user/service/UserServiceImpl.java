@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
                 .status(UserStatus.PENDING)
                 .build();
         userRepository.save(user);
-
     }
 
     @Transactional
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         User user = getUserByEmail(loginRequestDto.getEmail());
 
-        if(user.getStatus() == UserStatus.PENDING) {
+        if (user.getStatus() == UserStatus.PENDING) {
             throw new IllegalArgumentException("아직 승인 받지 않은 회원입니다.");
         }
 
@@ -70,7 +69,6 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .username(user.getUsername())
                 .build();
-
     }
 
     @Override
@@ -81,7 +79,6 @@ public class UserServiceImpl implements UserService {
         user.logout();
 
         refreshTokenService.deleteRefreshToken(user);
-
     }
 
     @Override
@@ -119,7 +116,6 @@ public class UserServiceImpl implements UserService {
         if (!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*])[a-zA-Z\\d!@#$%^&*]{10,}$")) {
             throw new IllegalArgumentException("비밀번호는 최소 10자 이상이어야 하며, 문자, 숫자, 특수문자를 포함해야 합니다.");
         }
-
     }
 
     private void inValidEmail(String email) {
@@ -127,7 +123,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
         }
-
     }
 
     public User findByUsername(String username) {
@@ -136,7 +131,5 @@ public class UserServiceImpl implements UserService {
             return userRepository.findByUsername(username).get();
         }
         throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
-
     }
-
 }

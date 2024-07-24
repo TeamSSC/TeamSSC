@@ -10,5 +10,4 @@ public interface RefreshTokenService {
     void deleteRefreshToken(User user);
 
     RefreshToken findRefreshToken(String refreshToken);
-
 }

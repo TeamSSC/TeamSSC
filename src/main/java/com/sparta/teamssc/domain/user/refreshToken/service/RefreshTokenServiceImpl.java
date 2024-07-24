@@ -34,7 +34,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                     .build();
             refreshTokenRepository.save(newToken);
         }
-
     }
 
     @Override
@@ -46,7 +45,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public RefreshToken findRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(()->new IllegalArgumentException("재로그인 해주세요."));
+                .orElseThrow(() -> new IllegalArgumentException("재로그인 해주세요."));
     }
-
 }

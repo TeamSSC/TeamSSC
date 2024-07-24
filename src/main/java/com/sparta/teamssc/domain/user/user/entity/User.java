@@ -85,5 +85,4 @@ public class User extends BaseEntity {
     public void logout() {
         this.status = UserStatus.LOGOUT;
     }
-
 }
