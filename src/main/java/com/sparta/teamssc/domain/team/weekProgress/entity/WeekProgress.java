@@ -32,7 +32,13 @@ public class WeekProgress extends BaseEntity {
     public WeekProgress(String name, ProgressStatus status) {
         this.name = name;
         this.status = status;
+        this.deleted = false;
     }
+
+    // 예정인 주차는 hardDelete가 되고, 진행중인 주차는 softDelete를 할것입니다.
+    @Column(nullable = false)
+    private boolean deleted = false;
+
 
     // 추후에 프로그래스 수정 가능
     public void updateStatus(ProgressStatus status) {
@@ -41,5 +47,8 @@ public class WeekProgress extends BaseEntity {
 
     public void updateName(String name) {
         this.name = name;
+    }
+    public void delete() {
+        this.deleted = true;
     }
 }

@@ -14,7 +14,9 @@ public interface WeekProgressService {
     WeekProgress createWeekProgress(String name);
 
     WeekProgressResponseDto updateWeekProgress(Long id, WeekProgressUpdateRequestDto requestDto);
+
     WeekProgressResponseDto updateWeekProgressStatus(Long id, ProgressStatus status);
+
     void deleteWeekProgress(Long id);
 
     List<WeekProgress> getAllWeekProgress();

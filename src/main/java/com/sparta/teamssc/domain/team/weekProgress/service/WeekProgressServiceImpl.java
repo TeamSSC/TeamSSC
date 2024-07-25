@@ -19,7 +19,7 @@ public class WeekProgressServiceImpl implements WeekProgressService {
     @Override
     public WeekProgress getWeekProgressById(Long id) {
 
-        return weekProgressRepository.findById(id)
+        return weekProgressRepository.findByIdAndNotDeleted(id)
                 .orElseThrow(() -> new IllegalArgumentException("주차 상태를 찾을 수 없습니다."));
     }
 
@@ -56,8 +56,7 @@ public class WeekProgressServiceImpl implements WeekProgressService {
     // 주차 상태 수정 : 상태 조정은 별개로도 이뤄져야함
     @Override
     public WeekProgressResponseDto updateWeekProgressStatus(Long id, ProgressStatus status) {
-        WeekProgress weekProgress = weekProgressRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("주차 상태를 찾을 수 없습니다."));
+        WeekProgress weekProgress =getWeekProgressById(id);
         weekProgress.updateStatus(status);
         weekProgress = weekProgressRepository.save(weekProgress);
         return WeekProgressResponseDto.builder()
@@ -67,10 +66,25 @@ public class WeekProgressServiceImpl implements WeekProgressService {
                 .build();
     }
 
-    // 주차 삭제
+    /**
+     * 주차 삭제: 진행예정은 실수로 만들 확률이 높음 -> 자식 엔티티로 성능저하 가능성 적음
+     * 진행중의 삭제는 성능저하 문제 발생 가능성 높음 -> softdelete로 분리
+     * @param id
+     */
     @Override
     public void deleteWeekProgress(Long id) {
+        try {
+            WeekProgress weekProgress = getWeekProgressById(id);
 
+            if (weekProgress.getStatus() == ProgressStatus.PLANNED) {
+                weekProgressRepository.delete(weekProgress);
+            } else {
+                weekProgress.delete();
+                weekProgressRepository.save(weekProgress);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("주차를 삭제할 수 없습니다.");
+        }
     }
 
     // 전체주차

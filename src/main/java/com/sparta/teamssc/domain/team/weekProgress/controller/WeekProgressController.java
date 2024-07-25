@@ -60,4 +60,12 @@ public class WeekProgressController {
                         .data(weekProgress)
                         .build());
     }
+
+    // 주차 삭제하기 - 주차의 상태에 따라 삭제가 다름
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto<String>> deleteWeekProgress(@PathVariable Long id) {
+        weekProgressService.deleteWeekProgress(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto<>(null, "주차 상태가 삭제되었습니다."));
+    }
 }
