@@ -1,10 +1,11 @@
 package com.sparta.teamssc.domain.image.service;
+import com.sparta.teamssc.domain.image.entity.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
 
     // 파일을 S3에 업로드하고 파일 URL을 반환
-    String uploadFile(MultipartFile file);
+    Image uploadFile(MultipartFile file);
 
     // 파일을 S3에서 삭제하고 데이터베이스에서도 삭제하는 메서드
     void deleteFile(String fileUrl);
@@ -15,4 +16,7 @@ public interface ImageService {
     // 파일 URL을 반환하는 메서드
     String getFileUrl(String fileName);
 
+    String findFileUrlByImageId(Long imageId);
+
+    String updateProfileImage(MultipartFile file);
 }

@@ -2,7 +2,7 @@ package com.sparta.teamssc.domain.user.user.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.team.entity.Team;
+import com.sparta.teamssc.domain.team.userTeamMatch.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.role.userRole.UserRole;
 import jakarta.persistence.*;
@@ -11,7 +11,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,17 +33,17 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String username;
 
-    @Column(name = "git_link",nullable = true)
+    @Column(name = "git_link", nullable = true)
     private String gitLink;
 
-    @Column(name = "vlog_link",nullable = true)
+    @Column(name = "vlog_link", nullable = true)
     private String vlogLink;
 
     @Column(nullable = true)
     private String intro;
 
     @Column(nullable = true)
-    private String mbti;
+    private UserMbti mbti;
 
     @Column(nullable = true)
     private String hobby;
@@ -50,7 +52,7 @@ public class User extends BaseEntity {
     @Column(nullable = true)
     private UserStatus status;
 
-    @Column(name = "profile_image",nullable = true)
+    @Column(name = "profile_image", nullable = true)
     private String profileImage;
 
     @Column(nullable = true)
@@ -62,9 +64,11 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    //    @ManyToOne
+//    @JoinColumn(name = "team_id")
+//    private Team team;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "period_id")
@@ -87,5 +91,19 @@ public class User extends BaseEntity {
     public void signupRefusal() { this.status = UserStatus.REFUSAL; }
     public void logout() {
         this.status = UserStatus.LOGOUT;
+    }
+
+    public void updateProfile(String username,String password, String gitLink, String vlogLink, String intro,
+                              UserMbti mbti){
+        this.username = username;
+        this.password = password;
+        this.gitLink = gitLink;
+        this.vlogLink = vlogLink;
+        this.intro = intro;
+        this.mbti = mbti;
+    }
+
+    public void updateProfileImage(String profileImage){
+        this.profileImage = profileImage;
     }
 }

@@ -1,10 +1,14 @@
 package com.sparta.teamssc.domain.image.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
+import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,8 +25,8 @@ public class Image extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String fileLink;
 
-//    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
-//    private List<BoardImage> boardImages = new ArrayList<>();
+    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardImage> boardImages = new ArrayList<>();
 
     @Builder
     public Image(String name, String fileLink) {
