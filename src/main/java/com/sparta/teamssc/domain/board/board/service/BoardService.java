@@ -18,4 +18,6 @@ public interface BoardService {
     Board findBoardByBoardId(Long boardId);
 
     void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String username);
+
+    void deleteBoard(Long boardId, String username);
 }

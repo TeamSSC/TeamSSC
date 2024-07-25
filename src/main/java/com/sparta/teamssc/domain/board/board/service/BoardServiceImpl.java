@@ -8,6 +8,7 @@ import com.sparta.teamssc.domain.board.board.entity.Board;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.exception.BoardCreationFailedException;
 import com.sparta.teamssc.domain.board.board.repository.BoardRepository;
+import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import com.sparta.teamssc.domain.board.boardImage.service.BoardImageService;
 import com.sparta.teamssc.domain.image.entity.Image;
 import com.sparta.teamssc.domain.image.service.ImageService;
@@ -122,6 +123,22 @@ public class BoardServiceImpl implements BoardService {
             }
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("게시글 수정에 실패하였습니다.");
+        }
+    }
+
+    // 게시글 삭제
+    @Override
+    public void deleteBoard(Long boardId, String username) {
+        try {
+            Board board = findBoardByBoardId(boardId);
+            if (board.getUser().getUsername().equals(username)) {
+                for (String fileLink : boardImageService.findFileUrlByBoardId(boardId)) {
+                    deleteImage(fileLink);
+                }
+                boardRepository.delete(board);
+            }
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("게시글 삭제에 실패했습니다.");
         }
     }
 

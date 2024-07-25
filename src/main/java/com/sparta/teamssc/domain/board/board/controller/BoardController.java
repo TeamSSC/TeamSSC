@@ -75,4 +75,17 @@ public class BoardController {
                         .message("게시글 수정 성공")
                         .build());
     }
+
+    // 게시글 삭제 기능
+    @DeleteMapping("/boards/{boardId}")
+    public ResponseEntity<ResponseDto<String>> deleteBoard(@PathVariable Long boardId,
+                                                           @AuthenticationPrincipal UserDetails userDetails) {
+
+        boardService.deleteBoard(boardId,userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("게시글 삭제 성공")
+                        .build());
+    }
 }

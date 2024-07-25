@@ -80,4 +80,12 @@ public class ImageServiceImpl implements ImageService {
         }
         return amazonS3.getUrl(bucketName, fileName).toString();
     }
+
+    public String findFileUrlByImageId(Long imageId) {
+
+        Image image = imageRepository.findById(imageId).orElseThrow(() ->
+                new IllegalArgumentException("해당 이미지를 찾을 수 없습니다"));
+
+        return image.getFileLink();
+    }
 }
