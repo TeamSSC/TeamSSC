@@ -4,6 +4,7 @@ package com.sparta.teamssc.domain.board.comment.controller;
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.board.comment.dto.request.CommentRequestDto;
 import com.sparta.teamssc.domain.board.comment.dto.response.CommentResponseDto;
+import com.sparta.teamssc.domain.board.comment.dto.response.ReplyResponseDto;
 import com.sparta.teamssc.domain.board.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,18 @@ public class CommentController {
         Page<CommentResponseDto> responseDto = commentService.getCommentFromBoard(boardId, page - 1);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Page<CommentResponseDto>>builder()
+                        .message("댓글 조회를 성공했습니다.")
+                        .data(responseDto)
+                        .build());
+    }
+
+    // 특정 댓글의 대댓글 조회
+    @GetMapping("/comments/{parentCommentId}")
+    public ResponseEntity<ResponseDto<Page<ReplyResponseDto>>> getCommentFromParentComment(@PathVariable Long parentCommentId,
+                                                                                           @RequestParam(value = "page", defaultValue = "1") int page) {
+        Page<ReplyResponseDto> responseDto = commentService.getCommentFromParentComment(parentCommentId, page - 1);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<Page<ReplyResponseDto>>builder()
                         .message("댓글 조회를 성공했습니다.")
                         .data(responseDto)
                         .build());

@@ -4,6 +4,7 @@ import com.sparta.teamssc.domain.board.board.entity.Board;
 import com.sparta.teamssc.domain.board.board.service.BoardService;
 import com.sparta.teamssc.domain.board.comment.dto.request.CommentRequestDto;
 import com.sparta.teamssc.domain.board.comment.dto.response.CommentResponseDto;
+import com.sparta.teamssc.domain.board.comment.dto.response.ReplyResponseDto;
 import com.sparta.teamssc.domain.board.comment.entity.Comment;
 import com.sparta.teamssc.domain.board.comment.repository.CommentRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
@@ -55,6 +56,20 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("작성된 댓글이 없거니, " + (page + 1) + " 페이지에 댓글이 없습니다.");
         }
         return commentPage;
+    }
+
+    // 특정 댓글의 대댓글 조회
+    @Override
+    public Page<ReplyResponseDto> getCommentFromParentComment(Long parentCommentId, int page) {
+
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createAt"));
+
+        Page<ReplyResponseDto> replyPage = commentRepository.findPagedCommentList(parentCommentId, pageable);
+
+        if (replyPage.isEmpty()) {
+            throw new IllegalArgumentException("작성된 댓글이 없거니, " + (page + 1) + " 페이지에 댓글이 없습니다.");
+        }
+        return replyPage;
     }
 
 }
