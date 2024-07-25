@@ -2,7 +2,6 @@ package com.sparta.teamssc.domain.team.dto.request;
 
 import com.sparta.teamssc.domain.team.entity.Section;
 
-import com.sparta.teamssc.domain.team.teamProgress.entity.WeekProgress;
 import lombok.Getter;
 
 import java.util.List;

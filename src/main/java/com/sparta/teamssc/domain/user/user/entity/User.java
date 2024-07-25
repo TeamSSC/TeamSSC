@@ -87,6 +87,9 @@ public class User extends BaseEntity {
         this.status = UserStatus.ACTIVE;
     }
 
+    public void signupApproval() { this.status = UserStatus.ACTIVE; }
+
+    public void signupRefusal() { this.status = UserStatus.REFUSAL; }
     public void logout() {
         this.status = UserStatus.LOGOUT;
     }
