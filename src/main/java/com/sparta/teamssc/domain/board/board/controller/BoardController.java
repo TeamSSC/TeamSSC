@@ -2,15 +2,13 @@ package com.sparta.teamssc.domain.board.board.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.BoardRequestDto;
+import com.sparta.teamssc.domain.board.board.dto.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +30,18 @@ public class BoardController {
                         .build());
     }
 
-    // 게시글 수정
+    // 특장 게시글 조회
+    @GetMapping("/boards/{boardId}")
+    public ResponseEntity<ResponseDto<BoardResponseDto>> getBoard(@PathVariable Long boardId) {
+
+        BoardResponseDto responseDto = boardService.getBoard(boardId);
+
+        return ResponseEntity.status(200)
+                .body(ResponseDto.<BoardResponseDto>builder()
+                        .message("게시글 조회 성공")
+                        .data(responseDto)
+                        .build());
+    }
 
 
 }
