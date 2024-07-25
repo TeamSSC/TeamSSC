@@ -1,6 +1,5 @@
 package com.sparta.teamssc.domain.team.dto.response;
 
-import com.sparta.teamssc.domain.team.teamProgress.entity.WeekProgress;
 import lombok.Builder;
 import lombok.Getter;
 
