@@ -38,4 +38,8 @@ public class WeekProgress extends BaseEntity {
     public void updateStatus(ProgressStatus status) {
         this.status = status;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }
