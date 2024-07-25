@@ -105,6 +105,15 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
+    public void withdrawn(String email) {
+
+        User user = getUserByEmail(email);
+
+        user.withdrawn();
+
+        userRepository.save(user);
+    }
 
     @Override
     public User getUserByEmail(String email) {

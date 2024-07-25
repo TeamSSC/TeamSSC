@@ -15,11 +15,13 @@ public interface UserService {
     // 이메일로 사용자가져오기
     User getUserByEmail(String email);
 
-    User findByUsername(String username);
+    User findByUsername(String email);
 
-    void logout(String username);
+    void logout(String email);
 
     LoginResponseDto tokenRefresh(String refreshToken);
 
     void updateUser(User user);
+
+    void withdrawn(String email);
 }
