@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.team.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
+import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
 import com.sparta.teamssc.domain.team.service.TeamService;
@@ -27,9 +28,10 @@ public class TeamController {
     @PostMapping()
     public ResponseEntity<ResponseDto<TeamCreateResponseDto>> createTeam(@PathVariable Long weekProgressId,
                                                                          @RequestBody TeamCreateRequestDto teamCreateRequestDto) {
-        teamCreateRequestDto.updateWeekProgressId(weekProgressId);
-        TeamCreateResponseDto teamResponseDto = teamService.createTeam(teamCreateRequestDto);
-        return ResponseEntity.status(HttpStatus.OK)
+
+        TeamCreateResponseDto teamResponseDto = teamService.createTeam(weekProgressId, teamCreateRequestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.<TeamCreateResponseDto>builder()
                         .message("팀 단일 생성을 성공했습니다.")
                         .data(teamResponseDto)
@@ -41,8 +43,9 @@ public class TeamController {
     public ResponseEntity<ResponseDto<TeamCreateResponseDto>> updateTeam(@PathVariable Long weekProgressId,
                                                                          @PathVariable Long teamId,
                                                                          @RequestBody TeamCreateRequestDto teamCreateRequestDto) {
-        teamCreateRequestDto.updateWeekProgressId(weekProgressId);
-        TeamCreateResponseDto teamResponseDto = teamService.updateTeam(teamId, teamCreateRequestDto);
+
+        TeamCreateResponseDto teamResponseDto = teamService.updateTeam(weekProgressId, teamId, teamCreateRequestDto);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<TeamCreateResponseDto>builder()
                         .message("팀 수정에 성공했습니다.")
@@ -53,7 +56,7 @@ public class TeamController {
     // 팀 삭제하기
     @DeleteMapping("/{teamId}")
     public ResponseEntity<ResponseDto<Void>> deleteTeam(@PathVariable Long weekProgressId, @PathVariable Long teamId) {
-        teamService.deleteTeam(teamId);
+        teamService.deleteTeam(weekProgressId,teamId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Void>builder()
                         .message("팀 삭제에 성공했습니다.")
@@ -61,15 +64,26 @@ public class TeamController {
                         .build());
     }
 
-    // 주차별 전체 팀 조회하기
+    // 단일 팀 불러오기
+    @GetMapping("/{teamId}/users")
+    public ResponseEntity<ResponseDto<SimpleTeamResponseDto>> getTeamUsers(@PathVariable Long weekProgressId,
+                                                                           @PathVariable Long teamId) {
+        SimpleTeamResponseDto teamUsers = teamService.getTeamUsers(teamId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<SimpleTeamResponseDto>builder()
+                        .message("팀 유저 조회 성공했습니다.")
+                        .data(teamUsers)
+                        .build());
+    }
+
+    // 팀 전체 라인업 보기
     @GetMapping("/lineup")
-    public ResponseEntity<ResponseDto<List<TeamCreateResponseDto>>> getAllTeams(@PathVariable Long weekProgressId) {
-        
+    public ResponseEntity<ResponseDto<List<SimpleTeamResponseDto>>> getAllTeams(@PathVariable Long weekProgressId) {
         weekProgressService.getWeekProgressById(weekProgressId);
 
-        List<TeamCreateResponseDto> teams = teamService.getAllTeams(weekProgressId);
+        List<SimpleTeamResponseDto> teams = teamService.getAllTeams(weekProgressId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.<List<TeamCreateResponseDto>>builder()
+                .body(ResponseDto.<List<SimpleTeamResponseDto>>builder()
                         .message("팀 편성표 조회 성공했습니다.")
                         .data(teams)
                         .build());
