@@ -7,6 +7,7 @@ import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +29,7 @@ public class BoardController {
 
         boardService.createBoard(requestDto, userDetails.getUsername());
 
-        return ResponseEntity.status(200)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
                         .message("게시글 생성 성공")
                         .build());
@@ -40,7 +41,7 @@ public class BoardController {
 
         BoardResponseDto responseDto = boardService.getBoard(boardId);
 
-        return ResponseEntity.status(200)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<BoardResponseDto>builder()
                         .message("게시글 조회 성공")
                         .data(responseDto)
@@ -53,7 +54,7 @@ public class BoardController {
 
         Page<BoardListResponseDto> responseDto = boardService.getBoards(page - 1);
 
-        return ResponseEntity.status(200)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Page<BoardListResponseDto>>builder()
                         .message("게시글 조회 성공")
                         .data(responseDto)
