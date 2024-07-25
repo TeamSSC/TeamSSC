@@ -52,9 +52,9 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ProfileResponseDto searchProfile(String email) {
+    public ProfileResponseDto searchProfile(Long userId) {
 
-        User user = userService.getUserByEmail(email);
+        User user = userService.findById(userId);
 
         return ProfileResponseDto.builder()
                 .username(user.getUsername())

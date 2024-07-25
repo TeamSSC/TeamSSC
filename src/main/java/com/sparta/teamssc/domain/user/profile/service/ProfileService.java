@@ -10,5 +10,5 @@ public interface ProfileService {
 
     void updateProfileImage(MultipartFile file, String username);
 
-    ProfileResponseDto searchProfile(String email);
+    ProfileResponseDto searchProfile(Long email);
 }

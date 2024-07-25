@@ -24,4 +24,6 @@ public interface UserService {
     void updateUser(User user);
 
     void withdrawn(String email);
+
+    User findById(Long id);
 }

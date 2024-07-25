@@ -43,13 +43,13 @@ public class ProfileController {
                         .build());
     }
 
-    @GetMapping("/users/profile")
-    public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
+    @GetMapping("/users/${userId}/profile")
+    public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(@PathVariable Long userId) {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<ProfileResponseDto>builder()
                         .message("프로필 조회 성공했습니다.")
-                        .data(profileService.searchProfile(userDetails.getUsername()))
+                        .data(profileService.searchProfile(userId))
                         .build());
     }
 }
