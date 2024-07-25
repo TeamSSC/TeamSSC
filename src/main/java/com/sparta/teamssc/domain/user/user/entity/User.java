@@ -41,14 +41,15 @@ public class User extends BaseEntity {
     private String intro;
 
     @Column(nullable = true)
-    private String mbti;
-
-    @Column(nullable = true)
     private String hobby;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private UserStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private UserMbti mbti;
 
     @Column(name = "profile_image",nullable = true)
     private String profileImage;
@@ -84,5 +85,16 @@ public class User extends BaseEntity {
 
     public void logout() {
         this.status = UserStatus.LOGOUT;
+    }
+
+    public void updateProfile(String email, String username, String gitLink, String vlogLink, String intro,
+                              UserMbti mbti, String profileImage){
+        this.email = email;
+        this.username = username;
+        this.gitLink = gitLink;
+        this.vlogLink = vlogLink;
+        this.intro = intro;
+        this.mbti = mbti;
+        this.profileImage = profileImage;
     }
 }
