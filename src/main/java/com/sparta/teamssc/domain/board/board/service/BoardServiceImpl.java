@@ -1,7 +1,8 @@
 package com.sparta.teamssc.domain.board.board.service;
 
-import com.sparta.teamssc.domain.board.board.dto.BoardRequestDto;
-import com.sparta.teamssc.domain.board.board.dto.BoardResponseDto;
+import com.sparta.teamssc.domain.board.board.dto.request.BoardRequestDto;
+import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
+import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.entity.Board;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.exception.BoardCreationFailedException;
@@ -12,6 +13,10 @@ import com.sparta.teamssc.domain.image.service.ImageService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,6 +74,20 @@ public class BoardServiceImpl implements BoardService {
                 .build();
     }
 
+    // 게시글 전체 조회
+    public Page<BoardListResponseDto> getBoards(int page) {
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createAt"));
+
+        Page<BoardListResponseDto> boardPage = boardRepository.findPagedBoardList(pageable);
+
+        if (boardPage.isEmpty()) {
+            throw new IllegalArgumentException("작성된 게시글이 없거니, " + (page + 1) + " 페이지에 글이 없습니다.");
+        }
+
+        return boardPage;
+    }
+
     // 이미지 저장하기
     private Image uploadImage(MultipartFile image) {
 
@@ -88,9 +107,8 @@ public class BoardServiceImpl implements BoardService {
 
     // 보드 아이디로 게시글 찾기
     private Board findBoardByBoardId(Long boardId) {
+
         return boardRepository.findById(boardId).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
     }
-
-
 }

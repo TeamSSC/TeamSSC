@@ -1,9 +1,8 @@
-package com.sparta.teamssc.domain.board.board.dto;
+package com.sparta.teamssc.domain.board.board.dto.request;
 
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

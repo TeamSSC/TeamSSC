@@ -1,4 +1,4 @@
-package com.sparta.teamssc.domain.board.board.dto;
+package com.sparta.teamssc.domain.board.board.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
