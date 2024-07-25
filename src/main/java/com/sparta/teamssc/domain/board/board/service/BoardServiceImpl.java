@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.board.board.service;
 
 import com.sparta.teamssc.domain.board.board.dto.BoardRequestDto;
 import com.sparta.teamssc.domain.board.board.entity.Board;
+import com.sparta.teamssc.domain.board.board.exception.BoardCreationFailedException;
 import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.repository.BoardRepository;
@@ -28,27 +29,29 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 생성
     @Override
     public void createBoard(BoardRequestDto requestDto, String username) {
+        try {
+            User user = userService.findByUsername(username);
 
-        User user = userService.findByUsername(username);
+            Board board = Board.builder()
+                    .title(requestDto.getTitle())
+                    .content(requestDto.getContent())
+                    .boardType(BoardType.BOARD)
+                    .user(user)
+                    .build();
 
-        Board board = Board.builder()
-                .title(requestDto.getTitle())
-                .content(requestDto.getContent())
-                .boardType(BoardType.BOARD)
-                .user(user)
-                .build();
+            // 보드 저장
+            boardRepository.save(board);
 
-        // 보드 저장
-        boardRepository.save(board);
-
-        // 이미지 저장 및 보드와의 연관 관계 설정
-        if (requestDto.getImages() != null) {
-            for (MultipartFile imageFile : requestDto.getImages()) {
-                Image image = uploadImage(imageFile);
-                boardImageService.boardImageSave(board, image);
+            // 이미지 저장 및 보드와의 연관 관계 설정
+            if (requestDto.getImages() != null) {
+                for (MultipartFile imageFile : requestDto.getImages()) {
+                    Image image = uploadImage(imageFile);
+                    boardImageService.boardImageSave(board, image);
+                }
             }
+        } catch (RuntimeException e) {
+            throw new BoardCreationFailedException("보드 생성에 실패했습니다.");
         }
-
     }
 
     // 이미지 저장하기

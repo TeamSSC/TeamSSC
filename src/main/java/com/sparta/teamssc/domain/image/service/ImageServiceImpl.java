@@ -4,11 +4,14 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.sparta.teamssc.domain.image.entity.FileContentType;
 import com.sparta.teamssc.domain.image.entity.Image;
+import com.sparta.teamssc.domain.image.exception.ImageException;
 import com.sparta.teamssc.domain.image.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -46,8 +49,8 @@ public class ImageServiceImpl implements ImageService {
 
             return image;
         }
-        catch (Exception e) {
-            throw new IllegalArgumentException("이미지를 업로드할 수 없습니다. " + e.getMessage());
+        catch (IOException e) {
+            throw new ImageException("이미지를 업로드할 수 없습니다. " + e.getMessage());
         }
     }
 
