@@ -18,5 +18,4 @@ public class BoardUpdateRequestDto {
         this.deleteImagesLink = deleteImagesLink;
         this.uploadImages = uploadImages;
     }
-
 }
