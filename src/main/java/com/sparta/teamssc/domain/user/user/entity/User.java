@@ -11,7 +11,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,14 +33,17 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String username;
 
-    @Column(name = "git_link",nullable = true)
+    @Column(name = "git_link", nullable = true)
     private String gitLink;
 
-    @Column(name = "vlog_link",nullable = true)
+    @Column(name = "vlog_link", nullable = true)
     private String vlogLink;
 
     @Column(nullable = true)
     private String intro;
+
+    @Column(nullable = true)
+    private String mbti;
 
     @Column(nullable = true)
     private String hobby;
@@ -47,11 +52,7 @@ public class User extends BaseEntity {
     @Column(nullable = true)
     private UserStatus status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
-    private UserMbti mbti;
-
-    @Column(name = "profile_image",nullable = true)
+    @Column(name = "profile_image", nullable = true)
     private String profileImage;
 
     @Column(nullable = true)
@@ -63,9 +64,11 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id")
-    private Team team;
+    //    @ManyToOne
+//    @JoinColumn(name = "team_id")
+//    private Team team;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "period_id")
@@ -83,6 +86,9 @@ public class User extends BaseEntity {
         this.status = UserStatus.ACTIVE;
     }
 
+    public void signupApproval() { this.status = UserStatus.ACTIVE; }
+
+    public void signupRefusal() { this.status = UserStatus.REFUSAL; }
     public void logout() {
         this.status = UserStatus.LOGOUT;
     }
