@@ -61,5 +61,4 @@ public class LikeServiceImpl implements LikeService {
                 .likeCount(likeRepository.findByBoardId(boardId).size())
                 .build();
     }
-
 }

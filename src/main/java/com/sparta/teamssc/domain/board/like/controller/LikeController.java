@@ -52,5 +52,4 @@ public class LikeController {
                         .data(likeResponseDto)
                         .build());
     }
-
 }
