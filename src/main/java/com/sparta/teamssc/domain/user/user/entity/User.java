@@ -2,7 +2,6 @@ package com.sparta.teamssc.domain.user.user.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.team.userTeamMatch.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.role.userRole.UserRole;
@@ -44,7 +43,7 @@ public class User extends BaseEntity {
     private String intro;
 
     @Column(nullable = true)
-    private String mbti;
+    private UserMbti mbti;
 
     @Column(nullable = true)
     private String hobby;
@@ -92,5 +91,19 @@ public class User extends BaseEntity {
     public void signupRefusal() { this.status = UserStatus.REFUSAL; }
     public void logout() {
         this.status = UserStatus.LOGOUT;
+    }
+
+    public void updateProfile(String username,String password, String gitLink, String vlogLink, String intro,
+                              UserMbti mbti){
+        this.username = username;
+        this.password = password;
+        this.gitLink = gitLink;
+        this.vlogLink = vlogLink;
+        this.intro = intro;
+        this.mbti = mbti;
+    }
+
+    public void updateProfileImage(String profileImage){
+        this.profileImage = profileImage;
     }
 }
