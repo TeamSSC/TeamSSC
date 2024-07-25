@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 public class ProfileRequestDto {
+    private String password;
     private String gitLink;
     private String vlogLink;
     private String intro;
     private UserMbti mbti;
-    private String profileImage;
 }

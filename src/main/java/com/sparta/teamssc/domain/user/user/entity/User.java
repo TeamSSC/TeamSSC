@@ -93,14 +93,17 @@ public class User extends BaseEntity {
         this.status = UserStatus.LOGOUT;
     }
 
-    public void updateProfile(String email, String username, String gitLink, String vlogLink, String intro,
-                              UserMbti mbti, String profileImage){
-        this.email = email;
+    public void updateProfile(String username,String password, String gitLink, String vlogLink, String intro,
+                              UserMbti mbti){
         this.username = username;
+        this.password = password;
         this.gitLink = gitLink;
         this.vlogLink = vlogLink;
         this.intro = intro;
         this.mbti = mbti;
+    }
+
+    public void updateProfileImage(String profileImage){
         this.profileImage = profileImage;
     }
 }
