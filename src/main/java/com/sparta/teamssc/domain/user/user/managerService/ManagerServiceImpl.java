@@ -17,6 +17,7 @@ public class ManagerServiceImpl implements ManagerService{
 
     private final UserRepository userRepository;
 
+    // 회원가입 승인
     @Override
     @Transactional
     public void signupApproval(Long userId) {
@@ -28,6 +29,7 @@ public class ManagerServiceImpl implements ManagerService{
 
     }
 
+    // 회원가입 거부
     @Override
     @Transactional
     public void signupRefusal(Long userId) {
@@ -39,6 +41,7 @@ public class ManagerServiceImpl implements ManagerService{
 
     }
 
+    // 회원가입 승인 대기자 조회
     @Override
     public List<PendSignupResponseDto> getPendSignup() {
 
@@ -49,6 +52,7 @@ public class ManagerServiceImpl implements ManagerService{
                 .collect(Collectors.toList());
     }
 
+    // userId 조회
     @Override
     public User getUserById(Long userId) {
 
