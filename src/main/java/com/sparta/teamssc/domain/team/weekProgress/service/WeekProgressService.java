@@ -4,6 +4,8 @@ import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressResponseDto;
 import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressUpdateRequestDto;
 import com.sparta.teamssc.domain.team.weekProgress.entity.ProgressStatus;
 import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -19,5 +21,6 @@ public interface WeekProgressService {
 
     void deleteWeekProgress(Long id);
 
-    List<WeekProgress> getAllWeekProgress();
+    Page<WeekProgress> getAllWeekProgress(Pageable pageable);
+
 }

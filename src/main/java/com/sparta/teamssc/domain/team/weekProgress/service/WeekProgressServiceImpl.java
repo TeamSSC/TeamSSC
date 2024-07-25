@@ -6,9 +6,9 @@ import com.sparta.teamssc.domain.team.weekProgress.entity.ProgressStatus;
 import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
 import com.sparta.teamssc.domain.team.weekProgress.repository.WeekProgressRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -87,9 +87,13 @@ public class WeekProgressServiceImpl implements WeekProgressService {
         }
     }
 
-    // 전체주차
+    // 전체주차 페이징
     @Override
-    public List<WeekProgress> getAllWeekProgress() {
-        return null;
+    public Page<WeekProgress> getAllWeekProgress(Pageable pageable) {
+        try {
+            return weekProgressRepository.findByNotDeleted(pageable);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("전체 주차를 페이징 실패했습니다.");
+        }
     }
 }

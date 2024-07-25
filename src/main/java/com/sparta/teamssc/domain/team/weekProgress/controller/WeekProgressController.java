@@ -4,13 +4,17 @@ import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressRequestDto;
 import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressResponseDto;
 import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressUpdateRequestDto;
-import com.sparta.teamssc.domain.team.weekProgress.entity.ProgressStatus;
 import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
 import com.sparta.teamssc.domain.team.weekProgress.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/weekProgress")
@@ -67,5 +71,22 @@ public class WeekProgressController {
         weekProgressService.deleteWeekProgress(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto<>(null, "주차 상태가 삭제되었습니다."));
+    }
+
+    // 전체 주차 보기 - 페이징 처리
+    @GetMapping
+    public ResponseEntity<ResponseDto<Page<WeekProgressResponseDto>>> getAllWeekProgress(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        Page<WeekProgress> weekProgressPage = weekProgressService.getAllWeekProgress(PageRequest.of(page, size));
+        Page<WeekProgressResponseDto> responseDtos = weekProgressPage.map(weekProgress -> WeekProgressResponseDto.builder()
+                .id(weekProgress.getId())
+                .name(weekProgress.getName())
+                .status(weekProgress.getStatus())
+                .build());
+        return ResponseEntity.ok(ResponseDto.<Page<WeekProgressResponseDto>>builder()
+                .message("전체 주차 상태 조회에 성공했습니다.")
+                .data(responseDtos)
+                .build());
     }
 }
