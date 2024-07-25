@@ -1,7 +1,9 @@
 package com.sparta.teamssc.domain.track.dto;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class TrackResponseDto {
 
     private String name;
