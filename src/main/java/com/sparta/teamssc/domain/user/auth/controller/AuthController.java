@@ -72,4 +72,14 @@ public class AuthController {
                         .build());
     }
 
+    @PostMapping("/users/withdrawn")
+    public ResponseEntity<ResponseDto<String>> withdrawn(@AuthenticationPrincipal UserDetails userDetails) {
+
+        userService.withdrawn(userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("회원탈퇴 성공했습니다.")
+                        .build());
+    }
 }

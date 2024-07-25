@@ -89,6 +89,7 @@ public class User extends BaseEntity {
     public void signupApproval() { this.status = UserStatus.ACTIVE; }
 
     public void signupRefusal() { this.status = UserStatus.REFUSAL; }
+
     public void logout() {
         this.status = UserStatus.LOGOUT;
     }
@@ -105,5 +106,9 @@ public class User extends BaseEntity {
 
     public void updateProfileImage(String profileImage){
         this.profileImage = profileImage;
+    }
+
+    public void withdrawn () {
+        this.status = UserStatus.WITHDRAWN;
     }
 }
