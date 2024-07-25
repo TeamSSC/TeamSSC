@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.team.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.team.teamProgress.entity.WeekProgress;
 import com.sparta.teamssc.domain.team.userTeamMatch.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
@@ -49,8 +50,9 @@ public class Team extends BaseEntity {
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    private WeekProgress weekProgress;  // 주차 상태
+    @ManyToOne
+    @JoinColumn(name = "week_progress_id")
+    private WeekProgress weekProgress; // 주차 상태
 
     @Builder
     public Team(Period period, String teamName, Section section, WeekProgress weekProgress, String leaderId, String teamDescription) {
@@ -96,5 +98,9 @@ public class Team extends BaseEntity {
         return userTeamMatches.stream()
                 .map(UserTeamMatch::getUser)
                 .collect(Collectors.toList());
+    }
+
+    public void updateWeekProgress(WeekProgress weekProgress) {
+        this.weekProgress = weekProgress;
     }
 }

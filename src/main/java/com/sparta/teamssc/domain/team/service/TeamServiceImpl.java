@@ -5,10 +5,11 @@ import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
 import com.sparta.teamssc.domain.team.entity.Team;
-import com.sparta.teamssc.domain.team.entity.WeekProgress;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
 import com.sparta.teamssc.domain.team.repository.TeamRepository;
+import com.sparta.teamssc.domain.team.teamProgress.entity.WeekProgress;
+import com.sparta.teamssc.domain.team.teamProgress.service.WeekProgressService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
     private final UserService userService;
     private final PeriodService periodService;
+    private final WeekProgressService weekProgressService;
 
     /**
      * 팀생성
@@ -38,6 +40,9 @@ public class TeamServiceImpl implements TeamService {
             // Period 조회
             Period period = periodService.getPeriodById(teamCreateRequestDto.getPeriodId());
 
+            // WeekProgress 조회
+            WeekProgress weekProgress = weekProgressService.getWeekProgressById(teamCreateRequestDto.getWeekProgressId());
+
             // User 조회
             List<User> users = teamCreateRequestDto.getUserEmails().stream()
                     .map(userService::getUserByEmail)
@@ -46,9 +51,8 @@ public class TeamServiceImpl implements TeamService {
             // Team 생성
             Team team = Team.builder()
                     .period(period)
-                    .teamName("팀 이름")
-                    .weekProgress(WeekProgress.주차선택하세요)
                     .section(teamCreateRequestDto.getSection())
+                    .weekProgress(weekProgress)
                     .leaderId(null)
                     .teamDescription("팀 설명")
                     .build();
@@ -60,13 +64,13 @@ public class TeamServiceImpl implements TeamService {
             TeamCreateResponseDto teamResponseDto = TeamCreateResponseDto.builder()
                     .id(team.getId())
                     .leaderId(team.getLeaderId())
-                    .weekProgress(team.getWeekProgress())
-                    .users(users.stream().map(User::getEmail).collect(Collectors.toList()))
+                    .weekProgress(team.getWeekProgress().getName())
+                    .userEmails(users.stream().map(User::getEmail).collect(Collectors.toList()))
                     .build();
 
             return teamResponseDto;
 
-        } catch (TeamNotFoundException e) {
+        } catch (Exception e) {
             throw new TeamCreationFailedException("팀 생성에 실패했습니다.");
         }
     }
@@ -80,17 +84,18 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public TeamCreateResponseDto updateTeam(Long teamId, TeamCreateRequestDto teamCreateRequestDto) {
-
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
 
         Period period = periodService.getPeriodById(teamCreateRequestDto.getPeriodId());
+        WeekProgress weekProgress = weekProgressService.getWeekProgressById(teamCreateRequestDto.getWeekProgressId());
         List<User> users = teamCreateRequestDto.getUserEmails().stream()
                 .map(userService::getUserByEmail)
                 .collect(Collectors.toList());
 
         team.updatePeriod(period);
         team.updateSection(teamCreateRequestDto.getSection());
+        team.updateWeekProgress(weekProgress);
         team.updateUsers(users);
 
         teamRepository.save(team);
@@ -98,8 +103,8 @@ public class TeamServiceImpl implements TeamService {
         return TeamCreateResponseDto.builder()
                 .id(team.getId())
                 .leaderId(team.getLeaderId())
-                .weekProgress(team.getWeekProgress())
-                .users(users.stream().map(User::getEmail).collect(Collectors.toList()))
+                .weekProgress(team.getWeekProgress().getName())
+                .userEmails(users.stream().map(User::getEmail).collect(Collectors.toList()))
                 .build();
     }
 
@@ -121,6 +126,11 @@ public class TeamServiceImpl implements TeamService {
      *
      * @return List<TeamResponseDto>
      */
+    /**
+     * 팀 조회하기
+     *
+     * @return List<TeamCreateResponseDto>
+     */
     @Transactional(readOnly = true)
     @Override
     public List<TeamCreateResponseDto> getAllTeams() {
@@ -129,7 +139,8 @@ public class TeamServiceImpl implements TeamService {
                 .map(team -> TeamCreateResponseDto.builder()
                         .id(team.getId())
                         .leaderId(team.getLeaderId())
-                        .users(team.getUsers().stream()
+                        .weekProgress(team.getWeekProgress().getName())
+                        .userEmails(team.getUsers().stream()
                                 .map(User::getEmail)
                                 .collect(Collectors.toList()))
                         .build())
