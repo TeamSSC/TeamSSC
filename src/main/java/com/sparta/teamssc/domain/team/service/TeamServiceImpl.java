@@ -4,8 +4,8 @@ import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
 import com.sparta.teamssc.domain.team.entity.Team;
+import com.sparta.teamssc.domain.team.entity.WeekProgress;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
 import com.sparta.teamssc.domain.team.repository.TeamRepository;
@@ -47,6 +47,7 @@ public class TeamServiceImpl implements TeamService {
             Team team = Team.builder()
                     .period(period)
                     .teamName("팀 이름")
+                    .weekProgress(WeekProgress.주차선택하세요)
                     .section(teamCreateRequestDto.getSection())
                     .leaderId(null)
                     .teamDescription("팀 설명")
@@ -59,6 +60,7 @@ public class TeamServiceImpl implements TeamService {
             TeamCreateResponseDto teamResponseDto = TeamCreateResponseDto.builder()
                     .id(team.getId())
                     .leaderId(team.getLeaderId())
+                    .weekProgress(team.getWeekProgress())
                     .users(users.stream().map(User::getEmail).collect(Collectors.toList()))
                     .build();
 
@@ -96,6 +98,7 @@ public class TeamServiceImpl implements TeamService {
         return TeamCreateResponseDto.builder()
                 .id(team.getId())
                 .leaderId(team.getLeaderId())
+                .weekProgress(team.getWeekProgress())
                 .users(users.stream().map(User::getEmail).collect(Collectors.toList()))
                 .build();
     }
@@ -116,23 +119,20 @@ public class TeamServiceImpl implements TeamService {
     /**
      * 팀 조회하기
      *
-     * @return List<TeamResponseDto></TeamResponseDto>
+     * @return List<TeamResponseDto>
      */
     @Transactional(readOnly = true)
     @Override
-    public List<TeamResponseDto> getAllTeams() {
-        try {
-            List<Team> teams = teamRepository.findAll();
-            return teams.stream()
-                    .map(team -> TeamResponseDto.builder()
-                            .id(team.getId())
-                            .teamName(team.getTeamName())
-                            .leaderId(team.getLeaderId())
-                            .users(team.getUsers().stream().map(User::getEmail).collect(Collectors.toList()))
-                            .build())
-                    .collect(Collectors.toList());
-        } catch (TeamNotFoundException e) {
-            throw new TeamNotFoundException("팀을 찾을 수 없습니다.");
-        }
+    public List<TeamCreateResponseDto> getAllTeams() {
+        List<Team> teams = teamRepository.findAll();
+        return teams.stream()
+                .map(team -> TeamCreateResponseDto.builder()
+                        .id(team.getId())
+                        .leaderId(team.getLeaderId())
+                        .users(team.getUsers().stream()
+                                .map(User::getEmail)
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
     }
 }

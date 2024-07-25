@@ -8,8 +8,6 @@ import com.sparta.teamssc.domain.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -62,12 +60,12 @@ public class TeamController {
 
     // 팀 편성표 조회하기
     @GetMapping("/lineup")
-    public ResponseEntity<ResponseDto<List<TeamResponseDto>>> getAllTeams() {
-            List<TeamResponseDto> teams = teamService.getAllTeams();
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(ResponseDto.<List<TeamResponseDto>>builder()
-                            .message("팀 편성표 조회 성공 했습니다")
-                            .data(teams)
-                            .build());
+    public ResponseEntity<ResponseDto<List<TeamCreateResponseDto>>> getAllTeams() {
+        List<TeamCreateResponseDto> teams = teamService.getAllTeams();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<List<TeamCreateResponseDto>>builder()
+                        .message("팀 편성표 조회 성공 했습니다")
+                        .data(teams)
+                        .build());
     }
 }

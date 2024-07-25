@@ -8,8 +8,10 @@ import java.util.List;
 
 public interface TeamService {
     TeamCreateResponseDto createTeam(TeamCreateRequestDto teamCreateRequestDto);
+
     TeamCreateResponseDto updateTeam(Long teamId, TeamCreateRequestDto teamCreateRequestDto);
+
     void deleteTeam(Long teamId);
 
-    List<TeamResponseDto> getAllTeams();
+    List<TeamCreateResponseDto> getAllTeams();
 }
