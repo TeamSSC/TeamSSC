@@ -8,7 +8,6 @@ import lombok.Getter;
 
 @Getter
 public class ProfileResponseDto {
-
     private final String email;
     private final String username;
     private final String gitLink;
