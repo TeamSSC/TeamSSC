@@ -34,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         User user = userOptional.get();
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
+                .username(user.getEmail())
                 .password(user.getPassword())
                 .build();
     }

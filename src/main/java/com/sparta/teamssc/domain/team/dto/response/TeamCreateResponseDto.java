@@ -10,5 +10,6 @@ import java.util.List;
 public class TeamCreateResponseDto {
     private final Long id;// 팀 아이디
     private final String leaderId;
-    private final List<String> users;
+    private final String weekProgress; // 주차 상태
+    private final List<String> userEmails;
 }

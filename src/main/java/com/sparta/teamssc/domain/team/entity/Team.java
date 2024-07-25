@@ -2,6 +2,8 @@ package com.sparta.teamssc.domain.team.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
+import com.sparta.teamssc.domain.team.userTeamMatch.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +11,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -36,26 +40,36 @@ public class Team extends BaseEntity {
 
     // 팀 리더
     @Column(nullable = true)
-    private String leaderId ;
+    private String leaderId;
 
     // 팀 소개
     @Column(nullable = true)
     private String teamDescription;
 
-    @OneToMany(mappedBy = "team")
-    private List<User> users; // 팀에 속한 사용자들
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "week_progress_id")
+    private WeekProgress weekProgress; // 주차 상태
 
     @Builder
-    public Team(Period period, String teamName, Section section, String leaderId, String teamDescription) {
+    public Team(Period period, String teamName, Section section, WeekProgress weekProgress, String leaderId, String teamDescription) {
         this.period = period;
         this.teamName = teamName;
         this.section = section;
+        this.weekProgress = weekProgress;
         this.leaderId = leaderId;
         this.teamDescription = teamDescription;
     }
+
     public void addUsers(List<User> users) {
-        this.users = users;
+        users.forEach(user -> {
+            UserTeamMatch userTeamMatch = new UserTeamMatch();
+            userTeamMatch.addTeam(this);
+            userTeamMatch.addUser(user);
+            userTeamMatches.add(userTeamMatch);
+        });
     }
 
     public void updatePeriod(Period period) {
@@ -75,6 +89,17 @@ public class Team extends BaseEntity {
     }
 
     public void updateUsers(List<User> users) {
-        this.users = users;
+        userTeamMatches.clear();
+        addUsers(users);
+    }
+
+    public List<User> getUsers() {
+        return userTeamMatches.stream()
+                .map(UserTeamMatch::getUser)
+                .collect(Collectors.toList());
+    }
+
+    public void updateWeekProgress(WeekProgress weekProgress) {
+        this.weekProgress = weekProgress;
     }
 }

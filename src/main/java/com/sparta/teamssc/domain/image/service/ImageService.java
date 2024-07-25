@@ -17,4 +17,6 @@ public interface ImageService {
     String getFileUrl(String fileName);
 
     String findFileUrlByImageId(Long imageId);
+
+    String updateProfileImage(MultipartFile file);
 }

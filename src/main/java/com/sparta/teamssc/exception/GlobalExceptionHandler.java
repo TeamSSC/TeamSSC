@@ -1,6 +1,7 @@
 package com.sparta.teamssc.exception;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
+import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +25,15 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    // 팀 생성에 실패했을 때
+    @ExceptionHandler(TeamCreationFailedException.class)
+    public ResponseEntity<ResponseDto<Object>> handleTeamCreationFailedException(TeamCreationFailedException ex) {
+        ResponseDto<Object> errorResponse = ResponseDto.<Object>builder()
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }
