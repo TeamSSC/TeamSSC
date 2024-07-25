@@ -1,14 +1,14 @@
 package com.sparta.teamssc.domain.user.user.managerController;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
+import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
 import com.sparta.teamssc.domain.user.user.managerService.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +42,20 @@ public class ManagerController {
         managerService.signupRefusal(userId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<String>builder()
                 .message("회원가입 승인이 거부 되었습니다.")
+                .build());
+    }
+
+    /**
+     * 회원가입 승인 대기자 조회 메서드
+     * @return 바디에 반환
+     */
+    @GetMapping("/signup/pend/")
+    public ResponseEntity<ResponseDto<List<PendSignupResponseDto>>> getPendSignup() {
+
+        List<PendSignupResponseDto> pendSignupResponseDto = managerService.getPendSignup();
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<List<PendSignupResponseDto>>builder()
+                .message("회원가입 승인 대기자가 조회 되었습니다.")
+                .data(pendSignupResponseDto)
                 .build());
     }
 }
