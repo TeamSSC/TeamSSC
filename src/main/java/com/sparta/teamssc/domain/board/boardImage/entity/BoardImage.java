@@ -1,7 +1,7 @@
-package com.sparta.teamssc.domain.board.like.entity;
+package com.sparta.teamssc.domain.board.boardImage.entity;
 
 import com.sparta.teamssc.domain.board.board.entity.Board;
-import com.sparta.teamssc.domain.user.user.entity.User;
+import com.sparta.teamssc.domain.image.entity.Image;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,25 +10,23 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "board_like")
-public class Like {
+public class BoardImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JoinColumn(name = "board_id", nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 
-    @JoinColumn(name = "user_id", nullable = false)
-    @ManyToOne
-    private User user;
+    @JoinColumn(name = "image_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Image image;
 
     @Builder
-    public Like(Board board, User user) {
+    public BoardImage(Board board, Image image) {
         this.board = board;
-        this.user = user;
+        this.image = image;
     }
-
 }
