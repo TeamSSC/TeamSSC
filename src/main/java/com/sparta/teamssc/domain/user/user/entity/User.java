@@ -2,7 +2,7 @@ package com.sparta.teamssc.domain.user.user.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.team.entity.Team;
+import com.sparta.teamssc.domain.team.userTeamMatch.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.role.userRole.UserRole;
 import jakarta.persistence.*;
@@ -43,7 +43,7 @@ public class User extends BaseEntity {
     private String intro;
 
     @Column(nullable = true)
-    private String mbti;
+    private UserMbti mbti;
 
     @Column(nullable = true)
     private String hobby;
