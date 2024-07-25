@@ -1,12 +1,14 @@
 package com.sparta.teamssc.domain.board.board.service;
 
 import com.sparta.teamssc.domain.board.board.dto.request.BoardRequestDto;
+import com.sparta.teamssc.domain.board.board.dto.request.BoardUpdateRequestDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.entity.Board;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.exception.BoardCreationFailedException;
 import com.sparta.teamssc.domain.board.board.repository.BoardRepository;
+import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import com.sparta.teamssc.domain.board.boardImage.service.BoardImageService;
 import com.sparta.teamssc.domain.image.entity.Image;
 import com.sparta.teamssc.domain.image.service.ImageService;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -61,6 +64,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     // 특정 게시글 조회
+    @Override
     public BoardResponseDto getBoard(Long boardId) {
         Board board = findBoardByBoardId(boardId);
         List<String> imageUrls = board.getBoardImages().stream()
@@ -75,6 +79,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     // 게시글 전체 조회
+    @Override
     public Page<BoardListResponseDto> getBoards(int page) {
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createAt"));
@@ -86,6 +91,55 @@ public class BoardServiceImpl implements BoardService {
         }
 
         return boardPage;
+    }
+
+    // 게시글 수정
+    @Override
+    @Transactional
+    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String username) {
+        try {
+            Board board = findBoardByBoardId(boardId);
+            if (board.getUser().getUsername().equals(username)) {
+
+                // 삭제할 이미지가 있으면 삭제
+                if (requestDto.getDeleteImagesLink() != null) {
+                    for (String imageLink : requestDto.getDeleteImagesLink()) {
+                        deleteImage(imageLink);
+                    }
+                }
+
+                if (requestDto.getUploadImages() != null) {
+                    for (MultipartFile imageFile : requestDto.getUploadImages()) {
+                        Image image = uploadImage(imageFile);
+                        boardImageService.boardImageSave(board, image);
+                        board.update(requestDto.getTitle(), requestDto.getContent());
+                    }
+                } else {
+                    board.update(requestDto.getTitle(), requestDto.getContent());
+                }
+
+            } else {
+                throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
+            }
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("게시글 수정에 실패하였습니다.");
+        }
+    }
+
+    // 게시글 삭제
+    @Override
+    public void deleteBoard(Long boardId, String username) {
+        try {
+            Board board = findBoardByBoardId(boardId);
+            if (board.getUser().getUsername().equals(username)) {
+                for (String fileLink : boardImageService.findFileUrlByBoardId(boardId)) {
+                    deleteImage(fileLink);
+                }
+                boardRepository.delete(board);
+            }
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("게시글 삭제에 실패했습니다.");
+        }
     }
 
     // 이미지 저장하기
@@ -106,7 +160,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     // 보드 아이디로 게시글 찾기
-    private Board findBoardByBoardId(Long boardId) {
+    @Override
+    public Board findBoardByBoardId(Long boardId) {
 
         return boardRepository.findById(boardId).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
