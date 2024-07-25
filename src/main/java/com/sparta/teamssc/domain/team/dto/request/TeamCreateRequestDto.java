@@ -13,4 +13,8 @@ public class TeamCreateRequestDto {
     private Section section; // 세션
     private Long weekProgressId; // 주차 상태 ID
     private List<String> userEmails;
+
+    public void updateWeekProgressId(Long weekProgressId) {
+        this.weekProgressId = weekProgressId;
+    }
 }

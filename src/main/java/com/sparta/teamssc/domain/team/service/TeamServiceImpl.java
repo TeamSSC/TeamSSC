@@ -75,6 +75,7 @@ public class TeamServiceImpl implements TeamService {
         }
     }
 
+
     /**
      * 팀 수정하기
      *
@@ -84,10 +85,10 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public TeamCreateResponseDto updateTeam(Long teamId, TeamCreateRequestDto teamCreateRequestDto) {
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+        Team team = getTeamById(teamId);
 
         Period period = periodService.getPeriodById(teamCreateRequestDto.getPeriodId());
+
         WeekProgress weekProgress = weekProgressService.getWeekProgressById(teamCreateRequestDto.getWeekProgressId());
         List<User> users = teamCreateRequestDto.getUserEmails().stream()
                 .map(userService::getUserByEmail)
@@ -116,8 +117,7 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     @Override
     public void deleteTeam(Long teamId) {
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+      Team team = getTeamById(teamId);
         teamRepository.delete(team);
     }
 
@@ -133,8 +133,8 @@ public class TeamServiceImpl implements TeamService {
      */
     @Transactional(readOnly = true)
     @Override
-    public List<TeamCreateResponseDto> getAllTeams() {
-        List<Team> teams = teamRepository.findAll();
+    public List<TeamCreateResponseDto> getAllTeams(Long weekProgressId) {
+        List<Team> teams = teamRepository.findAllByWeekProgressId(weekProgressId);
         return teams.stream()
                 .map(team -> TeamCreateResponseDto.builder()
                         .id(team.getId())
@@ -145,5 +145,9 @@ public class TeamServiceImpl implements TeamService {
                                 .collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
+    }
+    @Override
+    public Team getTeamById(Long teamId) {
+        return teamRepository.findById(teamId).orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
     }
 }
