@@ -4,18 +4,20 @@ import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
+import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
 import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
 import com.sparta.teamssc.domain.team.repository.TeamRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,13 +64,14 @@ public class TeamServiceImpl implements TeamService {
 
             return teamResponseDto;
 
-        } catch (Exception e) {
+        } catch (TeamNotFoundException e) {
             throw new TeamCreationFailedException("팀 생성에 실패했습니다.");
         }
     }
 
     /**
      * 팀 수정하기
+     *
      * @param teamId
      * @param teamCreateRequestDto
      * @return TeamCreateResponseDto
@@ -99,6 +102,7 @@ public class TeamServiceImpl implements TeamService {
 
     /**
      * 팀삭제하기
+     *
      * @param teamId
      */
     @Transactional
@@ -107,5 +111,28 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
         teamRepository.delete(team);
+    }
+
+    /**
+     * 팀 조회하기
+     *
+     * @return List<TeamResponseDto></TeamResponseDto>
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<TeamResponseDto> getAllTeams() {
+        try {
+            List<Team> teams = teamRepository.findAll();
+            return teams.stream()
+                    .map(team -> TeamResponseDto.builder()
+                            .id(team.getId())
+                            .teamName(team.getTeamName())
+                            .leaderId(team.getLeaderId())
+                            .users(team.getUsers().stream().map(User::getEmail).collect(Collectors.toList()))
+                            .build())
+                    .collect(Collectors.toList());
+        } catch (TeamNotFoundException e) {
+            throw new TeamNotFoundException("팀을 찾을 수 없습니다.");
+        }
     }
 }

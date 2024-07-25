@@ -4,8 +4,12 @@ import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
 
+import java.util.List;
+
 public interface TeamService {
     TeamCreateResponseDto createTeam(TeamCreateRequestDto teamCreateRequestDto);
     TeamCreateResponseDto updateTeam(Long teamId, TeamCreateRequestDto teamCreateRequestDto);
     void deleteTeam(Long teamId);
+
+    List<TeamResponseDto> getAllTeams();
 }
