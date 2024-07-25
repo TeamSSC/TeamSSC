@@ -7,24 +7,21 @@ import com.sparta.teamssc.domain.track.repository.TrackRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import com.sparta.teamssc.domain.user.user.service.UserServiceImpl;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
-public class TrackServiceImpl implements TrackService{
+public class TrackServiceImpl implements TrackService {
 
     private final TrackRepository trackRepository;
-    private final UserService userService;
 
-    public TrackResponseDto createTrack(String username, TrackRequestDto trackRequestDto) {
-
-        User user = userService.findByUsername(username);
-
-        if (checkAdmin(user).equals(Boolean.FALSE)) {
-            throw new AccessDeniedException("관리자만 트랙을 생성할 수 있습니다.");
-        }
+    public TrackResponseDto createTrack(TrackRequestDto trackRequestDto) {
 
         Track track = Track.builder()
                 .name(trackRequestDto.getName())
@@ -32,16 +29,27 @@ public class TrackServiceImpl implements TrackService{
 
         trackRepository.save(track);
 
-        return TrackResponseDto.builder().name(track.getName()).build();
+        return TrackResponseDto.builder()
+                .name(track.getName())
+                .build();
 
     }
 
-    // TODO : User Role 타입 String에서 Enum으로 바뀌면 수정 예정
-    public Boolean checkAdmin(User user){
-        if(user.getRoles().equals("ADMIN")){
-            return Boolean.TRUE;
-        } else {
-            return Boolean.FALSE;
+    @Transactional
+    public TrackResponseDto updateTrack(Long trackId, TrackRequestDto trackRequestDto) {
+
+        Track track = trackRepository.findById(trackId).orElseThrow(
+                ()-> new NoSuchElementException("수정할 트랙을 찾지 못했습니다.")
+        );
+
+        if (track.getName().equals(trackRequestDto.getName())) {
+            throw new IllegalArgumentException("트랙명을 같은 이름으로 변경할 수 없습니다.");
         }
+
+        Track updatedTrack = track.setTrackName(trackRequestDto.getName());
+
+        return TrackResponseDto.builder()
+                .name(updatedTrack.getName())
+                .build();
     }
 }
