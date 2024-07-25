@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -54,6 +55,17 @@ public class TeamController {
                 .body(ResponseDto.<Void>builder()
                         .message("팀 삭제에 성공했습니다.")
                         .data(null)
+                        .build());
+    }
+
+    // 팀 편성표 조회하기
+    @GetMapping("/lineup")
+    public ResponseEntity<ResponseDto<List<TeamCreateResponseDto>>> getAllTeams() {
+        List<TeamCreateResponseDto> teams = teamService.getAllTeams();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<List<TeamCreateResponseDto>>builder()
+                        .message("팀 편성표 조회 성공 했습니다")
+                        .data(teams)
                         .build());
     }
 }
