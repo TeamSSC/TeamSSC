@@ -64,10 +64,7 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
-
-    //    @ManyToOne
-//    @JoinColumn(name = "team_id")
-//    private Team team;
+    
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 
