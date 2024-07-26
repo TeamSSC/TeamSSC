@@ -1,6 +1,5 @@
 package com.sparta.teamssc.domain.user.refreshToken.service;
 
-import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.refreshToken.repository.RefreshTokenRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
@@ -8,7 +7,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Ref;
 import java.util.Optional;
 
 @Service

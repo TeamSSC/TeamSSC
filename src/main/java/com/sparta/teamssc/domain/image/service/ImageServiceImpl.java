@@ -68,6 +68,32 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Override
+    public String updateProfileImage(MultipartFile file) {
+
+        try {
+            // 파일 타입 검사
+            String contentType = file.getContentType();
+            if (FileContentType.getContentType(contentType) == null) {
+                throw new IllegalArgumentException("허용되지 않는 파일 타입입니다: " + contentType);
+            }
+
+            String fileName = generateFileName(file.getOriginalFilename());
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+
+            amazonS3.putObject(bucketName, fileName, file.getInputStream(), metadata);
+
+            String fileUrl = getFileUrl(fileName);
+            return fileUrl;
+        }
+        catch (IOException e) {
+            throw new ImageException("이미지를 업로드할 수 없습니다. " + e.getMessage());
+        }
+    }
+
     // 파일명을 생성하는 메서드
     public String generateFileName(String originalFileName) {
         return UUID.randomUUID().toString() + "_" + originalFileName;
@@ -79,5 +105,13 @@ public class ImageServiceImpl implements ImageService {
             throw new IllegalArgumentException("이미지을 업로드할 수 없습니다.");
         }
         return amazonS3.getUrl(bucketName, fileName).toString();
+    }
+
+    public String findFileUrlByImageId(Long imageId) {
+
+        Image image = imageRepository.findById(imageId).orElseThrow(() ->
+                new IllegalArgumentException("해당 이미지를 찾을 수 없습니다"));
+
+        return image.getFileLink();
     }
 }

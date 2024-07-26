@@ -16,4 +16,7 @@ public interface ImageService {
     // 파일 URL을 반환하는 메서드
     String getFileUrl(String fileName);
 
+    String findFileUrlByImageId(Long imageId);
+
+    String updateProfileImage(MultipartFile file);
 }

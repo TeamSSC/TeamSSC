@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.board.board.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.request.BoardRequestDto;
+import com.sparta.teamssc.domain.board.board.dto.request.BoardUpdateRequestDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.service.BoardService;
@@ -58,6 +59,33 @@ public class BoardController {
                 .body(ResponseDto.<Page<BoardListResponseDto>>builder()
                         .message("게시글 조회 성공")
                         .data(responseDto)
+                        .build());
+    }
+
+    // 게시글 수정 기능
+    @PatchMapping("/boards/{boardId}")
+    public ResponseEntity<ResponseDto<String>> updateBoard(@PathVariable Long boardId,
+                                                           @ModelAttribute BoardUpdateRequestDto requestDto,
+                                                           @AuthenticationPrincipal UserDetails userDetails) {
+
+        boardService.updateBoard(boardId, requestDto, userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("게시글 수정 성공")
+                        .build());
+    }
+
+    // 게시글 삭제 기능
+    @DeleteMapping("/boards/{boardId}")
+    public ResponseEntity<ResponseDto<String>> deleteBoard(@PathVariable Long boardId,
+                                                           @AuthenticationPrincipal UserDetails userDetails) {
+
+        boardService.deleteBoard(boardId,userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("게시글 삭제 성공")
                         .build());
     }
 }

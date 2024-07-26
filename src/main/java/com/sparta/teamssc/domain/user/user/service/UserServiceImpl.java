@@ -42,8 +42,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
         User user = getUserByEmail(loginRequestDto.getEmail());
@@ -72,9 +72,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void logout(String username) {
+    public void logout(String email) {
 
-        User user = findByUsername(username);
+        User user = getUserByEmail(email);
 
         user.logout();
 
@@ -89,11 +89,11 @@ public class UserServiceImpl implements UserService {
         if (currentToken == null || !JwtUtil.validateRefreshToken(currentToken.getRefreshToken())) {
             throw new IllegalArgumentException("다시 로그인 해주세요."); // 리프레시 토큰이 유효하지 않으면 예외 발생
         }
-        String username = JwtUtil.getUsernameFromToken(refreshToken);
-        User user = findByUsername(username);
+        String email = JwtUtil.getUsernameFromToken(refreshToken);
+        User user = getUserByEmail(email);
 
-        String newAccessToken = JwtUtil.createAccessToken(username); // 새로운 엑세스 토큰 생성
-        String newRefreshToken = JwtUtil.createRefreshToken(username); // 새로운 리프레시 토큰 생성
+        String newAccessToken = JwtUtil.createAccessToken(user.getEmail()); // 새로운 엑세스 토큰 생성
+        String newRefreshToken = JwtUtil.createRefreshToken(user.getEmail()); // 새로운 리프레시 토큰 생성
 
 
         refreshTokenService.updateRefreshToken(user, newRefreshToken); // 리프레시 토큰 업데이트
@@ -101,14 +101,28 @@ public class UserServiceImpl implements UserService {
         return LoginResponseDto.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
-                .username(username)
+                .username(user.getUsername())
                 .build();
     }
 
+    @Override
+    public void withdrawn(String email) {
+
+        User user = getUserByEmail(email);
+
+        user.withdrawn();
+
+        userRepository.save(user);
+    }
 
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public void updateUser(User user){
+        userRepository.save(user);
     }
 
     private void inValidPassword(String password) {
@@ -132,5 +146,10 @@ public class UserServiceImpl implements UserService {
             return userRepository.findByUsername(username).get();
         }
         throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 }

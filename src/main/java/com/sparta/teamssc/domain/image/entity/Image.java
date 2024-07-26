@@ -25,7 +25,7 @@ public class Image extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String fileLink;
 
-    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> boardImages = new ArrayList<>();
 
     @Builder

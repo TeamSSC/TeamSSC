@@ -34,7 +34,7 @@ public class Board extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> boardImages = new ArrayList<>();
 //
 //    @JoinColumn(name = "period_id", nullable = false)
@@ -48,6 +48,11 @@ public class Board extends BaseEntity {
         this.boardType = boardType;
         this.user = user;
 //        this.period = period;
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
 }

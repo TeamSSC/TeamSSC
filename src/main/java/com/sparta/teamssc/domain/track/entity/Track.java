@@ -31,4 +31,11 @@ public class Track extends BaseEntity {
     public Track(String name) {
         this.name = name;
     }
+
+    public Track setTrackName(String name) {
+
+        this.name = name;
+
+        return this;
+    }
 }
