@@ -1,4 +1,4 @@
-package com.sparta.teamssc.domain.team.weekProgress.dto;
+package com.sparta.teamssc.domain.weekProgress.dto;
 
 import lombok.Getter;
 

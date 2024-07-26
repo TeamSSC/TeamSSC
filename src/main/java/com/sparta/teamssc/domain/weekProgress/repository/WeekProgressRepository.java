@@ -1,6 +1,6 @@
-package com.sparta.teamssc.domain.team.weekProgress.repository;
+package com.sparta.teamssc.domain.weekProgress.repository;
 
-import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
+import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

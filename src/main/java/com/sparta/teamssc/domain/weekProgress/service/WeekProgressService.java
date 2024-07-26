@@ -1,13 +1,11 @@
-package com.sparta.teamssc.domain.team.weekProgress.service;
+package com.sparta.teamssc.domain.weekProgress.service;
 
-import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressResponseDto;
-import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressUpdateRequestDto;
-import com.sparta.teamssc.domain.team.weekProgress.entity.ProgressStatus;
-import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
+import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressResponseDto;
+import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressUpdateRequestDto;
+import com.sparta.teamssc.domain.weekProgress.entity.ProgressStatus;
+import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 
 public interface WeekProgressService {
