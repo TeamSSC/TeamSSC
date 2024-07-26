@@ -4,6 +4,9 @@ import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
+import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     // 회원가입
@@ -15,13 +18,24 @@ public interface UserService {
     // 이메일로 사용자가져오기
     User getUserByEmail(String email);
 
+    //username으로 사용자 가져오기
     User findByUsername(String email);
 
+    //로그아웃
     void logout(String email);
 
+    //리프레시토큰으로 토큰 재발급 후에 로그인
     LoginResponseDto tokenRefresh(String refreshToken);
 
+    //프로필 수정
     void updateUser(User user);
 
+    //회원탈퇴
     void withdrawn(String email);
+
+    //유저id값으로 사용자 가져오기
+    User findById(Long id);
+
+    //유저 페이징
+    Page<ProfileCardMapper> findAllUsers(Pageable pageable);
 }

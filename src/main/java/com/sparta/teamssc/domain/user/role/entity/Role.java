@@ -5,8 +5,7 @@ import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-
+@NoArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,4 +13,9 @@ public class Role {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @Builder
+    public Role(String name) {
+        this.name = name;
+    }
 }

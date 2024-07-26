@@ -6,13 +6,20 @@ import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.refreshToken.service.RefreshTokenService;
+import com.sparta.teamssc.domain.user.role.userRole.service.UserRoleService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
+import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +28,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
+    private final UserRoleService userRoleService;
+
+    @Value("${secret.admin-key}")
+    String adminKey;
+
 
     @Transactional
     @Override
@@ -33,13 +45,30 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(password);
         inValidEmail(email);
 
-        User user = User.builder()
-                .username(signupRequestDto.getUsername())
-                .email(email)
-                .password(encodedPassword)
-                .status(UserStatus.PENDING)
-                .build();
-        userRepository.save(user);
+        if (!Objects.isNull(signupRequestDto.getAdminKey())) {
+            if(signupRequestDto.getAdminKey().equals(adminKey)) {
+                User user = User.builder()
+                        .username(signupRequestDto.getUsername())
+                        .email(email)
+                        .password(encodedPassword)
+                        .status(UserStatus.ACTIVE)
+                        .build();
+                userRepository.save(user);
+                userRoleService.userRoleAdd(user, "admin");
+            } else{
+                throw new IllegalArgumentException("유효하지 않은 어드민토큰입니다.");
+            }
+        } else {
+
+            User user = User.builder()
+                    .username(signupRequestDto.getUsername())
+                    .email(email)
+                    .password(encodedPassword)
+                    .status(UserStatus.PENDING)
+                    .build();
+            userRepository.save(user);
+            userRoleService.userRoleAdd(user, "user");
+        }
     }
 
     @Override
@@ -116,12 +145,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<ProfileCardMapper> findAllUsers(Pageable pageable) {
+        return userRepository.findAllByOrderByCreateAtDesc(pageable);
+    }
+
+    @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
     @Override
-    public void updateUser(User user){
+    public void updateUser(User user) {
         userRepository.save(user);
     }
 
@@ -134,6 +168,7 @@ public class UserServiceImpl implements UserService {
 
     private void inValidEmail(String email) {
 
+
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
         }
@@ -142,9 +177,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUsername(String username) {
 
-        if (userRepository.findByUsername(username).isPresent()) {
-            return userRepository.findByUsername(username).get();
-        }
-        throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
+    }
+
+    @Override
+    public User findById(Long id) {
+
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
     }
 }

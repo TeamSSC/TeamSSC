@@ -2,14 +2,12 @@ package com.sparta.teamssc.domain.team.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
-import com.sparta.teamssc.domain.team.userTeamMatch.entity.UserTeamMatch;
+import com.sparta.teamssc.domain.teamProject.entity.TeamProject;
+import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
 import com.sparta.teamssc.domain.user.user.entity.User;
+import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +16,8 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor // 빌더 생성자 여러개 생성되기 때문에 전체 엔티티에서 빌더로 수정
+@Builder
 public class Team extends BaseEntity {
 
     @Id
@@ -49,29 +49,34 @@ public class Team extends BaseEntity {
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 
+    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private TeamProject teamProject;
+
     @ManyToOne
     @JoinColumn(name = "week_progress_id")
     private WeekProgress weekProgress; // 주차 상태
 
-    @Builder
-    public Team(Period period, String teamName, Section section, WeekProgress weekProgress, String leaderId, String teamDescription) {
-        this.period = period;
-        this.teamName = teamName;
-        this.section = section;
-        this.weekProgress = weekProgress;
-        this.leaderId = leaderId;
-        this.teamDescription = teamDescription;
-    }
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 
     public void addUsers(List<User> users) {
         users.forEach(user -> {
-            UserTeamMatch userTeamMatch = new UserTeamMatch();
-            userTeamMatch.addTeam(this);
-            userTeamMatch.addUser(user);
-            userTeamMatches.add(userTeamMatch);
+            UserTeamMatch userTeamMatch = UserTeamMatch.builder()
+                    .team(this)
+                    .user(user)
+                    .build();
+            this.userTeamMatches.add(userTeamMatch);
         });
     }
 
+    public void updateUsers(List<User> users) {
+        userTeamMatches.clear();
+        addUsers(users);
+    }
+
+    public void delete() {
+        this.deleted = true;
+    }
     public void updatePeriod(Period period) {
         this.period = period;
     }
@@ -88,11 +93,6 @@ public class Team extends BaseEntity {
         this.section = section;
     }
 
-    public void updateUsers(List<User> users) {
-        userTeamMatches.clear();
-        addUsers(users);
-    }
-
     public List<User> getUsers() {
         return userTeamMatches.stream()
                 .map(UserTeamMatch::getUser)
@@ -101,5 +101,9 @@ public class Team extends BaseEntity {
 
     public void updateWeekProgress(WeekProgress weekProgress) {
         this.weekProgress = weekProgress;
+    }
+
+    public void addTeamProject(TeamProject teamProject) {
+        this.teamProject = teamProject;
     }
 }
