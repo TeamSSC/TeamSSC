@@ -55,10 +55,28 @@ public class TrackServiceImpl implements TrackService {
                 .build();
     }
 
-    public List<TrackResponseDto> getTrack(int page, int size) {
+    public TrackResponseDto getTrack(Long trackId) {
+
+        Track track = trackRepository.findById(trackId).orElseThrow(
+                ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
+        );
+
+        return TrackResponseDto.builder()
+                .name(track.getName())
+                .build();
+    }
+
+    public List<TrackResponseDto> getTracks(int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
 
         return trackRepository.findName(pageRequest.getOffset(), pageRequest.getPageSize());
+    }
+
+    public Track searchTrack(Long trackId) {
+
+        return trackRepository.findById(trackId).orElseThrow(
+                ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
+        );
     }
 }
