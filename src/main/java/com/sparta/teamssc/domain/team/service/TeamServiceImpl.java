@@ -136,7 +136,9 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public List<SimpleTeamResponseDto> getAllTeams(Long weekProgressId) {
+
         List<Team> teams = teamRepository.findAllByWeekProgressIdAndNotDeleted(weekProgressId);
+
         return teams.stream()
                 .map(team -> SimpleTeamResponseDto.builder()
                         .id(team.getId())
@@ -166,10 +168,12 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Team getTeamById(Long teamId) {
+
         return teamRepository.findByIdAndNotDeleted(teamId).orElseThrow(() ->
                 new TeamNotFoundException("팀을 찾을 수 없습니다."));
     }
 
+    // 팀 매치에 팀과 유저추가
     private void addUserTeamMatches(Team team, List<User> users) {
 
         for (User user : users) {
@@ -184,7 +188,7 @@ public class TeamServiceImpl implements TeamService {
         }
     }
 
-    // 팀매치에서 유저 제거
+    // 팀 매치에서 유저 제거
     private void removeUserTeamMatches(Team team) {
 
         List<UserTeamMatch> existingMatches = new ArrayList<>(team.getUserTeamMatches());

@@ -31,9 +31,5 @@ jwt:
   refresh:
     token:
       expiration: 1209600000
-logging:
-  level:
-    org.springframework: DEBUG
-    com.sparta.instahub: DEBUG
 server:
   port: 8080
