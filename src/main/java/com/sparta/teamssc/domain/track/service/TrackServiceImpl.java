@@ -10,9 +10,11 @@ import com.sparta.teamssc.domain.user.user.service.UserServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -51,5 +53,40 @@ public class TrackServiceImpl implements TrackService {
         return TrackResponseDto.builder()
                 .name(updatedTrack.getName())
                 .build();
+    }
+
+    public TrackResponseDto getTrack(Long trackId) {
+
+        Track track = trackRepository.findById(trackId).orElseThrow(
+                ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
+        );
+
+        return TrackResponseDto.builder()
+                .name(track.getName())
+                .build();
+    }
+
+    public List<TrackResponseDto> getTracks(int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return trackRepository.findName(pageRequest.getOffset(), pageRequest.getPageSize());
+    }
+
+    public Track searchTrack(Long trackId) {
+
+        return trackRepository.findById(trackId).orElseThrow(
+                ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
+        );
+    }
+
+    @Transactional
+    public void deleteTrack(Long trackId) {
+
+        Track track = trackRepository.findById(trackId).orElseThrow(
+                ()-> new NoSuchElementException("해당 트랙이 존재하지 않습니다.")
+        );
+
+        trackRepository.delete(track);
     }
 }
