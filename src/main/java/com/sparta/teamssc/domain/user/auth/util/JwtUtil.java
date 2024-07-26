@@ -5,11 +5,13 @@ import com.sparta.teamssc.domain.user.auth.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -31,8 +33,8 @@ public class JwtUtil {
      * @param username
      * @return
      */
-    public static String createAccessToken(String username) {
-        return generateToken(username, accessTokenExpiration);
+    public static String createAccessToken(String username, List<String> roles) {
+        return generateToken(username, accessTokenExpiration, roles);
     }
 
     /**
@@ -41,8 +43,8 @@ public class JwtUtil {
      * @param username
      * @return
      */
-    public static String createRefreshToken(String username) {
-        return generateToken(username, refreshTokenExpiration);
+    public static String createRefreshToken(String username, List<String> roles) {
+        return generateToken(username, refreshTokenExpiration, roles);
     }
 
 
@@ -53,9 +55,10 @@ public class JwtUtil {
      * @param expiration
      * @return
      */
-    public static String generateToken(String username, long expiration) {
+    public static String generateToken(String username, long expiration, List<String> roles) {
         return Jwts.builder()
                 .setSubject(username) // 토큰 주체
+                .claim("roles", roles)
                 .setIssuedAt(new Date()) // 토큰 발행 시간
                 .setExpiration(new Date(System.currentTimeMillis() + expiration)) // 토큰 만료시간
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -113,4 +116,13 @@ public class JwtUtil {
     public static String getUsernameFromToken(String token) {
         return extractClaims(token).getSubject();
     }
+
+    public static List<SimpleGrantedAuthority> getRolesFromToken(String token) {
+        Claims claims = extractClaims(token);
+        List<String> roles = claims.get("roles", List.class);
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // ROLE_ 접두사 추가
+                .collect(Collectors.toList());
+    }
+
 }
