@@ -34,5 +34,10 @@ jwt:
 server:
   port: 8080
 
+logging:
+  level:
+    org.springframework: DEBUG
+    com.sparta.instahub: DEBUG
+
 secret:
   admin-key: ${ADMIN_SECRET_KEY}
