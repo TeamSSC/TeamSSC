@@ -4,9 +4,13 @@ import com.sparta.teamssc.domain.image.service.ImageService;
 import com.sparta.teamssc.domain.user.profile.dto.ProfileRequestDto;
 import com.sparta.teamssc.domain.user.profile.dto.ProfileResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
+import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,5 +70,14 @@ public class ProfileServiceImpl implements ProfileService {
                 .section(user.getSection())
                 .email(user.getEmail())
                 .build();
+    }
+
+    @Override
+    public Page<ProfileCardMapper> getAllProfiles(int page) {
+            Pageable pageable = PageRequest.of(page - 1, 10);
+
+            Page<ProfileCardMapper> profileCards = userService.findAllUsers(pageable);
+
+            return profileCards;
     }
 }
