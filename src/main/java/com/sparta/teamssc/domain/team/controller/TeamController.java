@@ -2,9 +2,11 @@ package com.sparta.teamssc.domain.team.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
+import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
 import com.sparta.teamssc.domain.team.service.TeamService;
+import com.sparta.teamssc.domain.team.weekProgress.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,30 +18,34 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor()
-@RequestMapping("api/teams")
+@RequestMapping("api/weekProgress/{weekProgressId}/teams")
 public class TeamController {
 
+    private final WeekProgressService weekProgressService;
     private final TeamService teamService;
 
     // 팀 생성하기
     @PostMapping()
-    public ResponseEntity<ResponseDto<TeamCreateResponseDto>> createTeam(@RequestBody TeamCreateRequestDto teamCreateRequestDto) {
+    public ResponseEntity<ResponseDto<TeamCreateResponseDto>> createTeam(@PathVariable Long weekProgressId,
+                                                                         @RequestBody TeamCreateRequestDto teamCreateRequestDto) {
 
-        TeamCreateResponseDto teamResponseDto = teamService.createTeam(teamCreateRequestDto);
+        TeamCreateResponseDto teamResponseDto = teamService.createTeam(weekProgressId, teamCreateRequestDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.<TeamCreateResponseDto>builder()
-                        .message("팀단일생성을 성공했습니다.")
+                        .message("팀 단일 생성을 성공했습니다.")
                         .data(teamResponseDto)
                         .build());
-
     }
 
-    // 팀수정하기
+    // 팀 수정하기
     @PatchMapping("/{teamId}")
-    public ResponseEntity<ResponseDto<TeamCreateResponseDto>> updateTeam(@PathVariable Long teamId,
+    public ResponseEntity<ResponseDto<TeamCreateResponseDto>> updateTeam(@PathVariable Long weekProgressId,
+                                                                         @PathVariable Long teamId,
                                                                          @RequestBody TeamCreateRequestDto teamCreateRequestDto) {
-        TeamCreateResponseDto teamResponseDto = teamService.updateTeam(teamId, teamCreateRequestDto);
+
+        TeamCreateResponseDto teamResponseDto = teamService.updateTeam(weekProgressId, teamId, teamCreateRequestDto);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<TeamCreateResponseDto>builder()
                         .message("팀 수정에 성공했습니다.")
@@ -49,8 +55,8 @@ public class TeamController {
 
     // 팀 삭제하기
     @DeleteMapping("/{teamId}")
-    public ResponseEntity<ResponseDto<Void>> deleteTeam(@PathVariable Long teamId) {
-        teamService.deleteTeam(teamId);
+    public ResponseEntity<ResponseDto<Void>> deleteTeam(@PathVariable Long weekProgressId, @PathVariable Long teamId) {
+        teamService.deleteTeam(weekProgressId,teamId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Void>builder()
                         .message("팀 삭제에 성공했습니다.")
@@ -58,13 +64,27 @@ public class TeamController {
                         .build());
     }
 
-    // 팀 편성표 조회하기
-    @GetMapping("/lineup")
-    public ResponseEntity<ResponseDto<List<TeamCreateResponseDto>>> getAllTeams() {
-        List<TeamCreateResponseDto> teams = teamService.getAllTeams();
+    // 단일 팀 불러오기
+    @GetMapping("/{teamId}/users")
+    public ResponseEntity<ResponseDto<SimpleTeamResponseDto>> getTeamUsers(@PathVariable Long weekProgressId,
+                                                                           @PathVariable Long teamId) {
+        SimpleTeamResponseDto teamUsers = teamService.getTeamUsers(teamId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.<List<TeamCreateResponseDto>>builder()
-                        .message("팀 편성표 조회 성공 했습니다")
+                .body(ResponseDto.<SimpleTeamResponseDto>builder()
+                        .message("팀 유저 조회 성공했습니다.")
+                        .data(teamUsers)
+                        .build());
+    }
+
+    // 팀 전체 라인업 보기
+    @GetMapping("/lineup")
+    public ResponseEntity<ResponseDto<List<SimpleTeamResponseDto>>> getAllTeams(@PathVariable Long weekProgressId) {
+        weekProgressService.getWeekProgressById(weekProgressId);
+
+        List<SimpleTeamResponseDto> teams = teamService.getAllTeams(weekProgressId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<List<SimpleTeamResponseDto>>builder()
+                        .message("팀 편성표 조회 성공했습니다.")
                         .data(teams)
                         .build());
     }

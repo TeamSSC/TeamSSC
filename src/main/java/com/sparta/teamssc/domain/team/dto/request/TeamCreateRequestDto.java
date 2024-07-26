@@ -11,6 +11,5 @@ import java.util.List;
 public class TeamCreateRequestDto {
     private Long periodId; // 기수
     private Section section; // 세션
-    private Long weekProgressId; // 주차 상태 ID
     private List<String> userEmails;
 }

@@ -1,6 +1,6 @@
 package com.sparta.teamssc.domain.userTeamMatches.controller;
 
-import com.sparta.teamssc.domain.userTeamMatches.service.UserTeamMatchesService;
+import com.sparta.teamssc.domain.userTeamMatches.service.UserTeamMatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserTeamMatchesController {
 
-    private final UserTeamMatchesService userTeamMatchesService;
+    private final UserTeamMatchService userTeamMatchesService;
 
 }
