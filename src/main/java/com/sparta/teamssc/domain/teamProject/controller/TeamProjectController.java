@@ -45,7 +45,9 @@ public class TeamProjectController {
     public ResponseEntity<ResponseDto<Void>> updateTeamProject(@PathVariable Long weekProgressId,
                                                                @PathVariable Long teamId,
                                                                @RequestBody TeamProjectDto teamProjectDto) {
+
         teamProjectService.updateTeamProject(teamId, teamProjectDto);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Void>builder()
                         .message("팀페이지 수정에 성공했습니다.")
@@ -62,9 +64,28 @@ public class TeamProjectController {
     public ResponseEntity<ResponseDto<Void>> deleteTeamProject(@PathVariable Long weekProgressId,
                                                                @PathVariable Long teamId) {
         teamProjectService.deleteTeamProject(teamId);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Void>builder()
                         .message("팀페이지 삭제에 성공했습니다.")
+                        .build());
+    }
+
+    /**
+     * 팀프로젝트 조회
+     * @param weekProgressId
+     * @param teamId
+     * @return
+     */
+    @GetMapping
+    public ResponseEntity<ResponseDto<TeamProjectDto>> getTeamProject(@PathVariable Long weekProgressId,
+                                                                      @PathVariable Long teamId) {
+        TeamProjectDto teamProjectDto = teamProjectService.getTeamProject(teamId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<TeamProjectDto>builder()
+                        .message("팀페이지 조회에 성공했습니다.")
+                        .data(teamProjectDto)
                         .build());
     }
 }

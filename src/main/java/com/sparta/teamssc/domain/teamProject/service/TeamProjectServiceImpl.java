@@ -1,7 +1,7 @@
 package com.sparta.teamssc.domain.teamProject.service;
 
+import com.amazonaws.services.kms.model.AlreadyExistsException;
 import com.sparta.teamssc.domain.team.entity.Team;
-import com.sparta.teamssc.domain.team.repository.TeamRepository;
 import com.sparta.teamssc.domain.team.service.TeamService;
 import com.sparta.teamssc.domain.teamProject.dto.TeamProjectDto;
 import com.sparta.teamssc.domain.teamProject.entity.TeamProject;
@@ -21,69 +21,84 @@ public class TeamProjectServiceImpl implements TeamProjectService {
     @Override
     @Transactional
     public void createTeamProject(Long teamId, TeamProjectDto teamProjectDto) {
-        Team team = teamService.getTeamById(teamId);
+        try {
+            Team team = teamService.getTeamById(teamId);
 
-        if (team.getTeamProject() != null) {
-            throw new RuntimeException("팀 프로젝트가 이미 존재합니다.");
+            TeamProject teamProject = TeamProject.builder()
+                    .team(team)
+                    .projectIntro(teamProjectDto.getProjectIntro())
+                    .notionLink(teamProjectDto.getNotionLink())
+                    .gitLink(teamProjectDto.getGitLink())
+                    .figmaLink(teamProjectDto.getFigmaLink())
+                    .build();
+
+            team.addTeamProject(teamProject);
+            teamProjectRepository.save(teamProject);
+        } catch (AlreadyExistsException e) {
+            throw new IllegalArgumentException("팀 프로젝트가 이미 존재합니다.");
         }
-
-        TeamProject teamProject = TeamProject.builder()
-                .team(team)
-                .projectIntro(teamProjectDto.getProjectIntro())
-                .notionLink(teamProjectDto.getNotionLink())
-                .gitLink(teamProjectDto.getGitLink())
-                .figmaLink(teamProjectDto.getFigmaLink())
-                .build();
-
-        team.addTeamProject(teamProject);
-        teamProjectRepository.save(teamProject);
     }
 
     // 수정
     @Override
     @Transactional
     public void updateTeamProject(Long teamId, TeamProjectDto teamProjectDto) {
+        try {
+            TeamProject teamProject = isExistTeamProject(teamId);
 
-        TeamProject teamProject = isExistTeamProject(teamId);
+            teamProject.updateProjectIntro(teamProjectDto.getProjectIntro());
+            teamProject.updateNotionLink(teamProjectDto.getNotionLink());
+            teamProject.updateGitLink(teamProjectDto.getGitLink());
+            teamProject.updateFigmaLink(teamProjectDto.getFigmaLink());
 
-        teamProject.updateProjectIntro(teamProjectDto.getProjectIntro());
-        teamProject.updateNotionLink(teamProjectDto.getNotionLink());
-        teamProject.updateGitLink(teamProjectDto.getGitLink());
-        teamProject.updateFigmaLink(teamProjectDto.getFigmaLink());
-
-        teamProjectRepository.save(teamProject);
+            teamProjectRepository.save(teamProject);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("수정할 팀 프로젝트가 없습니다.");
+        }
     }
 
     // 팀프로젝트 삭제
     @Override
     @Transactional
     public void deleteTeamProject(Long teamId) {
-        TeamProject teamProject = isExistTeamProject(teamId);
+        try {
+            TeamProject teamProject = isExistTeamProject(teamId);
 
-        teamProject.delete();
-        teamProjectRepository.save(teamProject);
+            teamProject.delete();
+            teamProjectRepository.save(teamProject);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("삭제할 팀 프로젝트가 없습니다.");
+        }
     }
 
+    // 팀프로젝트 불러오기
     @Override
+    @Transactional(readOnly = true)
     public TeamProjectDto getTeamProject(Long teamId) {
-        return null;
+        try {
+            TeamProject teamProject = isExistTeamProject(teamId);
+
+            return TeamProjectDto.builder()
+                    .projectIntro(teamProject.getProjectIntro())
+                    .notionLink(teamProject.getNotionLink())
+                    .gitLink(teamProject.getGitLink())
+                    .figmaLink(teamProject.getFigmaLink())
+                    .build();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("팀 프로젝트를 찾을 수 없습니다.");
+        }
     }
 
     // 찾을 수 없는 프로젝트
-   private TeamProject isExistTeamProject(Long teamId) {
-
-       Team team = teamService.getTeamById(teamId);
-       if (team.getTeamProject() == null) {
-           throw new RuntimeException("팀 프로젝트가 없습니다.");
-       }
-       return team.getTeamProject();
-   }
-
-    @Override
-    public void alreadyExist(Long teamId) {
+    private TeamProject isExistTeamProject(Long teamId) {
         Team team = teamService.getTeamById(teamId);
-        if (team.getTeamProject() != null) {
-            throw new RuntimeException("팀 프로젝트가 이미 존재합니다.");
+        TeamProject teamProject = team.getTeamProject();
+
+        if (teamProject.isDeleted()) {
+            throw new IllegalArgumentException("삭제된 팀 프로젝트입니다.");
+        } else if (teamProject == null) {
+            throw new IllegalArgumentException("팀 프로젝트가 없습니다.");
         }
+        return teamProject;
     }
 }
