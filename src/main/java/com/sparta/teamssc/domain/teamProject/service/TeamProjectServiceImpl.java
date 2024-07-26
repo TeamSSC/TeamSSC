@@ -54,8 +54,14 @@ public class TeamProjectServiceImpl implements TeamProjectService {
         teamProjectRepository.save(teamProject);
     }
 
+    // 팀프로젝트 삭제
     @Override
+    @Transactional
     public void deleteTeamProject(Long teamId) {
+        TeamProject teamProject = isExistTeamProject(teamId);
+
+        teamProject.delete();
+        teamProjectRepository.save(teamProject);
     }
 
     @Override

@@ -52,4 +52,19 @@ public class TeamProjectController {
                         .build());
     }
 
+    /**
+     * 팀프로젝트 삭제
+     * @param weekProgressId
+     * @param teamId
+     * @return
+     */
+    @DeleteMapping
+    public ResponseEntity<ResponseDto<Void>> deleteTeamProject(@PathVariable Long weekProgressId,
+                                                               @PathVariable Long teamId) {
+        teamProjectService.deleteTeamProject(teamId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<Void>builder()
+                        .message("팀페이지 삭제에 성공했습니다.")
+                        .build());
+    }
 }
