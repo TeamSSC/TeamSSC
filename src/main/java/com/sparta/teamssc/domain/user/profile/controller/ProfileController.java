@@ -43,7 +43,7 @@ public class ProfileController {
                         .build());
     }
 
-    @GetMapping("/users/${userId}/profile")
+    @GetMapping("/users/{userId}/profile")
     public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(@PathVariable Long userId) {
 
         return ResponseEntity.status(HttpStatus.OK)
