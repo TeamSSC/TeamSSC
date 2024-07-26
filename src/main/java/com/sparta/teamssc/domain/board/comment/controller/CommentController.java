@@ -3,6 +3,7 @@ package com.sparta.teamssc.domain.board.comment.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.board.comment.dto.request.CommentRequestDto;
+import com.sparta.teamssc.domain.board.comment.dto.request.UpdateCommentRequestDto;
 import com.sparta.teamssc.domain.board.comment.dto.response.CommentResponseDto;
 import com.sparta.teamssc.domain.board.comment.dto.response.ReplyResponseDto;
 import com.sparta.teamssc.domain.board.comment.service.CommentService;
@@ -56,6 +57,19 @@ public class CommentController {
                 .body(ResponseDto.<Page<ReplyResponseDto>>builder()
                         .message("댓글 조회를 성공했습니다.")
                         .data(responseDto)
+                        .build());
+    }
+
+    // 댓글 수정
+    @PatchMapping("/comments/{commentId}")
+    public ResponseEntity<ResponseDto<String>> updateComment(@PathVariable Long commentId,
+                                                             @RequestBody UpdateCommentRequestDto requestDto,
+                                                             @AuthenticationPrincipal UserDetails userDetails) {
+
+        commentService.updateComment(commentId, requestDto, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("댓글 수정을 성공했습니다.")
                         .build());
     }
 }
