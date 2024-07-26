@@ -2,7 +2,8 @@ package com.sparta.teamssc.domain.team.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
+import com.sparta.teamssc.domain.teamProject.entity.TeamProject;
+import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
 import jakarta.persistence.*;
@@ -47,6 +48,9 @@ public class Team extends BaseEntity {
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
+
+    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private TeamProject teamProject;
 
     @ManyToOne
     @JoinColumn(name = "week_progress_id")
@@ -97,5 +101,9 @@ public class Team extends BaseEntity {
 
     public void updateWeekProgress(WeekProgress weekProgress) {
         this.weekProgress = weekProgress;
+    }
+
+    public void addTeamProject(TeamProject teamProject) {
+        this.teamProject = teamProject;
     }
 }

@@ -1,6 +1,6 @@
-package com.sparta.teamssc.domain.team.weekProgress.dto;
+package com.sparta.teamssc.domain.weekProgress.dto;
 
-import com.sparta.teamssc.domain.team.weekProgress.entity.ProgressStatus;
+import com.sparta.teamssc.domain.weekProgress.entity.ProgressStatus;
 import lombok.Getter;
 
 @Getter

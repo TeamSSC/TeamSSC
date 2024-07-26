@@ -1,4 +1,4 @@
-package com.sparta.teamssc.domain.team.weekProgress.entity;
+package com.sparta.teamssc.domain.weekProgress.entity;
 
 public enum ProgressStatus {
     PLANNED, // 진행예정

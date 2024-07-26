@@ -1,20 +1,17 @@
-package com.sparta.teamssc.domain.team.weekProgress.controller;
+package com.sparta.teamssc.domain.weekProgress.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
-import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressRequestDto;
-import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressResponseDto;
-import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressUpdateRequestDto;
-import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
-import com.sparta.teamssc.domain.team.weekProgress.service.WeekProgressService;
+import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressRequestDto;
+import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressResponseDto;
+import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressUpdateRequestDto;
+import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
+import com.sparta.teamssc.domain.weekProgress.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/weekProgress")

@@ -1,4 +1,4 @@
-package com.sparta.teamssc.domain.team.weekProgress.entity;
+package com.sparta.teamssc.domain.weekProgress.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.team.entity.Team;
