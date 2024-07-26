@@ -24,6 +24,7 @@ public class TrackController {
 
     /**
      * 트랙 생성 기능 (관리자 권한 필요)
+     *
      * @param : x
      * @return : 생성된 트랙 정보 (트랙명)
      */
@@ -41,6 +42,7 @@ public class TrackController {
 
     /**
      * 트랙 수정 기능 (관리자 권한 필요)
+     *
      * @param : 수정할 트랙 id
      * @return : 수정된 트랙 정보 (트랙명)
      */
@@ -58,20 +60,19 @@ public class TrackController {
 
     /**
      * 트랙 조회 기능
+     *
      * @param : trackId : 있으면 단건조회, 없으면 페이징 조회
      * @return : 조회된 트랙 리스트 (트랙명)
      */
     @GetMapping
     public ResponseEntity<ResponseDto<?>> getTrack(@RequestParam(required = false) Long trackId,
-                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "1") int page,
                                                    @RequestParam(defaultValue = "5") int size) {
-
-        log.info(String.valueOf(trackId));
 
         if (trackId == null) {
 
             // 페이징 조회
-            List<TrackResponseDto> trackResponseDtoList = trackService.getTracks(page, size);
+            List<TrackResponseDto> trackResponseDtoList = trackService.getTracks(page - 1, size);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseDto.<List<TrackResponseDto>>builder()
@@ -93,6 +94,7 @@ public class TrackController {
 
     /**
      * 트랙 삭제 기능 (관리자 권한 필요)
+     *
      * @param : 삭제할 트랙 id
      * @return : x
      */

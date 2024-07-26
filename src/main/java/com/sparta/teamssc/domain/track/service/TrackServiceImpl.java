@@ -40,7 +40,7 @@ public class TrackServiceImpl implements TrackService {
     @Transactional
     public TrackResponseDto updateTrack(Long trackId, TrackRequestDto trackRequestDto) {
 
-        Track track = trackRepository.findById(trackId).orElseThrow(
+        Track track = trackRepository.findByIdAndDeletedIsFalse(trackId).orElseThrow(
                 ()-> new NoSuchElementException("수정할 트랙을 찾지 못했습니다.")
         );
 
@@ -57,7 +57,7 @@ public class TrackServiceImpl implements TrackService {
 
     public TrackResponseDto getTrack(Long trackId) {
 
-        Track track = trackRepository.findById(trackId).orElseThrow(
+        Track track = trackRepository.findByIdAndDeletedIsFalse(trackId).orElseThrow(
                 ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
         );
 
@@ -73,20 +73,22 @@ public class TrackServiceImpl implements TrackService {
         return trackRepository.findName(pageRequest.getOffset(), pageRequest.getPageSize());
     }
 
-    public Track searchTrack(Long trackId) {
-
-        return trackRepository.findById(trackId).orElseThrow(
-                ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
-        );
-    }
-
     @Transactional
     public void deleteTrack(Long trackId) {
 
-        Track track = trackRepository.findById(trackId).orElseThrow(
+        Track track = trackRepository.findByIdAndDeletedIsFalse(trackId).orElseThrow(
                 ()-> new NoSuchElementException("해당 트랙이 존재하지 않습니다.")
         );
 
-        trackRepository.delete(track);
+        track.deleteTrack();
+
+        // TODO : 기수에 deleted 필드 추가되면 연관된 기수도 모두 Soft delete 처리로직 추가 예정
+    }
+
+    public Track searchTrack(Long trackId) {
+
+        return trackRepository.findByIdAndDeletedIsFalse(trackId).orElseThrow(
+                ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
+        );
     }
 }
