@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
         if (!Objects.isNull(signupRequestDto.getAdminKey())) {
             if(signupRequestDto.getAdminKey().equals(adminKey)) {
+
                 User user = User.builder()
                         .username(signupRequestDto.getUsername())
                         .email(email)
