@@ -4,17 +4,14 @@ import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
 import com.sparta.teamssc.domain.team.service.TeamService;
-import com.sparta.teamssc.domain.team.weekProgress.service.WeekProgressService;
+import com.sparta.teamssc.domain.weekProgress.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor()

@@ -3,15 +3,11 @@ package com.sparta.teamssc.exception;
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
-import com.sparta.teamssc.domain.team.weekProgress.exception.InvalidWeekProgressException;
+import com.sparta.teamssc.domain.weekProgress.exception.InvalidWeekProgressException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-
-import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

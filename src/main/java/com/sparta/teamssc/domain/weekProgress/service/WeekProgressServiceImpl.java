@@ -1,11 +1,11 @@
-package com.sparta.teamssc.domain.team.weekProgress.service;
+package com.sparta.teamssc.domain.weekProgress.service;
 
-import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressResponseDto;
-import com.sparta.teamssc.domain.team.weekProgress.dto.WeekProgressUpdateRequestDto;
-import com.sparta.teamssc.domain.team.weekProgress.entity.ProgressStatus;
-import com.sparta.teamssc.domain.team.weekProgress.entity.WeekProgress;
-import com.sparta.teamssc.domain.team.weekProgress.exception.InvalidWeekProgressException;
-import com.sparta.teamssc.domain.team.weekProgress.repository.WeekProgressRepository;
+import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressResponseDto;
+import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressUpdateRequestDto;
+import com.sparta.teamssc.domain.weekProgress.entity.ProgressStatus;
+import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
+import com.sparta.teamssc.domain.weekProgress.exception.InvalidWeekProgressException;
+import com.sparta.teamssc.domain.weekProgress.repository.WeekProgressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
