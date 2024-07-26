@@ -6,6 +6,7 @@ import com.sparta.teamssc.domain.board.board.dto.request.BoardUpdateRequestDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.service.BoardService;
+import com.sparta.teamssc.domain.user.role.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -68,7 +69,7 @@ public class BoardController {
                                                            @ModelAttribute BoardUpdateRequestDto requestDto,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
 
-        boardService.updateBoard(boardId, requestDto, userDetails.getUsername());
+        boardService.updateBoard(boardId, requestDto, userDetails.getUsername(), (List<Role>) userDetails.getAuthorities());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
@@ -81,7 +82,7 @@ public class BoardController {
     public ResponseEntity<ResponseDto<String>> deleteBoard(@PathVariable Long boardId,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
 
-        boardService.deleteBoard(boardId,userDetails.getUsername());
+        boardService.deleteBoard(boardId,userDetails.getUsername(), (List<Role>) userDetails.getAuthorities());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()

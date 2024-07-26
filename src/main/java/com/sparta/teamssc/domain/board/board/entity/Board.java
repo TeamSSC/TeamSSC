@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.board.board.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
+import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column/*(nullable = false)*/
+    @Column(nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -36,18 +37,18 @@ public class Board extends BaseEntity {
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> boardImages = new ArrayList<>();
-//
-//    @JoinColumn(name = "period_id", nullable = false)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Period period;
+
+    @JoinColumn(name = "period_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Period period;
 
     @Builder
-    public Board(String title, String content, BoardType boardType, User user/*, Period period*/) {
+    public Board(String title, String content, BoardType boardType, User user, Period period) {
         this.title = title;
         this.content = content;
         this.boardType = boardType;
         this.user = user;
-//        this.period = period;
+        this.period = period;
     }
 
     public void update(String title, String content) {

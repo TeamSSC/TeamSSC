@@ -32,6 +32,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 ))
                 .from(qBoard)
                 .orderBy(qBoard.createAt.desc())
+                .where(qBoard.boardType.eq(BoardType.BOARD))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
