@@ -16,6 +16,7 @@ import com.sparta.teamssc.domain.user.user.service.UserService;
 import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.userTeamMatches.service.UserTeamMatchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
