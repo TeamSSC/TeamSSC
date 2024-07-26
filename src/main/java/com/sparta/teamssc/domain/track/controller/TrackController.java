@@ -90,4 +90,20 @@ public class TrackController {
                             .build());
         }
     }
+
+    /**
+     * 트랙 삭제 기능 (관리자 권한 필요)
+     * @param : 삭제할 트랙 id
+     * @return : x
+     */
+    @DeleteMapping("/{trackId}")
+    public ResponseEntity<ResponseDto<String>> deleteTrack(@PathVariable Long trackId) {
+
+        trackService.deleteTrack(trackId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("트랙을 삭제했습니다.")
+                        .build());
+    }
 }

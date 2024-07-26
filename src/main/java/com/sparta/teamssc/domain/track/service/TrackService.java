@@ -17,4 +17,6 @@ public interface TrackService {
     TrackResponseDto getTrack(Long trackId);
 
     Track searchTrack(Long trackId);
+
+    void deleteTrack(Long trackId);
 }

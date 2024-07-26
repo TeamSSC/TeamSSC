@@ -79,4 +79,14 @@ public class TrackServiceImpl implements TrackService {
                 ()-> new NoSuchElementException("요청하신 트랙이 존재하지 않습니다.")
         );
     }
+
+    @Transactional
+    public void deleteTrack(Long trackId) {
+
+        Track track = trackRepository.findById(trackId).orElseThrow(
+                ()-> new NoSuchElementException("해당 트랙이 존재하지 않습니다.")
+        );
+
+        trackRepository.delete(track);
+    }
 }
