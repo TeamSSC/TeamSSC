@@ -27,7 +27,8 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                 .select(Projections.constructor(CommentResponseDto.class,
                         qComment.id,
                         qComment.content,
-                        qComment.createAt
+                        qComment.createAt,
+                        qComment.user.username
                 ))
                 .from(qComment)
                 .orderBy(qComment.createAt.desc())
@@ -48,7 +49,8 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                         qComment.id,
                         qComment.parentCommentId,
                         qComment.content,
-                        qComment.createAt
+                        qComment.createAt,
+                        qComment.user.username
                 ))
                 .from(qComment)
                 .orderBy(qComment.createAt.desc())

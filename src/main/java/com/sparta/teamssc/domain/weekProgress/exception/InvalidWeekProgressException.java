@@ -1,4 +1,4 @@
-package com.sparta.teamssc.domain.team.weekProgress.exception;
+package com.sparta.teamssc.domain.weekProgress.exception;
 
 public class InvalidWeekProgressException extends RuntimeException {
     public InvalidWeekProgressException(String message) {

@@ -1,17 +1,16 @@
 package com.sparta.teamssc.exception;
 
+import com.amazonaws.services.kms.model.AlreadyExistsException;
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
-import com.sparta.teamssc.domain.team.weekProgress.exception.InvalidWeekProgressException;
+import com.sparta.teamssc.domain.weekProgress.exception.InvalidWeekProgressException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 
-import java.util.Map;
+import java.rmi.AlreadyBoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,4 +46,22 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
-}
+
+    // 존재여부에
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ResponseDto<Object>> handleInvalidRequestException(AlreadyExistsException ex) {
+        ResponseDto<Object> errorResponse = ResponseDto.<Object>builder()
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ResponseDto<Object>> handleInvalidRequestException(IllegalArgumentException ex) {
+        ResponseDto<Object> errorResponse = ResponseDto.<Object>builder()
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }}
