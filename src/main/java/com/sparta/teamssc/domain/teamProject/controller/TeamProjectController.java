@@ -23,17 +23,33 @@ public class TeamProjectController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<ResponseDto<String>> createTeamProject(@PathVariable Long weekProgressId,
-                                                                 @PathVariable Long teamId,
-                                                                 @RequestBody TeamProjectDto teamProjectDto) {
-        String message = teamProjectService.createTeamProject(teamId, teamProjectDto);
+    public ResponseEntity<ResponseDto<Void>> createTeamProject(@PathVariable Long weekProgressId,
+                                                               @PathVariable Long teamId,
+                                                               @RequestBody TeamProjectDto teamProjectDto) {
+        teamProjectService.createTeamProject(teamId, teamProjectDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseDto.<String>builder()
-                        .message(message)
+                .body(ResponseDto.<Void>builder()
+                        .message("팀페이지 작성에 성공했습니다.")
                         .build());
     }
 
 
-
+    /**
+     * 팀프로젝트 수정
+     * @param weekProgressId
+     * @param teamId
+     * @param teamProjectDto
+     * @return
+     */
+    @PatchMapping
+    public ResponseEntity<ResponseDto<Void>> updateTeamProject(@PathVariable Long weekProgressId,
+                                                               @PathVariable Long teamId,
+                                                               @RequestBody TeamProjectDto teamProjectDto) {
+        teamProjectService.updateTeamProject(teamId, teamProjectDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<Void>builder()
+                        .message("팀페이지 수정에 성공했습니다.")
+                        .build());
+    }
 
 }

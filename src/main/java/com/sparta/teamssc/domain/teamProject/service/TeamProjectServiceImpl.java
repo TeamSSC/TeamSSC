@@ -18,12 +18,14 @@ public class TeamProjectServiceImpl implements TeamProjectService {
     private final TeamService teamService;
 
     // 팀 프로젝트 생성하기
-    @Transactional
     @Override
-    public String createTeamProject(Long teamId, TeamProjectDto teamProjectDto) {
+    @Transactional
+    public void createTeamProject(Long teamId, TeamProjectDto teamProjectDto) {
         Team team = teamService.getTeamById(teamId);
 
-        alreadyExist(teamId);
+        if (team.getTeamProject() != null) {
+            throw new RuntimeException("팀 프로젝트가 이미 존재합니다.");
+        }
 
         TeamProject teamProject = TeamProject.builder()
                 .team(team)
@@ -35,8 +37,41 @@ public class TeamProjectServiceImpl implements TeamProjectService {
 
         team.addTeamProject(teamProject);
         teamProjectRepository.save(teamProject);
-        return "팀페이지 작성에 성공했습니다.";
     }
+
+    // 수정
+    @Override
+    @Transactional
+    public void updateTeamProject(Long teamId, TeamProjectDto teamProjectDto) {
+
+        TeamProject teamProject = isExistTeamProject(teamId);
+
+        teamProject.updateProjectIntro(teamProjectDto.getProjectIntro());
+        teamProject.updateNotionLink(teamProjectDto.getNotionLink());
+        teamProject.updateGitLink(teamProjectDto.getGitLink());
+        teamProject.updateFigmaLink(teamProjectDto.getFigmaLink());
+
+        teamProjectRepository.save(teamProject);
+    }
+
+    @Override
+    public void deleteTeamProject(Long teamId) {
+    }
+
+    @Override
+    public TeamProjectDto getTeamProject(Long teamId) {
+        return null;
+    }
+
+    // 찾을 수 없는 프로젝트
+   private TeamProject isExistTeamProject(Long teamId) {
+
+       Team team = teamService.getTeamById(teamId);
+       if (team.getTeamProject() == null) {
+           throw new RuntimeException("팀 프로젝트가 없습니다.");
+       }
+       return team.getTeamProject();
+   }
 
     @Override
     public void alreadyExist(Long teamId) {

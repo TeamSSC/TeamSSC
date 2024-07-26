@@ -43,4 +43,20 @@ public class TeamProject extends BaseEntity {
         this.gitLink = gitLink;
         this.figmaLink = figmaLink;
     }
+
+    public void updateProjectIntro(String projectIntro) {
+        this.projectIntro = projectIntro;
+    }
+
+    public void updateNotionLink(String notionLink) {
+        this.notionLink = notionLink;
+    }
+
+    public void updateGitLink(String gitLink) {
+        this.gitLink = gitLink;
+    }
+
+    public void updateFigmaLink(String figmaLink) {
+        this.figmaLink = figmaLink;
+    }
 }
