@@ -82,11 +82,30 @@ public class CommentServiceImpl implements CommentService {
             Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                     new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
 
-            User user = userService.getUserByEmail(email);
-
-            comment.update(requestDto.getContent());
+            if(comment.getUser().getEmail().equals(email)) {
+                comment.update(requestDto.getContent());
+            } else {
+                throw new IllegalArgumentException("본인 댓글만 수정할 수 있습니다.");
+            }
         } catch (Exception e) {
             throw new IllegalArgumentException("댓글 수정을 실패했습니다.");
+        }
+    }
+
+    // 댓글 삭제
+    @Override
+    public void deleteComment(Long commentId, String email) {
+        try {
+            Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                    new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+
+            if (comment.getUser().getEmail().equals(email)) {
+                commentRepository.delete(comment);
+            } else {
+                throw new IllegalArgumentException("본인 댓글만 삭제할 수 있습니다.");
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("댓글 삭제를 실패했습니다.");
         }
     }
 

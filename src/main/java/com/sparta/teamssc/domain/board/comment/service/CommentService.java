@@ -15,4 +15,6 @@ public interface CommentService {
     Page<ReplyResponseDto> getCommentFromParentComment(Long parentCommentId, int page);
 
     void updateComment(Long commentId, UpdateCommentRequestDto requestDto, String email);
+
+    void deleteComment(Long commentId, String email);
 }

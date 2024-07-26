@@ -72,4 +72,16 @@ public class CommentController {
                         .message("댓글 수정을 성공했습니다.")
                         .build());
     }
+
+    // 댓글 삭제
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<ResponseDto<String>> deleteComment(@PathVariable Long commentId,
+                                                             @AuthenticationPrincipal UserDetails userDetails) {
+
+        commentService.deleteComment(commentId, userDetails.getUsername());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("댓글 삭제를 성공했습니다.")
+                        .build());
+    }
 }
