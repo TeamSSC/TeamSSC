@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.user.profile.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.user.profile.dto.ProfileRequestDto;
+import com.sparta.teamssc.domain.user.profile.dto.ProfileResponseDto;
 import com.sparta.teamssc.domain.user.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,16 @@ public class ProfileController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
                         .message("프로필 이미지 수정 성공했습니다.")
+                        .build());
+    }
+
+    @GetMapping("/users/${userId}/profile")
+    public ResponseEntity<ResponseDto<ProfileResponseDto>> getProfile(@PathVariable Long userId) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<ProfileResponseDto>builder()
+                        .message("프로필 조회 성공했습니다.")
+                        .data(profileService.searchProfile(userId))
                         .build());
     }
 }

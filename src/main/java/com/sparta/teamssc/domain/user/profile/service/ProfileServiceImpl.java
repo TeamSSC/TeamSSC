@@ -2,6 +2,7 @@ package com.sparta.teamssc.domain.user.profile.service;
 
 import com.sparta.teamssc.domain.image.service.ImageService;
 import com.sparta.teamssc.domain.user.profile.dto.ProfileRequestDto;
+import com.sparta.teamssc.domain.user.profile.dto.ProfileResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import jakarta.transaction.Transactional;
@@ -40,7 +41,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void updateProfileImage(MultipartFile file, String email){
+    public void updateProfileImage(MultipartFile file, String email) {
 
         User existUser = userService.getUserByEmail(email);
 
@@ -48,5 +49,22 @@ public class ProfileServiceImpl implements ProfileService {
         existUser.updateProfileImage(profileImage);
 
         userService.updateUser(existUser);
+    }
+
+    @Override
+    public ProfileResponseDto searchProfile(Long userId) {
+
+        User user = userService.findById(userId);
+
+        return ProfileResponseDto.builder()
+                .username(user.getUsername())
+                .gitLink(user.getGitLink())
+                .vlogLink(user.getVlogLink())
+                .intro(user.getIntro())
+                .mbti(user.getMbti())
+                .profileImage(user.getProfileImage())
+                .section(user.getSection())
+                .email(user.getEmail())
+                .build();
     }
 }
