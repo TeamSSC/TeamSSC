@@ -10,9 +10,11 @@ import com.sparta.teamssc.domain.user.user.service.UserServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -51,5 +53,12 @@ public class TrackServiceImpl implements TrackService {
         return TrackResponseDto.builder()
                 .name(updatedTrack.getName())
                 .build();
+    }
+
+    public List<TrackResponseDto> getTrack(int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return trackRepository.findName(pageRequest.getOffset(), pageRequest.getPageSize());
     }
 }

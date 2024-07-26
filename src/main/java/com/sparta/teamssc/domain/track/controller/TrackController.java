@@ -11,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/tracks")
 public class TrackController {
@@ -52,6 +54,23 @@ public class TrackController {
                 .body(ResponseDto.<TrackResponseDto>builder()
                         .message("트랙이름을 수정했습니다.")
                         .data(trackResponseDto)
+                        .build());
+    }
+
+    /**
+     * 트랙 수정 기능 (관리자 권한 필요)
+     * @param : x
+     * @return : 조회된 트랙 리스트 (트랙명)
+     */
+    @GetMapping
+    public ResponseEntity<ResponseDto<List<TrackResponseDto>>> getTrack(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+
+        List<TrackResponseDto> trackResponseDtoList = trackService.getTrack(page, size);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<List<TrackResponseDto>>builder()
+                        .message("트랙이름을 조회했습니다.")
+                        .data(trackResponseDtoList)
                         .build());
     }
 }
