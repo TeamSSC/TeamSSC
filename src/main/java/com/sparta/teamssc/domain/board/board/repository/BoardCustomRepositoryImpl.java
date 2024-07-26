@@ -3,6 +3,7 @@ package com.sparta.teamssc.domain.board.board.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
+import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.entity.QBoard;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,10 +27,32 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 .select(Projections.constructor(BoardListResponseDto.class,
                         qBoard.id,
                         qBoard.title,
+                        qBoard.user.username,
                         qBoard.createAt
                 ))
                 .from(qBoard)
                 .orderBy(qBoard.createAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(boardList, pageable, boardList.size());
+    }
+
+    @Override
+    public Page<BoardListResponseDto> findPagedNoticeList(Pageable pageable) {
+        QBoard qBoard = QBoard.board;
+
+        List<BoardListResponseDto> boardList = jpaQueryFactory
+                .select(Projections.constructor(BoardListResponseDto.class,
+                        qBoard.id,
+                        qBoard.title,
+                        qBoard.user.username,
+                        qBoard.createAt
+                ))
+                .from(qBoard)
+                .orderBy(qBoard.createAt.desc())
+                .where(qBoard.boardType.eq(BoardType.NOTICE))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

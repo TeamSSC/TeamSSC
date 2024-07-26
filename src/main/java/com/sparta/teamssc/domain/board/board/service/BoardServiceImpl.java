@@ -166,4 +166,47 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findById(boardId).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
     }
+
+    // 공지사항 작성
+    @Override
+    public void createNotice(BoardRequestDto requestDto, String email) {
+        try {
+            User user = userService.getUserByEmail(email);
+
+            Board board = Board.builder()
+                    .title(requestDto.getTitle())
+                    .content(requestDto.getContent())
+                    .boardType(BoardType.NOTICE)
+                    .user(user)
+                    .build();
+
+            // 보드 저장
+            boardRepository.save(board);
+
+            // 이미지 저장 및 보드와의 연관 관계 설정
+            if (requestDto.getImages() != null) {
+                for (MultipartFile imageFile : requestDto.getImages()) {
+                    Image image = uploadImage(imageFile);
+                    boardImageService.boardImageSave(board, image);
+                }
+            }
+        } catch (RuntimeException e) {
+            throw new BoardCreationFailedException("보드 생성에 실패했습니다.");
+        }
+    }
+
+    // 공지사항 전체 조회
+    @Override
+    public Page<BoardListResponseDto> getNotices(int page) {
+
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createAt"));
+
+        Page<BoardListResponseDto> noticePage = boardRepository.findPagedNoticeList(pageable);
+
+        if (noticePage.isEmpty()) {
+            throw new IllegalArgumentException("작성된 공지사항이 없거니, " + (page + 1) + " 페이지에 공지사항이 없습니다.");
+        }
+
+        return noticePage;
+    }
 }
