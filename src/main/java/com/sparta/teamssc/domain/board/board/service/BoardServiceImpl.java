@@ -8,7 +8,6 @@ import com.sparta.teamssc.domain.board.board.entity.Board;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.exception.BoardCreationFailedException;
 import com.sparta.teamssc.domain.board.board.repository.BoardRepository;
-import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import com.sparta.teamssc.domain.board.boardImage.service.BoardImageService;
 import com.sparta.teamssc.domain.image.entity.Image;
 import com.sparta.teamssc.domain.image.service.ImageService;
