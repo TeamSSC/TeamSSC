@@ -24,7 +24,7 @@ public class Track extends BaseEntity {
     private String name;
 
     // 기수
-    @OneToMany(mappedBy = "track")
+    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Period> periods;
 
     @Builder
