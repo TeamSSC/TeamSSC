@@ -16,15 +16,15 @@ public interface BoardService {
 
     BoardResponseDto getBoard(Long boardId);
 
-    Page<BoardListResponseDto> getBoards(int page);
+    Page<BoardListResponseDto> getBoards(int page, String email);
 
     Board findBoardByBoardId(Long boardId);
 
-    void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email, List<Role> roles);
+    void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email/*, List<Role> roles*/);
 
-    void deleteBoard(Long boardId, String username,  List<Role> roles);
+    void deleteBoard(Long boardId, String username/*, List<Role> roles*/);
 
     void createNotice(BoardRequestDto requestDto, String email);
 
-    Page<BoardListResponseDto> getNotices(int page);
+    Page<BoardListResponseDto> getNotices(int page, String email);
 }

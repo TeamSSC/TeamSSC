@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
         inValidPassword(password);
         String encodedPassword = passwordEncoder.encode(password);
-        inValidEmail(email);
+//        inValidEmail(email);
 
         User user = User.builder()
                 .username(signupRequestDto.getUsername())

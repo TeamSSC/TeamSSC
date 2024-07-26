@@ -52,9 +52,10 @@ public class BoardController {
 
     // 게시글 전체 조회
     @GetMapping("/boards")
-    public ResponseEntity<ResponseDto<Page<BoardListResponseDto>>> getBoards(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<ResponseDto<Page<BoardListResponseDto>>> getBoards(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                                             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Page<BoardListResponseDto> responseDto = boardService.getBoards(page - 1);
+        Page<BoardListResponseDto> responseDto = boardService.getBoards(page - 1, userDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Page<BoardListResponseDto>>builder()
@@ -69,7 +70,7 @@ public class BoardController {
                                                            @ModelAttribute BoardUpdateRequestDto requestDto,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
 
-        boardService.updateBoard(boardId, requestDto, userDetails.getUsername(), (List<Role>) userDetails.getAuthorities());
+        boardService.updateBoard(boardId, requestDto, userDetails.getUsername()/*, (List<Role>) userDetails.getAuthorities()*/);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
@@ -82,7 +83,7 @@ public class BoardController {
     public ResponseEntity<ResponseDto<String>> deleteBoard(@PathVariable Long boardId,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
 
-        boardService.deleteBoard(boardId,userDetails.getUsername(), (List<Role>) userDetails.getAuthorities());
+        boardService.deleteBoard(boardId,userDetails.getUsername()/*, (List<Role>) userDetails.getAuthorities()*/);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()

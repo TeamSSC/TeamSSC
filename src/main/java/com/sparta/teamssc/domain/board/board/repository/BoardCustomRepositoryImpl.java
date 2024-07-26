@@ -5,6 +5,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.entity.QBoard;
+import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.period.entity.QPeriod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,7 +22,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<BoardListResponseDto> findPagedBoardList(Pageable pageable) {
+    public Page<BoardListResponseDto> findPagedBoardList(Pageable pageable, Period period) {
         QBoard qBoard = QBoard.board;
 
         List<BoardListResponseDto> boardList = jpaQueryFactory
@@ -32,7 +34,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 ))
                 .from(qBoard)
                 .orderBy(qBoard.createAt.desc())
-                .where(qBoard.boardType.eq(BoardType.BOARD))
+                .where(qBoard.boardType.eq(BoardType.BOARD), qBoard.period.eq(period))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -41,7 +43,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
     }
 
     @Override
-    public Page<BoardListResponseDto> findPagedNoticeList(Pageable pageable) {
+    public Page<BoardListResponseDto> findPagedNoticeList(Pageable pageable, Period period) {
         QBoard qBoard = QBoard.board;
 
         List<BoardListResponseDto> boardList = jpaQueryFactory
@@ -53,7 +55,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 ))
                 .from(qBoard)
                 .orderBy(qBoard.createAt.desc())
-                .where(qBoard.boardType.eq(BoardType.NOTICE))
+                .where(qBoard.boardType.eq(BoardType.NOTICE), qBoard.period.eq(period))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

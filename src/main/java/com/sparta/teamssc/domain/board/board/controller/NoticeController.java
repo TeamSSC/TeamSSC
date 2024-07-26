@@ -33,9 +33,10 @@ public class NoticeController {
 
     // 공지 사항 조회
     @GetMapping("/notices")
-    public ResponseEntity<ResponseDto<Page<BoardListResponseDto>>> getNotices(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<ResponseDto<Page<BoardListResponseDto>>> getNotices(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                                              @AuthenticationPrincipal UserDetails userDetails) {
 
-        Page<BoardListResponseDto> responseDto = boardService.getNotices(page - 1);
+        Page<BoardListResponseDto> responseDto = boardService.getNotices(page - 1, userDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Page<BoardListResponseDto>>builder()

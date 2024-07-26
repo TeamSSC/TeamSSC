@@ -11,6 +11,7 @@ import com.sparta.teamssc.domain.board.board.repository.BoardRepository;
 import com.sparta.teamssc.domain.board.boardImage.service.BoardImageService;
 import com.sparta.teamssc.domain.image.entity.Image;
 import com.sparta.teamssc.domain.image.service.ImageService;
+import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.role.entity.Role;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
@@ -81,11 +82,13 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 전체 조회
     @Override
-    public Page<BoardListResponseDto> getBoards(int page) {
+    public Page<BoardListResponseDto> getBoards(int page, String email) {
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createAt"));
 
-        Page<BoardListResponseDto> boardPage = boardRepository.findPagedBoardList(pageable);
+        Period period = userService.getUserByEmail(email).getPeriod();
+
+        Page<BoardListResponseDto> boardPage = boardRepository.findPagedBoardList(pageable, period);
 
         if (boardPage.isEmpty()) {
             throw new IllegalArgumentException("작성된 게시글이 없거니, " + (page + 1) + " 페이지에 글이 없습니다.");
@@ -97,10 +100,10 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 수정
     @Override
     @Transactional
-    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email, List<Role> roles) {
+    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email/*, List<Role> roles*/) {
         try {
             Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getEmail().equals(email) || roles.contains("MANAGER") || roles.contains("ADMIN")) {
+            if (board.getUser().getEmail().equals(email)/* || roles.contains("MANAGER") || roles.contains("ADMIN")*/) {
 
                 // 삭제할 이미지가 있으면 삭제
                 if (requestDto.getDeleteImagesLink() != null) {
@@ -129,10 +132,10 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 삭제
     @Override
-    public void deleteBoard(Long boardId, String email, List<Role> roles) {
+    public void deleteBoard(Long boardId, String email/*, List<Role> roles*/) {
         try {
             Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getEmail().equals(email) || roles.contains("MANAGER") || roles.contains("ADMIN")) {
+            if (board.getUser().getEmail().equals(email)/* || roles.contains("MANAGER") || roles.contains("ADMIN")*/) {
                 for (String fileLink : boardImageService.findFileUrlByBoardId(boardId)) {
                     deleteImage(fileLink);
                 }
@@ -179,6 +182,7 @@ public class BoardServiceImpl implements BoardService {
                     .content(requestDto.getContent())
                     .boardType(BoardType.NOTICE)
                     .user(user)
+                    .period(user.getPeriod())
                     .build();
 
             // 보드 저장
@@ -198,11 +202,13 @@ public class BoardServiceImpl implements BoardService {
 
     // 공지사항 전체 조회
     @Override
-    public Page<BoardListResponseDto> getNotices(int page) {
+    public Page<BoardListResponseDto> getNotices(int page, String email) {
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createAt"));
 
-        Page<BoardListResponseDto> noticePage = boardRepository.findPagedNoticeList(pageable);
+        Period period = userService.getUserByEmail(email).getPeriod();
+
+        Page<BoardListResponseDto> noticePage = boardRepository.findPagedNoticeList(pageable, period);
 
         if (noticePage.isEmpty()) {
             throw new IllegalArgumentException("작성된 공지사항이 없거니, " + (page + 1) + " 페이지에 공지사항이 없습니다.");
