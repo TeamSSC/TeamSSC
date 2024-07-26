@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -42,16 +44,20 @@ public class UserServiceImpl implements UserService {
         inValidPassword(password);
         String encodedPassword = passwordEncoder.encode(password);
         inValidEmail(email);
-        if (!adminKey.isEmpty() && signupRequestDto.getAdminKey().equals(adminKey)) {
 
-            User user = User.builder()
-                    .username(signupRequestDto.getUsername())
-                    .email(email)
-                    .password(encodedPassword)
-                    .status(UserStatus.ACTIVE)
-                    .build();
-            userRepository.save(user);
-            userRoleService.userRoleAdd(user, "admin");
+        if (!Objects.isNull(signupRequestDto.getAdminKey())) {
+            if(signupRequestDto.getAdminKey().equals(adminKey)) {
+                User user = User.builder()
+                        .username(signupRequestDto.getUsername())
+                        .email(email)
+                        .password(encodedPassword)
+                        .status(UserStatus.ACTIVE)
+                        .build();
+                userRepository.save(user);
+                userRoleService.userRoleAdd(user, "admin");
+            } else{
+                throw new IllegalArgumentException("유효하지 않은 어드민토큰입니다.");
+            }
         } else {
 
             User user = User.builder()
