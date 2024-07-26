@@ -9,8 +9,11 @@ import com.sparta.teamssc.domain.user.refreshToken.service.RefreshTokenService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
+import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -116,12 +119,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<ProfileCardMapper> findAllUsers(Pageable pageable) {
+        return userRepository.findAllByOrderByCreateAtDesc(pageable);
+    }
+
+    @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
     @Override
-    public void updateUser(User user){
+    public void updateUser(User user) {
         userRepository.save(user);
     }
 
@@ -134,22 +142,21 @@ public class UserServiceImpl implements UserService {
 
     private void inValidEmail(String email) {
 
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
-        }
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("중복된 이메일이 존재합니다."));
     }
 
     @Override
     public User findByUsername(String username) {
 
-        if (userRepository.findByUsername(username).isPresent()) {
-            return userRepository.findByUsername(username).get();
-        }
-        throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
     }
 
     @Override
     public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
+
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
     }
 }
