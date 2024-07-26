@@ -33,3 +33,6 @@ jwt:
       expiration: 1209600000
 server:
   port: 8080
+
+secret:
+  admin-key: ${ADMIN_SECRET_KEY}

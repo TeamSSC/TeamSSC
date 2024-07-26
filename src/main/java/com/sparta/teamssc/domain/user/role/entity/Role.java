@@ -14,6 +14,7 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Builder
     public Role(String name) {
         this.name = name;
     }

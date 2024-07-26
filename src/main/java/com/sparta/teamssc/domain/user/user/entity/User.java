@@ -2,9 +2,8 @@ package com.sparta.teamssc.domain.user.user.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
-
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
-import com.sparta.teamssc.domain.user.role.userRole.UserRole;
+import com.sparta.teamssc.domain.user.role.userRole.entity.UserRole;
 import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
