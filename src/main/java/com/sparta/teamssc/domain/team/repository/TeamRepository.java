@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
-//    // weekProgressId를 통한 삭제되지 않은 팀 찾기
+    // weekProgressId를 통한 삭제되지 않은 팀 찾기
 @Query("SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.userTeamMatches utm LEFT JOIN FETCH utm.user WHERE t.weekProgress.id = :weekProgressId AND t.deleted = false")
 List<Team> findAllByWeekProgressIdAndNotDeleted(@Param("weekProgressId") Long weekProgressId);
 
