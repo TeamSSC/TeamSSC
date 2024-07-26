@@ -8,7 +8,6 @@ import com.sparta.teamssc.domain.board.board.entity.Board;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
 import com.sparta.teamssc.domain.board.board.exception.BoardCreationFailedException;
 import com.sparta.teamssc.domain.board.board.repository.BoardRepository;
-import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import com.sparta.teamssc.domain.board.boardImage.service.BoardImageService;
 import com.sparta.teamssc.domain.image.entity.Image;
 import com.sparta.teamssc.domain.image.service.ImageService;
@@ -37,9 +36,9 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 생성
     @Override
-    public void createBoard(BoardRequestDto requestDto, String username) {
+    public void createBoard(BoardRequestDto requestDto, String email) {
         try {
-            User user = userService.findByUsername(username);
+            User user = userService.getUserByEmail(email);
 
             Board board = Board.builder()
                     .title(requestDto.getTitle())
@@ -96,10 +95,10 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 수정
     @Override
     @Transactional
-    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String username) {
+    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email) {
         try {
             Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getUsername().equals(username)) {
+            if (board.getUser().getEmail().equals(email)) {
 
                 // 삭제할 이미지가 있으면 삭제
                 if (requestDto.getDeleteImagesLink() != null) {
@@ -128,10 +127,10 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 삭제
     @Override
-    public void deleteBoard(Long boardId, String username) {
+    public void deleteBoard(Long boardId, String email) {
         try {
             Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getUsername().equals(username)) {
+            if (board.getUser().getEmail().equals(email)) {
                 for (String fileLink : boardImageService.findFileUrlByBoardId(boardId)) {
                     deleteImage(fileLink);
                 }

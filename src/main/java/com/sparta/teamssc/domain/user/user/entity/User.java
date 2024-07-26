@@ -2,9 +2,10 @@ package com.sparta.teamssc.domain.user.user.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.team.userTeamMatch.entity.UserTeamMatch;
+
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.role.userRole.UserRole;
+import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,10 +64,7 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
-
-    //    @ManyToOne
-//    @JoinColumn(name = "team_id")
-//    private Team team;
+    
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 

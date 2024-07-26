@@ -30,12 +30,6 @@ public class Comment extends BaseEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
     @Column(nullable = true)
     private Long parentCommentId;
 
@@ -49,7 +43,6 @@ public class Comment extends BaseEntity {
 
     public void update(String content) {
         this.content = content;
-        this.updatedAt = LocalDateTime.now();
     }
 
 }
