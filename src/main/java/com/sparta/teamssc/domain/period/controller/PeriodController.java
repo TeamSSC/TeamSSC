@@ -7,10 +7,9 @@ import com.sparta.teamssc.domain.period.service.PeriodServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -30,6 +29,16 @@ public class PeriodController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<PeriodResponseDto>builder()
                 .message("기수가 생성 되었습니다.")
+                .build());
+    }
+
+    @GetMapping("/periods")
+    public ResponseEntity<ResponseDto<List<PeriodResponseDto>>> getAllPeriod() {
+        List<PeriodResponseDto> periodResponseDtoList = periodService.getAllPeriod();
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<List<PeriodResponseDto>>builder()
+                .message("기수가 조회 되었습니다.")
+                .data(periodResponseDtoList)
                 .build());
     }
 }

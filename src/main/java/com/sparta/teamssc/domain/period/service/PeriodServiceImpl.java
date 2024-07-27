@@ -9,6 +9,8 @@ import com.sparta.teamssc.domain.track.service.TrackServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PeriodServiceImpl implements PeriodService {
@@ -35,6 +37,22 @@ public class PeriodServiceImpl implements PeriodService {
                 .period(periodRequestDto.getPeriod())
                 .status(periodRequestDto.getStatus())
                 .build();
+    }
+
+    @Override
+    public List<PeriodResponseDto> getAllPeriod() {
+        List<Period> periods = periodRepository.findAll(); // 모든 Period 엔티티 조회
+
+        // Period 엔티티를 PeriodResponseDto로 변환
+        List<PeriodResponseDto> periodResponseDtoList = periods.stream()
+                .map(period -> PeriodResponseDto.builder()
+                        .id(period.getId())
+                        .period(period.getPeriod())
+                        .status(period.getStatus())
+                        .build())
+                .toList();
+
+        return periodResponseDtoList; // 변환된 DTO 리스트 반환
     }
 
     public Period getPeriodById(Long periodId) {
