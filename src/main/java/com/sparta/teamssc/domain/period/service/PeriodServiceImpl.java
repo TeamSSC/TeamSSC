@@ -2,12 +2,15 @@ package com.sparta.teamssc.domain.period.service;
 
 import com.sparta.teamssc.domain.period.dto.PeriodRequestDto;
 import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
+import com.sparta.teamssc.domain.period.dto.PeriodUpdateRequestDto;
 import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.period.entity.PeriodStatus;
 import com.sparta.teamssc.domain.period.repository.PeriodRepository;
 import com.sparta.teamssc.domain.track.entity.Track;
 import com.sparta.teamssc.domain.track.service.TrackServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,9 +42,10 @@ public class PeriodServiceImpl implements PeriodService {
                 .build();
     }
 
+    // 기수 전체 조회
     @Override
     public List<PeriodResponseDto> getAllPeriod() {
-        List<Period> periods = periodRepository.findAll(); // 모든 Period 엔티티 조회
+        List<Period> periods = periodRepository.findAll();
 
         // Period 엔티티를 PeriodResponseDto로 변환
         List<PeriodResponseDto> periodResponseDtoList = periods.stream()
@@ -52,7 +56,18 @@ public class PeriodServiceImpl implements PeriodService {
                         .build())
                 .toList();
 
-        return periodResponseDtoList; // 변환된 DTO 리스트 반환
+        return periodResponseDtoList;
+    }
+
+    // 기수 상태 수정
+    @Override
+    @Transactional
+    public void updatePeriod(Long periodId, PeriodUpdateRequestDto periodUpdateRequestDto) {
+
+        Period period = getPeriodById(periodId);
+        period.updatePeriod(periodUpdateRequestDto.getStatus());
+
+        periodRepository.save(period);
     }
 
     public Period getPeriodById(Long periodId) {

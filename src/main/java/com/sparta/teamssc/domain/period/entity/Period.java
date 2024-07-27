@@ -32,4 +32,8 @@ public class Period {
         this.period = period;
         this.status = status;
     }
+
+    public void updatePeriod(PeriodStatus status) {
+        this.status = status;
+    }
 }
