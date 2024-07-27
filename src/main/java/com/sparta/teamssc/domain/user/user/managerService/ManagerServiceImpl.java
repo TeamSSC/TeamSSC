@@ -4,6 +4,8 @@ import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
+import com.sparta.teamssc.domain.user.user.service.UserService;
+import com.sparta.teamssc.domain.user.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,17 +17,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerServiceImpl implements ManagerService{
 
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
 
     // 회원가입 승인
     @Override
     @Transactional
     public void signupApproval(Long userId) {
 
-        User user = getUserById(userId);
+        User user = userService.findById(userId);
 
         user.signupApproval();
-        userRepository.save(user);
+        userService.updateUser(user);
 
     }
 
@@ -34,10 +36,10 @@ public class ManagerServiceImpl implements ManagerService{
     @Transactional
     public void signupRefusal(Long userId) {
 
-        User user = getUserById(userId);
+        User user = userService.findById(userId);
 
         user.signupRefusal();
-        userRepository.save(user);
+        userService.updateUser(user);
 
     }
 
@@ -45,18 +47,10 @@ public class ManagerServiceImpl implements ManagerService{
     @Override
     public List<PendSignupResponseDto> getPendSignup() {
 
-        List<User> pendSignupList = userRepository.findByStatus(UserStatus.PENDING);
+        List<User> pendSignupList = userService.findByStatus(UserStatus.PENDING);
 
         return pendSignupList.stream()
                 .map(user -> new PendSignupResponseDto(user.getId(), user.getEmail(), user.getUsername(), user.getStatus()))
                 .collect(Collectors.toList());
-    }
-
-    // userId 조회
-    @Override
-    public User getUserById(Long userId) {
-
-        return userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원가입 승인 대기 사용자를 찾을 수 없습니다."));
     }
 }
