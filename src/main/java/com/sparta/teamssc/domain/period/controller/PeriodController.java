@@ -63,4 +63,13 @@ public class PeriodController {
                 .build());
     }
 
+    @DeleteMapping("/periods/{periodId}")
+    public ResponseEntity<ResponseDto<Void>> deletePeriod(@PathVariable Long periodId) {
+
+        periodService.deletePeriod(periodId);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<Void>builder()
+                .message("기수가 삭제 되었습니다.")
+                .build());
+    }
+
 }

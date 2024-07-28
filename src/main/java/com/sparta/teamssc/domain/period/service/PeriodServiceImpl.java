@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -67,6 +68,18 @@ public class PeriodServiceImpl implements PeriodService {
         Period period = getPeriodById(periodId);
         period.updatePeriod(periodUpdateRequestDto.getStatus());
 
+        periodRepository.save(period);
+    }
+
+    @Override
+    @Transactional
+    public void deletePeriod(Long periodId) {
+
+        Period period = periodRepository.findByIdAndDeletedIsFalse(periodId).orElseThrow(
+                () -> new NoSuchElementException("해당 기수가 존재하지 않습니다.")
+        );
+
+        period.delete();
         periodRepository.save(period);
     }
 
