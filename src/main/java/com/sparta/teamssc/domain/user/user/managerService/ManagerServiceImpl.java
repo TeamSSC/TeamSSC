@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerServiceImpl implements ManagerService{
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     // 회원가입 승인
     @Override
