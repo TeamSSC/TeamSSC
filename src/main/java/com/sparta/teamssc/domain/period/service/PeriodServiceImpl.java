@@ -71,6 +71,7 @@ public class PeriodServiceImpl implements PeriodService {
         periodRepository.save(period);
     }
 
+    // 기수 삭제
     @Override
     @Transactional
     public void deletePeriod(Long periodId) {

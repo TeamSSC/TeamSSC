@@ -63,6 +63,11 @@ public class PeriodController {
                 .build());
     }
 
+    /**
+     * 기수 삭제 메서드
+     * @param periodId
+     * @return 바디에 반환
+     */
     @DeleteMapping("/periods/{periodId}")
     public ResponseEntity<ResponseDto<Void>> deletePeriod(@PathVariable Long periodId) {
 
