@@ -27,15 +27,24 @@ public class Track extends BaseEntity {
     @OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Period> periods;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
     @Builder
     public Track(String name) {
         this.name = name;
+        this.deleted = false;
     }
 
     public Track setTrackName(String name) {
 
         this.name = name;
+        return this;
+    }
 
+    public Track deleteTrack() {
+
+        this.deleted=true;
         return this;
     }
 }

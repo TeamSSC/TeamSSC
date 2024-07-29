@@ -63,7 +63,7 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private RefreshToken refreshToken;
-    
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTeamMatch> userTeamMatches = new ArrayList<>();
 
@@ -72,27 +72,32 @@ public class User extends BaseEntity {
     private Period period;
 
     @Builder
-    public User(String email, String password, String username, UserStatus status) {
+    public User(String email, String password, String username, UserStatus status, Period period) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.status = status;
+        this.period = period;
     }
 
     public void login() {
         this.status = UserStatus.ACTIVE;
     }
 
-    public void signupApproval() { this.status = UserStatus.ACTIVE; }
+    public void signupApproval() {
+        this.status = UserStatus.ACTIVE;
+    }
 
-    public void signupRefusal() { this.status = UserStatus.REFUSAL; }
+    public void signupRefusal() {
+        this.status = UserStatus.REFUSAL;
+    }
 
     public void logout() {
         this.status = UserStatus.LOGOUT;
     }
 
-    public void updateProfile(String username,String password, String gitLink, String vlogLink, String intro,
-                              UserMbti mbti){
+    public void updateProfile(String username, String password, String gitLink, String vlogLink, String intro,
+                              UserMbti mbti) {
         this.username = username;
         this.password = password;
         this.gitLink = gitLink;
@@ -101,11 +106,11 @@ public class User extends BaseEntity {
         this.mbti = mbti;
     }
 
-    public void updateProfileImage(String profileImage){
+    public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
 
-    public void withdrawn () {
+    public void withdrawn() {
         this.status = UserStatus.WITHDRAWN;
     }
 }
