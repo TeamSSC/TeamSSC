@@ -66,7 +66,7 @@ public class TeamController {
     }
 
     // 단일 팀 불러오기
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{teamId}/users")
     public ResponseEntity<ResponseDto<SimpleTeamResponseDto>> getTeamUsers(@PathVariable Long weekProgressId,
                                                                            @PathVariable Long teamId) {
@@ -79,7 +79,7 @@ public class TeamController {
     }
 
     // 팀 전체 라인업 보기
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/lineup")
     public ResponseEntity<ResponseDto<List<SimpleTeamResponseDto>>> getAllTeams(@PathVariable Long weekProgressId) {
         weekProgressService.getWeekProgressById(weekProgressId);

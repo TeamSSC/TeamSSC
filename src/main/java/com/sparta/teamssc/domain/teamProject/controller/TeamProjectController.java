@@ -6,6 +6,7 @@ import com.sparta.teamssc.domain.teamProject.service.TeamProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ public class TeamProjectController {
      * @param teamProjectDto
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<ResponseDto<Void>> createTeamProject(@PathVariable Long weekProgressId,
                                                                @PathVariable Long teamId,
@@ -41,6 +43,7 @@ public class TeamProjectController {
      * @param teamProjectDto
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping
     public ResponseEntity<ResponseDto<Void>> updateTeamProject(@PathVariable Long weekProgressId,
                                                                @PathVariable Long teamId,
@@ -60,6 +63,7 @@ public class TeamProjectController {
      * @param teamId
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping
     public ResponseEntity<ResponseDto<Void>> deleteTeamProject(@PathVariable Long weekProgressId,
                                                                @PathVariable Long teamId) {
@@ -77,6 +81,7 @@ public class TeamProjectController {
      * @param teamId
      * @return
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<ResponseDto<TeamProjectDto>> getTeamProject(@PathVariable Long weekProgressId,
                                                                       @PathVariable Long teamId) {
