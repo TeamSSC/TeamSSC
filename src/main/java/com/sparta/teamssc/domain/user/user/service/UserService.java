@@ -4,9 +4,12 @@ import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
+import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface UserService {
     // 회원가입
@@ -38,4 +41,7 @@ public interface UserService {
 
     //유저 페이징
     Page<ProfileCardMapper> findAllUsers(Pageable pageable);
+
+    //유저Status로 사용자 가져오기
+    List<User> findByStatus(UserStatus userStatus);
 }

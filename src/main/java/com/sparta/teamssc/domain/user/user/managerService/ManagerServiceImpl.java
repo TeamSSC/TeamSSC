@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerServiceImpl implements ManagerService{
 
-    private final UserRepository userRepository;
     private final UserService userService;
     private final UserRoleService userRoleService;
 
@@ -27,10 +26,11 @@ public class ManagerServiceImpl implements ManagerService{
     @Transactional
     public void signupApproval(Long userId) {
 
-        User user = getUserById(userId);
+        User user = userService.findById(userId);
 
         user.signupApproval();
-        userRepository.save(user);
+        userService.updateUser(user);
+
     }
 
     // 회원가입 거부
@@ -38,17 +38,18 @@ public class ManagerServiceImpl implements ManagerService{
     @Transactional
     public void signupRefusal(Long userId) {
 
-        User user = getUserById(userId);
+        User user = userService.findById(userId);
 
         user.signupRefusal();
-        userRepository.save(user);
+        userService.updateUser(user);
+
     }
 
     // 회원가입 승인 대기자 조회
     @Override
     public List<PendSignupResponseDto> getPendSignup() {
 
-        List<User> pendSignupList = userRepository.findByStatus(UserStatus.PENDING);
+        List<User> pendSignupList = userService.findByStatus(UserStatus.PENDING);
 
         return pendSignupList.stream()
                 .map(user -> new PendSignupResponseDto(user.getId(), user.getEmail(), user.getUsername(), user.getStatus()))
@@ -62,13 +63,5 @@ public class ManagerServiceImpl implements ManagerService{
         User user = userService.getUserByEmail(approveManagerRequestDto.getUserEmail());
 
         userRoleService.userRoleAdd(user,"manager");
-    }
-
-    // userId 조회
-    @Override
-    public User getUserById(Long userId) {
-
-        return userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원가입 승인 대기 사용자를 찾을 수 없습니다."));
     }
 }
