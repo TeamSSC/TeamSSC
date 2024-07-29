@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void signup(SignupRequestDto signupRequestDto, Long periodId) {
+    public void signup(SignupRequestDto signupRequestDto) {
 
         String password = signupRequestDto.getPassword();
         String email = signupRequestDto.getEmail();
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = passwordEncoder.encode(password);
         inValidEmail(email);
 
-        if (!Objects.isNull(signupRequestDto.getAdminKey())) {
+        if (signupRequestDto.getAdminKey() != null && signupRequestDto.getPeriodId() == null) {
             if (signupRequestDto.getAdminKey().equals(adminKey)) {
 
                 User user = User.builder()
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
             }
         } else {
 
-            Period period = periodService.getPeriodById(periodId);
+            Period period = periodService.getPeriodById(signupRequestDto.getPeriodId());
             User user = User.builder()
                     .username(signupRequestDto.getUsername())
                     .email(email)
