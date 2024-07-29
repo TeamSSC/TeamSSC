@@ -20,10 +20,10 @@ public class LikeServiceImpl implements LikeService {
 
     // 게시물 좋아요
     @Override
-    public void likeBoard(Long boardId, String username) {
+    public void likeBoard(Long boardId, String email) {
         try {
             Board board = boardService.findBoardByBoardId(boardId);
-            User user = userService.findByUsername(username);
+            User user = userService.getUserByEmail(email);
 
             if (likeRepository.findByBoardIdAndUserId(boardId, user.getId()).isPresent()) {
                 throw new IllegalArgumentException("중복 좋아요는 할 수 없습니다.");
@@ -41,9 +41,9 @@ public class LikeServiceImpl implements LikeService {
 
     // 게시물 좋아요 취소
     @Override
-    public void unlikeBoard(Long boardId, String username) {
+    public void unlikeBoard(Long boardId, String email) {
         try {
-            User user = userService.findByUsername(username);
+            User user = userService.getUserByEmail(email);
             Like like = likeRepository.findByBoardIdAndUserId(boardId, user.getId()).orElseThrow(() ->
                     new IllegalArgumentException("좋아요한 게시글의 좋아요만 취소할 수 있습니다."));
 
@@ -56,6 +56,9 @@ public class LikeServiceImpl implements LikeService {
     // 특정 게시글의 좋아요 수
     @Override
     public LikeResponseDto countBoardLikes(Long boardId) {
+        // 게시글이 없을 경우 검증
+        boardService.findBoardByBoardId(boardId);
+
         return LikeResponseDto.builder()
                 .boardId(boardId)
                 .likeCount(likeRepository.findByBoardId(boardId).size())
