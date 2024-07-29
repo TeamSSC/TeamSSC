@@ -2,6 +2,8 @@ package com.sparta.teamssc.domain.board.board.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
 import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
+import com.sparta.teamssc.domain.board.comment.entity.Comment;
+import com.sparta.teamssc.domain.board.like.entity.Like;
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import jakarta.persistence.*;
@@ -36,7 +38,13 @@ public class Board extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> boardImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     @JoinColumn(name = "period_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)

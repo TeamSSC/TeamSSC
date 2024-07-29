@@ -5,8 +5,8 @@ import com.sparta.teamssc.domain.board.board.dto.request.BoardUpdateRequestDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.entity.Board;
-import com.sparta.teamssc.domain.user.role.entity.Role;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
 
@@ -20,9 +20,9 @@ public interface BoardService {
 
     Board findBoardByBoardId(Long boardId);
 
-    void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email/*, List<Role> roles*/);
+    void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email);
 
-    void deleteBoard(Long boardId, String username/*, List<Role> roles*/);
+    void deleteBoard(Long boardId, String username, List<SimpleGrantedAuthority> authorities);
 
     void createNotice(BoardRequestDto requestDto, String email);
 

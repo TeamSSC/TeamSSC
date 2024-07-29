@@ -12,7 +12,6 @@ import com.sparta.teamssc.domain.board.boardImage.service.BoardImageService;
 import com.sparta.teamssc.domain.image.entity.Image;
 import com.sparta.teamssc.domain.image.service.ImageService;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.user.role.entity.Role;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -100,10 +100,10 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 수정
     @Override
     @Transactional
-    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email/*, List<Role> roles*/) {
+    public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email) {
         try {
             Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getEmail().equals(email)/* || roles.contains("MANAGER") || roles.contains("ADMIN")*/) {
+            if (board.getUser().getEmail().equals(email)) {
 
                 // 삭제할 이미지가 있으면 삭제
                 if (requestDto.getDeleteImagesLink() != null) {
@@ -132,14 +132,18 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 삭제
     @Override
-    public void deleteBoard(Long boardId, String email/*, List<Role> roles*/) {
+    public void deleteBoard(Long boardId, String email, List<SimpleGrantedAuthority> authorities) {
         try {
             Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getEmail().equals(email)/* || roles.contains("MANAGER") || roles.contains("ADMIN")*/) {
+            if (board.getUser().getEmail().equals(email) ||
+                    authorities.contains(new SimpleGrantedAuthority("MANAGER")) ||
+                    authorities.contains(new SimpleGrantedAuthority("ADMIN"))) {
                 for (String fileLink : boardImageService.findFileUrlByBoardId(boardId)) {
                     deleteImage(fileLink);
                 }
                 boardRepository.delete(board);
+            } else {
+                throw new IllegalArgumentException("본인 게시글 또는 관리자만 삭제할 수 있습니다");
             }
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("게시글 삭제에 실패했습니다.");

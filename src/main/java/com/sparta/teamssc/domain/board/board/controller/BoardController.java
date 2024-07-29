@@ -6,16 +6,17 @@ import com.sparta.teamssc.domain.board.board.dto.request.BoardUpdateRequestDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.service.BoardService;
-import com.sparta.teamssc.domain.user.role.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -70,7 +71,7 @@ public class BoardController {
                                                            @ModelAttribute BoardUpdateRequestDto requestDto,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
 
-        boardService.updateBoard(boardId, requestDto, userDetails.getUsername()/*, (List<Role>) userDetails.getAuthorities()*/);
+        boardService.updateBoard(boardId, requestDto, userDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
@@ -82,8 +83,10 @@ public class BoardController {
     @DeleteMapping("/boards/{boardId}")
     public ResponseEntity<ResponseDto<String>> deleteBoard(@PathVariable Long boardId,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
+        List<SimpleGrantedAuthority> authorities = userDetails.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toList());
 
-        boardService.deleteBoard(boardId,userDetails.getUsername()/*, (List<Role>) userDetails.getAuthorities()*/);
+        boardService.deleteBoard(boardId,userDetails.getUsername(), authorities);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
