@@ -26,10 +26,21 @@ public class Period {
     @Enumerated(EnumType.STRING)
     private PeriodStatus status;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
     @Builder
     public Period(int period, PeriodStatus status, Track track) {
         this.track = track;
         this.period = period;
         this.status = status;
+    }
+
+    public void updatePeriod(PeriodStatus status) {
+        this.status = status;
+    }
+
+    public void delete() {
+        this.deleted = true;
     }
 }
