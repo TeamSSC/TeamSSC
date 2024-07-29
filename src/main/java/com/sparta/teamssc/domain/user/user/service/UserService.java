@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface UserService {
     // 회원가입
-    void signup(SignupRequestDto signupRequestDto, Long periodId);
+    void signup(SignupRequestDto signupRequestDto);
 
     // 로그인
     LoginResponseDto login(LoginRequestDto loginRequestDto);

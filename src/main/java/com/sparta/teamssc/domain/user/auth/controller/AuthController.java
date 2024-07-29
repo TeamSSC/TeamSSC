@@ -21,11 +21,10 @@ public class AuthController {
     private final UserService userService;
 
     // 회원가입
-    @PostMapping("/period/{periodId}/users/signup")
-    public ResponseEntity<ResponseDto<String>> signup(@RequestBody SignupRequestDto signupRequestDto,
-                                                      @PathVariable Long periodId) {
+    @PostMapping("/users/signup")
+    public ResponseEntity<ResponseDto<String>> signup(@RequestBody SignupRequestDto signupRequestDto) {
 
-        userService.signup(signupRequestDto, periodId);
+        userService.signup(signupRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.<String>builder()
