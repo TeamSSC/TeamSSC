@@ -1,8 +1,12 @@
 package com.sparta.teamssc.domain.user.user.service;
 
+import com.sparta.teamssc.common.dto.ResponseDto;
+import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
+import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
+import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
@@ -42,6 +46,6 @@ public interface UserService {
     //유저 페이징
     Page<ProfileCardMapper> findAllUsers(Pageable pageable);
 
-    //유저Status로 사용자 가져오기
-    List<User> findByStatus(UserStatus userStatus);
+    // 회원가입 대기 상태 유저 페이징
+    Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period);
 }

@@ -1,12 +1,17 @@
 package com.sparta.teamssc.domain.user.user.managerController;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
+import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.user.user.dto.request.ApproveManagerRequestDto;
 import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
 import com.sparta.teamssc.domain.user.user.managerService.ManagerService;
+import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,14 +55,17 @@ public class ManagerController {
      * 회원가입 승인 대기자 조회 메서드
      * @return 바디에 반환
      */
-    @GetMapping("/signup/pend/")
-    public ResponseEntity<ResponseDto<List<PendSignupResponseDto>>> getPendSignup() {
+    @GetMapping("/signup/pend")
+    public ResponseEntity<ResponseDto<Page<PendSignupResponseDto>>> getPendSignup(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                                                  @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<PendSignupResponseDto> pendSignupResponseDto = managerService.getPendSignup();
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<List<PendSignupResponseDto>>builder()
-                .message("회원가입 승인 대기자가 조회 되었습니다.")
-                .data(pendSignupResponseDto)
-                .build());
+        Page<PendSignupResponseDto> responseDto = managerService.getPendSignup(page - 1, userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<Page<PendSignupResponseDto>>builder()
+                        .message("회원가입 승인 대기자가 조회 되었습니다.")
+                        .data(responseDto)
+                        .build());
     }
 
     @PostMapping("/period/manager")
