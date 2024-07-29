@@ -2,12 +2,18 @@ package com.sparta.teamssc.domain.period.service;
 
 import com.sparta.teamssc.domain.period.dto.PeriodRequestDto;
 import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
+import com.sparta.teamssc.domain.period.dto.PeriodUpdateRequestDto;
 import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.period.entity.PeriodStatus;
 import com.sparta.teamssc.domain.period.repository.PeriodRepository;
 import com.sparta.teamssc.domain.track.entity.Track;
 import com.sparta.teamssc.domain.track.service.TrackServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +41,47 @@ public class PeriodServiceImpl implements PeriodService {
                 .period(periodRequestDto.getPeriod())
                 .status(periodRequestDto.getStatus())
                 .build();
+    }
+
+    // 기수 전체 조회
+    @Override
+    public List<PeriodResponseDto> getAllPeriod() {
+        List<Period> periods = periodRepository.findAll();
+
+        // Period 엔티티를 PeriodResponseDto로 변환
+        List<PeriodResponseDto> periodResponseDtoList = periods.stream()
+                .map(period -> PeriodResponseDto.builder()
+                        .id(period.getId())
+                        .period(period.getPeriod())
+                        .status(period.getStatus())
+                        .build())
+                .toList();
+
+        return periodResponseDtoList;
+    }
+
+    // 기수 상태 수정
+    @Override
+    @Transactional
+    public void updatePeriod(Long periodId, PeriodUpdateRequestDto periodUpdateRequestDto) {
+
+        Period period = getPeriodById(periodId);
+        period.updatePeriod(periodUpdateRequestDto.getStatus());
+
+        periodRepository.save(period);
+    }
+
+    // 기수 삭제
+    @Override
+    @Transactional
+    public void deletePeriod(Long periodId) {
+
+        Period period = periodRepository.findByIdAndDeletedIsFalse(periodId).orElseThrow(
+                () -> new NoSuchElementException("해당 기수가 존재하지 않습니다.")
+        );
+
+        period.delete();
+        periodRepository.save(period);
     }
 
     public Period getPeriodById(Long periodId) {

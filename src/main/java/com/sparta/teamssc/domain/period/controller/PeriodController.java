@@ -3,14 +3,15 @@ package com.sparta.teamssc.domain.period.controller;
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.period.dto.PeriodRequestDto;
 import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
+import com.sparta.teamssc.domain.period.dto.PeriodUpdateRequestDto;
+import com.sparta.teamssc.domain.period.entity.PeriodStatus;
 import com.sparta.teamssc.domain.period.service.PeriodServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -32,4 +33,48 @@ public class PeriodController {
                 .message("기수가 생성 되었습니다.")
                 .build());
     }
+
+    /**
+     * 기수 전체 조회 메서드
+     * @return 바디에 반환
+     */
+    @GetMapping("/periods")
+    public ResponseEntity<ResponseDto<List<PeriodResponseDto>>> getAllPeriod() {
+        List<PeriodResponseDto> periodResponseDtoList = periodService.getAllPeriod();
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<List<PeriodResponseDto>>builder()
+                .message("기수가 조회 되었습니다.")
+                .data(periodResponseDtoList)
+                .build());
+    }
+
+    /**
+     * 기수 상태 수정 메서드
+     * @param periodId
+     * @param periodUpdateRequestDto
+     * @return 바디에 반환
+     */
+    @PatchMapping("/periods/{periodId}")
+    public ResponseEntity<ResponseDto<Void>> updatePeriod(@PathVariable Long periodId,
+                                                          @RequestBody PeriodUpdateRequestDto periodUpdateRequestDto) {
+        periodService.updatePeriod(periodId, periodUpdateRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<Void>builder()
+                .message("기수가 상태가 변경 되었습니다.")
+                .build());
+    }
+
+    /**
+     * 기수 삭제 메서드
+     * @param periodId
+     * @return 바디에 반환
+     */
+    @DeleteMapping("/periods/{periodId}")
+    public ResponseEntity<ResponseDto<Void>> deletePeriod(@PathVariable Long periodId) {
+
+        periodService.deletePeriod(periodId);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<Void>builder()
+                .message("기수가 삭제 되었습니다.")
+                .build());
+    }
+
 }
