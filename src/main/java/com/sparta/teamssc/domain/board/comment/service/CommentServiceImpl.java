@@ -50,6 +50,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Page<CommentResponseDto> getCommentFromBoard(Long boardId, int page) {
 
+        boardService.findBoardByBoardId(boardId);
+
         Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createAt"));
 
         Page<CommentResponseDto> commentPage = commentRepository.findPagedParentCommentList(boardId, pageable);
