@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.user.user.managerService;
 
+import com.sparta.teamssc.domain.user.user.dto.request.ApproveManagerRequestDto;
 import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface ManagerService {
     void signupRefusal(Long userId);
 
     List<PendSignupResponseDto> getPendSignup();
+
+    void approveManager(ApproveManagerRequestDto approveManagerRequestDto);
 }

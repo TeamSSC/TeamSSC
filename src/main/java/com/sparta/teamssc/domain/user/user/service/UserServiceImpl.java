@@ -1,11 +1,14 @@
 package com.sparta.teamssc.domain.user.user.service;
 
+import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.refreshToken.service.RefreshTokenService;
+import com.sparta.teamssc.domain.user.role.userRole.entity.UserRole;
 import com.sparta.teamssc.domain.user.role.userRole.service.UserRoleService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
@@ -16,11 +19,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
     private final UserRoleService userRoleService;
+    private final PeriodService periodService;
 
     @Value("${secret.admin-key}")
     String adminKey;
@@ -37,7 +46,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void signup(SignupRequestDto signupRequestDto) {
+    public void signup(SignupRequestDto signupRequestDto, Long periodId) {
 
         String password = signupRequestDto.getPassword();
         String email = signupRequestDto.getEmail();
@@ -47,7 +56,8 @@ public class UserServiceImpl implements UserService {
         inValidEmail(email);
 
         if (!Objects.isNull(signupRequestDto.getAdminKey())) {
-            if(signupRequestDto.getAdminKey().equals(adminKey)) {
+            if (signupRequestDto.getAdminKey().equals(adminKey)) {
+
                 User user = User.builder()
                         .username(signupRequestDto.getUsername())
                         .email(email)
@@ -56,17 +66,20 @@ public class UserServiceImpl implements UserService {
                         .build();
                 userRepository.save(user);
                 userRoleService.userRoleAdd(user, "admin");
-            } else{
+            } else {
                 throw new IllegalArgumentException("유효하지 않은 어드민토큰입니다.");
             }
         } else {
 
+            Period period = periodService.getPeriodById(periodId);
             User user = User.builder()
                     .username(signupRequestDto.getUsername())
                     .email(email)
                     .password(encodedPassword)
                     .status(UserStatus.PENDING)
+                    .period(period)
                     .build();
+
             userRepository.save(user);
             userRoleService.userRoleAdd(user, "user");
         }
@@ -86,8 +99,12 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
-        String accessToken = JwtUtil.createAccessToken(user.getEmail());
-        String refreshToken = JwtUtil.createRefreshToken(user.getEmail());
+        List<String> roles = user.getRoles().stream()
+                .map(userRole -> userRole.getRole().getName())
+                .collect(Collectors.toList());
+
+        String accessToken = JwtUtil.createAccessToken(user.getEmail(), roles);
+        String refreshToken = JwtUtil.createRefreshToken(user.getEmail(), roles);
 
         refreshTokenService.updateRefreshToken(user, refreshToken);
 
@@ -122,8 +139,12 @@ public class UserServiceImpl implements UserService {
         String email = JwtUtil.getUsernameFromToken(refreshToken);
         User user = getUserByEmail(email);
 
-        String newAccessToken = JwtUtil.createAccessToken(user.getEmail()); // 새로운 엑세스 토큰 생성
-        String newRefreshToken = JwtUtil.createRefreshToken(user.getEmail()); // 새로운 리프레시 토큰 생성
+        List<String> roles = user.getRoles().stream()
+                .map(userRole -> userRole.getRole().getName())
+                .collect(Collectors.toList());
+
+        String newAccessToken = JwtUtil.createAccessToken(user.getEmail(), roles); // 새로운 엑세스 토큰 생성
+        String newRefreshToken = JwtUtil.createRefreshToken(user.getEmail(), roles); // 새로운 리프레시 토큰 생성
 
 
         refreshTokenService.updateRefreshToken(user, newRefreshToken); // 리프레시 토큰 업데이트
@@ -194,4 +215,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByStatus(UserStatus.PENDING);
     }
 
+
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
+                .collect(Collectors.toList());
+    }
 }

@@ -9,6 +9,7 @@ import com.sparta.teamssc.domain.weekProgress.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class TeamController {
     private final TeamService teamService;
 
     // 팀 생성하기
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping()
     public ResponseEntity<ResponseDto<TeamCreateResponseDto>> createTeam(@PathVariable Long weekProgressId,
                                                                          @RequestBody TeamCreateRequestDto teamCreateRequestDto) {
@@ -36,6 +38,7 @@ public class TeamController {
     }
 
     // 팀 수정하기
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PatchMapping("/{teamId}")
     public ResponseEntity<ResponseDto<TeamCreateResponseDto>> updateTeam(@PathVariable Long weekProgressId,
                                                                          @PathVariable Long teamId,
@@ -51,6 +54,7 @@ public class TeamController {
     }
 
     // 팀 삭제하기
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @DeleteMapping("/{teamId}")
     public ResponseEntity<ResponseDto<Void>> deleteTeam(@PathVariable Long weekProgressId, @PathVariable Long teamId) {
         teamService.deleteTeam(weekProgressId,teamId);
@@ -62,6 +66,7 @@ public class TeamController {
     }
 
     // 단일 팀 불러오기
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{teamId}/users")
     public ResponseEntity<ResponseDto<SimpleTeamResponseDto>> getTeamUsers(@PathVariable Long weekProgressId,
                                                                            @PathVariable Long teamId) {
@@ -74,6 +79,7 @@ public class TeamController {
     }
 
     // 팀 전체 라인업 보기
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/lineup")
     public ResponseEntity<ResponseDto<List<SimpleTeamResponseDto>>> getAllTeams(@PathVariable Long weekProgressId) {
         weekProgressService.getWeekProgressById(weekProgressId);

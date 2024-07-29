@@ -19,9 +19,9 @@ public class DataLoader implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
         if (roleRepository.count() == 0) {
-            roleRepository.save(new Role("user"));
-            roleRepository.save(new Role("admin"));
-            roleRepository.save(new Role("manager"));
+            roleRepository.save(new Role("USER"));
+            roleRepository.save(new Role("ADMIN"));
+            roleRepository.save(new Role("MANAGER"));
         }
     }
 }

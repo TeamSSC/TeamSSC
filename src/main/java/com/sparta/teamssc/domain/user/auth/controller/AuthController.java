@@ -21,10 +21,11 @@ public class AuthController {
     private final UserService userService;
 
     // 회원가입
-    @PostMapping("/users/signup")
-    public ResponseEntity<ResponseDto<String>> signup(@RequestBody SignupRequestDto signupRequestDto) {
+    @PostMapping("/period/{periodId}/users/signup")
+    public ResponseEntity<ResponseDto<String>> signup(@RequestBody SignupRequestDto signupRequestDto,
+                                                      @PathVariable Long periodId) {
 
-        userService.signup(signupRequestDto);
+        userService.signup(signupRequestDto, periodId);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.<String>builder()
@@ -33,6 +34,7 @@ public class AuthController {
     }
 
     // 로그인
+
     /**
      * 로그인
      *
@@ -51,6 +53,7 @@ public class AuthController {
 
     /**
      * 로그아웃
+     *
      * @param userDetails
      * @return 로그아웃 성공 메세지
      */
@@ -67,6 +70,7 @@ public class AuthController {
 
     /**
      * 리프레시 토큰으로 토큰 재발급 및 재로그인
+     *
      * @param refreshToken
      * @return 재로그인 메세지와 데이터
      */
@@ -82,6 +86,7 @@ public class AuthController {
 
     /**
      * 회원탈퇴
+     *
      * @param userDetails
      * @return 탈퇴성공했다는 메세지
      */
