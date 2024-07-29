@@ -36,6 +36,9 @@ public interface UserService {
     //회원탈퇴
     void withdrawn(String email);
 
+    //비밀번호 확인
+    void inValidPassword(String password);
+
     //유저id값으로 사용자 가져오기
     User findById(Long id);
 

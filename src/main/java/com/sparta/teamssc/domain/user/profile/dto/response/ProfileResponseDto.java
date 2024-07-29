@@ -1,4 +1,4 @@
-package com.sparta.teamssc.domain.user.profile.dto;
+package com.sparta.teamssc.domain.user.profile.dto.response;
 
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.team.entity.Team;
