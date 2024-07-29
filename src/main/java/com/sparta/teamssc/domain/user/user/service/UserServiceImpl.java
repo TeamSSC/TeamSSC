@@ -210,6 +210,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
     }
 
+    @Override
+    public List<User> findByStatus(UserStatus status) {
+        return userRepository.findByStatus(UserStatus.PENDING);
+    }
+
+
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
