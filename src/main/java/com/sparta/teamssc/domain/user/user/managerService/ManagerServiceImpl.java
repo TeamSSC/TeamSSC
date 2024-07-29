@@ -64,12 +64,4 @@ public class ManagerServiceImpl implements ManagerService{
 
         userRoleService.userRoleAdd(user,"manager");
     }
-
-    // userId 조회
-    @Override
-    public User getUserById(Long userId) {
-
-        return userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("회원가입 승인 대기 사용자를 찾을 수 없습니다."));
-    }
 }
