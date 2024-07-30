@@ -1,8 +1,9 @@
 package com.sparta.teamssc.domain.user.profile.service;
 
 import com.sparta.teamssc.domain.image.service.ImageService;
-import com.sparta.teamssc.domain.user.profile.dto.ProfileRequestDto;
-import com.sparta.teamssc.domain.user.profile.dto.ProfileResponseDto;
+import com.sparta.teamssc.domain.user.profile.dto.request.PasswordRequestDto;
+import com.sparta.teamssc.domain.user.profile.dto.request.ProfileRequestDto;
+import com.sparta.teamssc.domain.user.profile.dto.response.ProfileResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
 import com.sparta.teamssc.domain.user.user.service.UserService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +22,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final UserService userService;
     private final ImageService imageService;
-
+    private final PasswordEncoder passwordEncoder;
     /**
      * 프로필 생성
      *
@@ -28,19 +30,39 @@ public class ProfileServiceImpl implements ProfileService {
      * @param email
      */
     @Override
+    @Transactional
     public void updateProfile(ProfileRequestDto profileRequestDto, String email) {
 
         User existUser = userService.getUserByEmail(email);
 
         existUser.updateProfile(
-                existUser.getUsername(),
-                profileRequestDto.getPassword(),
                 profileRequestDto.getGitLink(),
                 profileRequestDto.getVlogLink(),
                 profileRequestDto.getIntro(),
                 profileRequestDto.getMbti()
         );
-        userService.updateUser(existUser);
+    }
+
+    @Override
+    public void confirmPassword(PasswordRequestDto passwordRequestDto, String email){
+
+        User existUser = userService.getUserByEmail(email);
+
+        if (!passwordEncoder.matches(passwordRequestDto.getPassword(), existUser.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updatePassword(PasswordRequestDto passwordRequestDto, String email){
+
+        userService.inValidPassword(passwordRequestDto.getPassword());
+
+        User existUser = userService.getUserByEmail(email);
+        String encodedPassword = passwordEncoder.encode(passwordRequestDto.getPassword());
+
+        existUser.updatePassword(encodedPassword);
     }
 
     @Override
@@ -51,8 +73,6 @@ public class ProfileServiceImpl implements ProfileService {
 
         String profileImage = imageService.updateProfileImage(file);
         existUser.updateProfileImage(profileImage);
-
-        userService.updateUser(existUser);
     }
 
     @Override

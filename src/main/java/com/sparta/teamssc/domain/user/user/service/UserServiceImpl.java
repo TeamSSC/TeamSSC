@@ -109,7 +109,6 @@ public class UserServiceImpl implements UserService {
         refreshTokenService.updateRefreshToken(user, refreshToken);
 
         user.login();
-        userRepository.save(user);
 
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
@@ -181,7 +180,8 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    private void inValidPassword(String password) {
+    @Override
+    public void inValidPassword(String password) {
 
         if (!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*])[a-zA-Z\\d!@#$%^&*]{10,}$")) {
             throw new IllegalArgumentException("비밀번호는 최소 10자 이상이어야 하며, 문자, 숫자, 특수문자를 포함해야 합니다.");

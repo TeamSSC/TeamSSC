@@ -96,10 +96,7 @@ public class User extends BaseEntity {
         this.status = UserStatus.LOGOUT;
     }
 
-    public void updateProfile(String username, String password, String gitLink, String vlogLink, String intro,
-                              UserMbti mbti) {
-        this.username = username;
-        this.password = password;
+    public void updateProfile(String gitLink, String vlogLink,String intro,UserMbti mbti) {
         this.gitLink = gitLink;
         this.vlogLink = vlogLink;
         this.intro = intro;
@@ -108,6 +105,10 @@ public class User extends BaseEntity {
 
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 
     public void withdrawn() {
