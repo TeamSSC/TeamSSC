@@ -2,8 +2,7 @@ package com.sparta.teamssc.domain.user.user.managerService;
 
 import com.sparta.teamssc.domain.user.user.dto.request.ApproveManagerRequestDto;
 import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface ManagerService {
 
@@ -11,7 +10,7 @@ public interface ManagerService {
 
     void signupRefusal(Long userId);
 
-    List<PendSignupResponseDto> getPendSignup();
+    Page<PendSignupResponseDto> getPendSignup(int page, String email);
 
     void approveManager(ApproveManagerRequestDto approveManagerRequestDto);
 }

@@ -1,5 +1,7 @@
 package com.sparta.teamssc.domain.user.user.managerService;
 
+import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
+import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.role.userRole.service.UserRoleService;
 import com.sparta.teamssc.domain.user.user.dto.request.ApproveManagerRequestDto;
 import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
@@ -8,6 +10,10 @@ import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,13 +53,15 @@ public class ManagerServiceImpl implements ManagerService{
 
     // 회원가입 승인 대기자 조회
     @Override
-    public List<PendSignupResponseDto> getPendSignup() {
+    public Page<PendSignupResponseDto> getPendSignup(int page, String email) {
 
-        List<User> pendSignupList = userService.findByStatus(UserStatus.PENDING);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createAt"));
 
-        return pendSignupList.stream()
-                .map(user -> new PendSignupResponseDto(user.getId(), user.getEmail(), user.getUsername(), user.getStatus()))
-                .collect(Collectors.toList());
+        Period period = userService.getUserByEmail(email).getPeriod();
+
+        Page<PendSignupResponseDto> pendPage = userService.findPagedPendList(pageable, period);
+
+        return pendPage;
     }
 
     //매니저 권한 부여

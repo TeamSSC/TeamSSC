@@ -4,19 +4,23 @@ import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class PendSignupResponseDto {
 
-    private final Long userId;
-    private final String email;
-    private final String username;
-    private final UserStatus status;
+    private Long userId;
+    private String email;
+    private String username;
+    private UserStatus status;
+    private LocalDateTime createAt;
 
     @Builder
-    public PendSignupResponseDto(Long userId, String email, String username, UserStatus status) {
+    public PendSignupResponseDto(Long userId, String email, String username, UserStatus status, LocalDateTime createAt) {
         this.userId = userId;
         this.email = email;
         this.username = username;
         this.status = status;
+        this.createAt = createAt;
     }
 }

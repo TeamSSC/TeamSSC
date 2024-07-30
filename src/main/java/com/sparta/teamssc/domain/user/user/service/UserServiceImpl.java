@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.user.user.service;
 
+import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
@@ -10,6 +11,7 @@ import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
 import com.sparta.teamssc.domain.user.refreshToken.service.RefreshTokenService;
 import com.sparta.teamssc.domain.user.role.userRole.entity.UserRole;
 import com.sparta.teamssc.domain.user.role.userRole.service.UserRoleService;
+import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
@@ -211,10 +213,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findByStatus(UserStatus status) {
-        return userRepository.findByStatus(UserStatus.PENDING);
+    public Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period) {
+        return userRepository.findPagedPendList(pageable, period);
     }
-
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
         return roles.stream()
