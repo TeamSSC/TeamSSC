@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
         inValidPassword(password);
         String encodedPassword = passwordEncoder.encode(password);
-        inValidEmail(email);
+//        inValidEmail(email);
 
         if (signupRequestDto.getAdminKey() != null && signupRequestDto.getPeriodId() == null) {
             if (signupRequestDto.getAdminKey().equals(adminKey)) {

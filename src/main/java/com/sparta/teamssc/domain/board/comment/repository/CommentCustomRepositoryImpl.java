@@ -32,7 +32,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                 ))
                 .from(qComment)
                 .orderBy(qComment.createAt.desc())
-                .where(qComment.parentCommentId.isNull())
+                .where(qComment.parentCommentId.isNull(), qComment.board.id.eq(boardId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -54,7 +54,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
                 ))
                 .from(qComment)
                 .orderBy(qComment.createAt.desc())
-                .where(qComment.parentCommentId.isNotNull())
+                .where(qComment.parentCommentId.eq(parentCommentId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

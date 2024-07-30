@@ -11,10 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -51,9 +53,10 @@ public class BoardController {
 
     // 게시글 전체 조회
     @GetMapping("/boards")
-    public ResponseEntity<ResponseDto<Page<BoardListResponseDto>>> getBoards(@RequestParam(value = "page", defaultValue = "1") int page) {
+    public ResponseEntity<ResponseDto<Page<BoardListResponseDto>>> getBoards(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                                             @AuthenticationPrincipal UserDetails userDetails) {
 
-        Page<BoardListResponseDto> responseDto = boardService.getBoards(page - 1);
+        Page<BoardListResponseDto> responseDto = boardService.getBoards(page - 1, userDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Page<BoardListResponseDto>>builder()
@@ -80,8 +83,10 @@ public class BoardController {
     @DeleteMapping("/boards/{boardId}")
     public ResponseEntity<ResponseDto<String>> deleteBoard(@PathVariable Long boardId,
                                                            @AuthenticationPrincipal UserDetails userDetails) {
+        List<SimpleGrantedAuthority> authorities = userDetails.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toList());
 
-        boardService.deleteBoard(boardId,userDetails.getUsername());
+        boardService.deleteBoard(boardId,userDetails.getUsername(), authorities);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()

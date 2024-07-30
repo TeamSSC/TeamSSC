@@ -9,12 +9,14 @@ import java.time.LocalDateTime;
 public class BoardListResponseDto {
     private Long boardId;
     private String title;
+    private String username;
     private LocalDateTime createAt;
 
     @Builder
-    public BoardListResponseDto (Long boardId, String title, LocalDateTime createAt) {
+    public BoardListResponseDto (Long boardId, String title, String username, LocalDateTime createAt) {
         this.boardId = boardId;
         this.title = title;
+        this.username = username;
         this.createAt = createAt;
     }
 }

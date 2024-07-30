@@ -29,26 +29,25 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 생성
     @Override
     public void createComment(Long boardId, CommentRequestDto commentRequestDto, String email) {
-        try {
-            Board board = boardService.findBoardByBoardId(boardId);
-            User user = userService.getUserByEmail(email);
 
-            Comment comment = Comment.builder()
-                    .content(commentRequestDto.getContent())
-                    .parentCommentId(commentRequestDto.getParentCommentId())
-                    .user(user)
-                    .board(board)
-                    .build();
+        Board board = boardService.findBoardByBoardId(boardId);
+        User user = userService.getUserByEmail(email);
 
-            commentRepository.save(comment);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("댓글 생성을 실패했습니다.");
-        }
+        Comment comment = Comment.builder()
+                .content(commentRequestDto.getContent())
+                .parentCommentId(commentRequestDto.getParentCommentId())
+                .user(user)
+                .board(board)
+                .build();
+
+        commentRepository.save(comment);
     }
 
     // 특정 게시글에 있는 댓글 조회
     @Override
     public Page<CommentResponseDto> getCommentFromBoard(Long boardId, int page) {
+
+        boardService.findBoardByBoardId(boardId);
 
         Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createAt"));
 
@@ -78,35 +77,28 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void updateComment(Long commentId, UpdateCommentRequestDto requestDto, String email) {
-        try {
-            Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                    new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
 
-            if(comment.getUser().getEmail().equals(email)) {
-                comment.update(requestDto.getContent());
-            } else {
-                throw new IllegalArgumentException("본인 댓글만 수정할 수 있습니다.");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("댓글 수정을 실패했습니다.");
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+
+        if (comment.getUser().getEmail().equals(email)) {
+            comment.update(requestDto.getContent());
+        } else {
+            throw new IllegalArgumentException("본인 댓글만 수정할 수 있습니다.");
         }
     }
 
     // 댓글 삭제
     @Override
     public void deleteComment(Long commentId, String email) {
-        try {
-            Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                    new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
 
-            if (comment.getUser().getEmail().equals(email)) {
-                commentRepository.delete(comment);
-            } else {
-                throw new IllegalArgumentException("본인 댓글만 삭제할 수 있습니다.");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("댓글 삭제를 실패했습니다.");
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+
+        if (comment.getUser().getEmail().equals(email)) {
+            commentRepository.delete(comment);
+        } else {
+            throw new IllegalArgumentException("본인 댓글만 삭제할 수 있습니다.");
         }
     }
-
 }
