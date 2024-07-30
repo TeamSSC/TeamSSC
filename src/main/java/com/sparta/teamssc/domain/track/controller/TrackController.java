@@ -26,7 +26,7 @@ public class TrackController {
      * 트랙 생성 기능 (관리자 권한 필요)
      *
      * @param : x
-     * @return : 생성된 트랙 정보 (트랙명)
+     * @return : 생성된 트랙 정보 (트랙 아이디, 트랙명)
      */
     @PostMapping
     public ResponseEntity<ResponseDto<TrackResponseDto>> createTrack(@RequestBody TrackRequestDto trackRequestDto) {
@@ -44,7 +44,7 @@ public class TrackController {
      * 트랙 수정 기능 (관리자 권한 필요)
      *
      * @param : 수정할 트랙 id
-     * @return : 수정된 트랙 정보 (트랙명)
+     * @return : 수정된 트랙 정보 (트랙 아이디, 트랙명)
      */
     @PutMapping("/{trackId}")
     public ResponseEntity<ResponseDto<TrackResponseDto>> updateTrack(@PathVariable Long trackId, @RequestBody TrackRequestDto trackRequestDto) {
@@ -61,15 +61,15 @@ public class TrackController {
     /**
      * 트랙 조회 기능
      *
-     * @param : trackId : 있으면 단건조회, 없으면 페이징 조회
-     * @return : 조회된 트랙 리스트 (트랙명)
+     * @param : trackId : 있으면 단건조회, 없으면 전체 조회
+     * @return : 조회된 트랙 리스트 (트랙 아이디, 트랙명)
      */
     @GetMapping
     public ResponseEntity<ResponseDto<?>> getTrack(@RequestParam(required = false) Long trackId) {
 
         if (trackId == null) {
 
-            // 페이징 조회
+            // 전체
             List<TrackResponseDto> trackResponseDtoList = trackService.getTracks();
 
             return ResponseEntity.status(HttpStatus.OK)
