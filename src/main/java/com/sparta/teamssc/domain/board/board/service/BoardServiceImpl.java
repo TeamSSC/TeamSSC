@@ -39,35 +39,33 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 생성
     @Override
     public void createBoard(BoardRequestDto requestDto, String email) {
-        try {
-            User user = userService.getUserByEmail(email);
 
-            Board board = Board.builder()
-                    .title(requestDto.getTitle())
-                    .content(requestDto.getContent())
-                    .boardType(BoardType.BOARD)
-                    .user(user)
-                    .period(user.getPeriod())
-                    .build();
+        User user = userService.getUserByEmail(email);
 
-            // 보드 저장
-            boardRepository.save(board);
+        Board board = Board.builder()
+                .title(requestDto.getTitle())
+                .content(requestDto.getContent())
+                .boardType(BoardType.BOARD)
+                .user(user)
+                .period(user.getPeriod())
+                .build();
 
-            // 이미지 저장 및 보드와의 연관 관계 설정
-            if (requestDto.getImages() != null) {
-                for (MultipartFile imageFile : requestDto.getImages()) {
-                    Image image = uploadImage(imageFile);
-                    boardImageService.boardImageSave(board, image);
-                }
+        // 보드 저장
+        boardRepository.save(board);
+
+        // 이미지 저장 및 보드와의 연관 관계 설정
+        if (requestDto.getImages() != null) {
+            for (MultipartFile imageFile : requestDto.getImages()) {
+                Image image = uploadImage(imageFile);
+                boardImageService.boardImageSave(board, image);
             }
-        } catch (RuntimeException e) {
-            throw new BoardCreationFailedException("보드 생성에 실패했습니다.");
         }
     }
 
     // 특정 게시글 조회
     @Override
     public BoardResponseDto getBoard(Long boardId) {
+
         Board board = findBoardByBoardId(boardId);
         List<String> imageUrls = board.getBoardImages().stream()
                 .map(boardImage -> boardImage.getImage().getFileLink())  // 이미지 URL을 추출
@@ -101,52 +99,44 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void updateBoard(Long boardId, BoardUpdateRequestDto requestDto, String email) {
-        try {
-            Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getEmail().equals(email)) {
 
-                // 삭제할 이미지가 있으면 삭제
-                if (requestDto.getDeleteImagesLink() != null) {
-                    for (String imageLink : requestDto.getDeleteImagesLink()) {
-                        deleteImage(imageLink);
-                    }
-                }
+        Board board = findBoardByBoardId(boardId);
+        if (!board.getUser().getEmail().equals(email)) {
+            throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
+        }
 
-                if (requestDto.getUploadImages() != null) {
-                    for (MultipartFile imageFile : requestDto.getUploadImages()) {
-                        Image image = uploadImage(imageFile);
-                        boardImageService.boardImageSave(board, image);
-                        board.update(requestDto.getTitle(), requestDto.getContent());
-                    }
-                } else {
-                    board.update(requestDto.getTitle(), requestDto.getContent());
-                }
-
-            } else {
-                throw new IllegalArgumentException("본인 게시글만 수정할 수 있습니다.");
+        // 삭제할 이미지가 있으면 삭제
+        if (requestDto.getDeleteImagesLink() != null) {
+            for (String imageLink : requestDto.getDeleteImagesLink()) {
+                deleteImage(imageLink);
             }
-        } catch (RuntimeException e) {
-            throw new IllegalArgumentException("게시글 수정에 실패하였습니다.");
+        }
+
+        if (requestDto.getUploadImages() != null) {
+            for (MultipartFile imageFile : requestDto.getUploadImages()) {
+                Image image = uploadImage(imageFile);
+                boardImageService.boardImageSave(board, image);
+                board.update(requestDto.getTitle(), requestDto.getContent());
+            }
+        } else {
+            board.update(requestDto.getTitle(), requestDto.getContent());
         }
     }
 
     // 게시글 삭제
     @Override
     public void deleteBoard(Long boardId, String email, List<SimpleGrantedAuthority> authorities) {
-        try {
-            Board board = findBoardByBoardId(boardId);
-            if (board.getUser().getEmail().equals(email) ||
-                    authorities.contains(new SimpleGrantedAuthority("MANAGER")) ||
-                    authorities.contains(new SimpleGrantedAuthority("ADMIN"))) {
-                for (String fileLink : boardImageService.findFileUrlByBoardId(boardId)) {
-                    deleteImage(fileLink);
-                }
-                boardRepository.delete(board);
-            } else {
-                throw new IllegalArgumentException("본인 게시글 또는 관리자만 삭제할 수 있습니다");
+
+        Board board = findBoardByBoardId(boardId);
+        if (board.getUser().getEmail().equals(email) ||
+                authorities.contains(new SimpleGrantedAuthority("MANAGER")) ||
+                authorities.contains(new SimpleGrantedAuthority("ADMIN"))) {
+            for (String fileLink : boardImageService.findFileUrlByBoardId(boardId)) {
+                deleteImage(fileLink);
             }
-        } catch (RuntimeException e) {
-            throw new IllegalArgumentException("게시글 삭제에 실패했습니다.");
+            boardRepository.delete(board);
+        } else {
+            throw new IllegalArgumentException("본인 게시글 또는 관리자만 삭제할 수 있습니다");
         }
     }
 
@@ -178,29 +168,26 @@ public class BoardServiceImpl implements BoardService {
     // 공지사항 작성
     @Override
     public void createNotice(BoardRequestDto requestDto, String email) {
-        try {
-            User user = userService.getUserByEmail(email);
 
-            Board board = Board.builder()
-                    .title(requestDto.getTitle())
-                    .content(requestDto.getContent())
-                    .boardType(BoardType.NOTICE)
-                    .user(user)
-                    .period(user.getPeriod())
-                    .build();
+        User user = userService.getUserByEmail(email);
 
-            // 보드 저장
-            boardRepository.save(board);
+        Board board = Board.builder()
+                .title(requestDto.getTitle())
+                .content(requestDto.getContent())
+                .boardType(BoardType.NOTICE)
+                .user(user)
+                .period(user.getPeriod())
+                .build();
 
-            // 이미지 저장 및 보드와의 연관 관계 설정
-            if (requestDto.getImages() != null) {
-                for (MultipartFile imageFile : requestDto.getImages()) {
-                    Image image = uploadImage(imageFile);
-                    boardImageService.boardImageSave(board, image);
-                }
+        // 보드 저장
+        boardRepository.save(board);
+
+        // 이미지 저장 및 보드와의 연관 관계 설정
+        if (requestDto.getImages() != null) {
+            for (MultipartFile imageFile : requestDto.getImages()) {
+                Image image = uploadImage(imageFile);
+                boardImageService.boardImageSave(board, image);
             }
-        } catch (RuntimeException e) {
-            throw new BoardCreationFailedException("보드 생성에 실패했습니다.");
         }
     }
 

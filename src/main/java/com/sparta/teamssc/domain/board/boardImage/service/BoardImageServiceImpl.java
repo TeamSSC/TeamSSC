@@ -1,7 +1,6 @@
 package com.sparta.teamssc.domain.board.boardImage.service;
 
 import com.sparta.teamssc.domain.board.board.entity.Board;
-import com.sparta.teamssc.domain.board.board.service.BoardService;
 import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import com.sparta.teamssc.domain.board.boardImage.repository.BoardImageRepository;
 import com.sparta.teamssc.domain.image.entity.Image;
@@ -32,6 +31,7 @@ public class BoardImageServiceImpl implements BoardImageService {
 
     @Override
     public List<String> findFileUrlByBoardId(Long boardId) {
+
         List<BoardImage> boardImageList = boardImageRepository.findByBoardId(boardId);
         List<String> fileUrlList = new ArrayList<>();
         for (BoardImage boardImage : boardImageList) {
