@@ -54,6 +54,7 @@ public class PeriodServiceImpl implements PeriodService {
                         .id(period.getId())
                         .period(period.getPeriod())
                         .status(period.getStatus())
+                        .trackName(period.getTrack().getName())
                         .build())
                 .toList();
 
