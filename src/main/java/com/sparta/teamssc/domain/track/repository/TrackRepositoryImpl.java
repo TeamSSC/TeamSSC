@@ -16,20 +16,18 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<TrackResponseDto> findName(long offset, int pageSize) {
+    public List<TrackResponseDto> findName() {
 
         QTrack track = QTrack.track;
 
         List<Track> trackList = jpaQueryFactory.select(track)
                 .from(track)
-                .offset(offset)
-                .limit(pageSize)
                 .where(track.deleted.eq(false))
                 .orderBy(track.name.asc())
                 .fetch();
 
         List<TrackResponseDto> trackResponseDtoList = trackList.stream()
-                .map(searchTrack -> TrackResponseDto.builder().name(searchTrack.getName()).build())
+                .map(searchTrack -> TrackResponseDto.builder().id(searchTrack.getId()).name(searchTrack.getName()).build())
                 .collect(Collectors.toList());
 
         return trackResponseDtoList;

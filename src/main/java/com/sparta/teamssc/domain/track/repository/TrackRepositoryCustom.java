@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface TrackRepositoryCustom {
-    List<TrackResponseDto> findName(long offset, int pageSize);
+    List<TrackResponseDto> findName();
 }
