@@ -10,6 +10,8 @@ import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
@@ -20,30 +22,24 @@ public class LikeServiceImpl implements LikeService {
 
     // 게시물 좋아요
     @Override
-    public void likeBoard(Long boardId, String email) {
+    public void toggleLikeBoard(Long boardId, String email) {
 
         Board board = boardService.findBoardByBoardId(boardId);
         User user = userService.getUserByEmail(email);
 
-        if (likeRepository.findByBoardIdAndUserId(boardId, user.getId()).isPresent()) {
-            throw new IllegalArgumentException("중복 좋아요는 할 수 없습니다.");
+        // 해당 게시물에 대한 사용자의 좋아요 여부를 확인
+        Optional<Like> existingLike = likeRepository.findByBoardIdAndUserId(boardId, user.getId());
+
+        if (existingLike.isPresent()) {
+            // 좋아요가 이미 존재하면 삭제
+            likeRepository.delete(existingLike.get());
         } else {
+            // 좋아요가 존재하지 않으면 새로 추가
             likeRepository.save(Like.builder()
                     .board(board)
                     .user(user)
                     .build());
         }
-    }
-
-    // 게시물 좋아요 취소
-    @Override
-    public void unlikeBoard(Long boardId, String email) {
-
-        User user = userService.getUserByEmail(email);
-        Like like = likeRepository.findByBoardIdAndUserId(boardId, user.getId()).orElseThrow(() ->
-                new IllegalArgumentException("좋아요한 게시글의 좋아요만 취소할 수 있습니다."));
-
-        likeRepository.delete(like);
     }
 
     // 특정 게시글의 좋아요 수
