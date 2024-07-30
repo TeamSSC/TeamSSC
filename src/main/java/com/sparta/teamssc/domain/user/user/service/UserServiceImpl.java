@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
         inValidPassword(password);
         String encodedPassword = passwordEncoder.encode(password);
-//        inValidEmail(email);
+        inValidEmail(email);
 
         if (signupRequestDto.getAdminKey() != null && signupRequestDto.getPeriodId() == null) {
             if (signupRequestDto.getAdminKey().equals(adminKey)) {
@@ -116,6 +116,7 @@ public class UserServiceImpl implements UserService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .username(user.getUsername())
+                .periodId(user.getPeriod().getId())
                 .build();
     }
 
