@@ -12,7 +12,7 @@ public interface TrackService {
 
     TrackResponseDto updateTrack(Long trackId, TrackRequestDto trackRequestDto);
 
-    List<TrackResponseDto> getTracks(int page, int size);
+    List<TrackResponseDto> getTracks();
 
     TrackResponseDto getTrack(Long trackId);
 

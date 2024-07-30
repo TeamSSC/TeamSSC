@@ -7,6 +7,7 @@ import com.sparta.teamssc.domain.track.repository.TrackRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import com.sparta.teamssc.domain.user.user.service.UserServiceImpl;
+import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class TrackServiceImpl implements TrackService {
         trackRepository.save(track);
 
         return TrackResponseDto.builder()
+                .id(track.getId())
                 .name(track.getName())
                 .build();
 
@@ -48,9 +50,14 @@ public class TrackServiceImpl implements TrackService {
             throw new IllegalArgumentException("트랙명을 같은 이름으로 변경할 수 없습니다.");
         }
 
+        if (trackRepository.findByName(trackRequestDto.getName()).isPresent()) {
+            throw new DuplicateRequestException("중복된 트랙명이 존재합니다.");
+        }
+
         Track updatedTrack = track.setTrackName(trackRequestDto.getName());
 
         return TrackResponseDto.builder()
+                .id(track.getId())
                 .name(updatedTrack.getName())
                 .build();
     }
@@ -62,15 +69,14 @@ public class TrackServiceImpl implements TrackService {
         );
 
         return TrackResponseDto.builder()
+                .id(track.getId())
                 .name(track.getName())
                 .build();
     }
 
-    public List<TrackResponseDto> getTracks(int page, int size) {
+    public List<TrackResponseDto> getTracks() {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        return trackRepository.findName(pageRequest.getOffset(), pageRequest.getPageSize());
+        return trackRepository.findName();
     }
 
     @Transactional

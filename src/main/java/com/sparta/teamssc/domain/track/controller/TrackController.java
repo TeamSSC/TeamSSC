@@ -65,14 +65,12 @@ public class TrackController {
      * @return : 조회된 트랙 리스트 (트랙명)
      */
     @GetMapping
-    public ResponseEntity<ResponseDto<?>> getTrack(@RequestParam(required = false) Long trackId,
-                                                   @RequestParam(defaultValue = "1") int page,
-                                                   @RequestParam(defaultValue = "5") int size) {
+    public ResponseEntity<ResponseDto<?>> getTrack(@RequestParam(required = false) Long trackId) {
 
         if (trackId == null) {
 
             // 페이징 조회
-            List<TrackResponseDto> trackResponseDtoList = trackService.getTracks(page - 1, size);
+            List<TrackResponseDto> trackResponseDtoList = trackService.getTracks();
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseDto.<List<TrackResponseDto>>builder()
