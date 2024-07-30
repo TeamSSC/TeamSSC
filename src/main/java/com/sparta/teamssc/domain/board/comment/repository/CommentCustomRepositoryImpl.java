@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.board.comment.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.teamssc.domain.board.comment.dto.response.CommentResponseDto;
 import com.sparta.teamssc.domain.board.comment.dto.response.ReplyResponseDto;
@@ -22,13 +23,21 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
     @Override
     public Page<CommentResponseDto> findPagedParentCommentList(Long boardId, Pageable pageable) {
         QComment qComment = QComment.comment;
+        QComment qReply = new QComment("reply");
+
+        // 대댓글 수를 세는 서브쿼리
+        JPQLQuery<Long> replyCountSubQuery = jpaQueryFactory
+                .select(qReply.count())
+                .from(qReply)
+                .where(qReply.parentCommentId.eq(qComment.id));
 
         List<CommentResponseDto> parentCommentList =jpaQueryFactory
                 .select(Projections.constructor(CommentResponseDto.class,
                         qComment.id,
                         qComment.content,
                         qComment.createAt,
-                        qComment.user.username
+                        qComment.user.username,
+                        replyCountSubQuery.gt(0L)  // 대댓글이 1개 이상이면 true
                 ))
                 .from(qComment)
                 .orderBy(qComment.createAt.desc())
