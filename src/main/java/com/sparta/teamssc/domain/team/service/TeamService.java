@@ -19,4 +19,6 @@ public interface TeamService {
     TeamMemberResponseDto getMyTeamMembers(Long teamId, Long userId); //내가 속한 팀의 팀원들
 
     SimpleTeamResponseDto getTeamUsers(Long teamId);
+
+    boolean isSameTeam(Long id, Long teamId);
 }

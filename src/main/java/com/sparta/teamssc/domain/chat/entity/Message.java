@@ -1,25 +1,33 @@
 package com.sparta.teamssc.domain.chat.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.sparta.teamssc.domain.user.user.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Message extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String sender;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageReceiver> receivers;
+
+    @Column(nullable = false)
     private String content;
 
-    public void updateSender(String sender) {
-        this.sender = sender;
-    }
+    @Column(nullable = false)
+    private LocalDateTime sentTime;
 }
