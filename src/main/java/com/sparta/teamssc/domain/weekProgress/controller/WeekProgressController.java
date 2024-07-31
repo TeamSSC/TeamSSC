@@ -1,6 +1,8 @@
 package com.sparta.teamssc.domain.weekProgress.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
+import com.sparta.teamssc.domain.user.user.entity.User;
+import com.sparta.teamssc.domain.user.user.service.UserService;
 import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressRequestDto;
 import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressResponseDto;
 import com.sparta.teamssc.domain.weekProgress.dto.WeekProgressUpdateRequestDto;
@@ -13,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.List;
 public class WeekProgressController {
 
     private final WeekProgressService weekProgressService;
+    private final UserService userService;
 
     // 주차 생성
     @PreAuthorize("hasRole('ROLE_MANAGER')")
@@ -81,9 +86,10 @@ public class WeekProgressController {
 
     // 기간 ID로 전체 주차 보기
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/period/{periodId}")
-    public ResponseEntity<ResponseDto<List<WeekProgressbyPeriodResponseDto>>> getWeekProgressByPeriodId(@PathVariable Long periodId) {
-        List<WeekProgressbyPeriodResponseDto> weekProgressList = weekProgressService.getWeekProgressByPeriodId(periodId);
+    @GetMapping("/myweekProgress")
+    public ResponseEntity<ResponseDto<List<WeekProgressbyPeriodResponseDto>>> getMyWeekProgress(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserByEmail(userDetails.getUsername());
+        List<WeekProgressbyPeriodResponseDto> weekProgressList = weekProgressService.getWeekProgressByPeriodId(user.getPeriod().getId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<List<WeekProgressbyPeriodResponseDto>>builder()
                         .message("기간 ID로 전체 주차 조회에 성공했습니다.")
