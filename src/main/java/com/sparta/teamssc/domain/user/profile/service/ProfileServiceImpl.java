@@ -93,11 +93,10 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Page<ProfileCardMapper> getAllProfiles(int page) {
+    public Page<ProfileCardMapper> findMemberCards(int page,String email) {
+
             Pageable pageable = PageRequest.of(page - 1, 10);
 
-            Page<ProfileCardMapper> profileCards = userService.findAllUsers(pageable);
-
-            return profileCards;
+        return userService.findMemberCards(pageable,email);
     }
 }
