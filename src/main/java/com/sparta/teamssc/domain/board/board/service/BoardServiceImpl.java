@@ -73,6 +73,8 @@ public class BoardServiceImpl implements BoardService {
 
         return BoardResponseDto.builder()
                 .title(board.getTitle())
+                .username(board.getUser().getUsername())
+                .createAt(board.getCreateAt())
                 .content(board.getContent())
                 .fileLinks(imageUrls)
                 .build();
@@ -88,7 +90,7 @@ public class BoardServiceImpl implements BoardService {
 
         Page<BoardListResponseDto> boardPage = boardRepository.findPagedBoardList(pageable, period);
 
-        if (boardPage.isEmpty()) {
+        if (boardPage.isEmpty() && page != 0) {
             throw new IllegalArgumentException("작성된 게시글이 없거니, " + (page + 1) + " 페이지에 글이 없습니다.");
         }
 
