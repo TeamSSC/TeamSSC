@@ -239,7 +239,7 @@ public class TeamServiceImpl implements TeamService {
         return TeamMemberResponseDto.builder()
                 .currentWeekProgress(team.getWeekProgress().getName())
                 .teamName(team.getTeamName())
-                .userEmails(members.stream().map(User::getEmail).collect(Collectors.toList()))
+                .userIds(members.stream().map(User::getId).collect(Collectors.toList()))
                 .userNames(members.stream().map(User::getUsername).collect(Collectors.toList()))
                 .build();
     }
