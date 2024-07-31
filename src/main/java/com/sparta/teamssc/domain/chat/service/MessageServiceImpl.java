@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +27,11 @@ public class MessageServiceImpl implements MessageService {
     @Transactional
     @Override
     public MessageResponseDto sendMessageToTeam(Long teamId, MessageRequestDto messageRequestDto) {
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         String currentUsername = userDetails.getUsername();
+
         User sender = userService.getUserByEmail(currentUsername);
 
         if (!teamService.isSameTeam(sender.getId(), teamId)) {
