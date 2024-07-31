@@ -32,9 +32,11 @@ public class WeekProgressController {
     // 주차 생성
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping
-    public ResponseEntity<ResponseDto<WeekProgressResponseDto>> createWeekProgress(@RequestBody WeekProgressRequestDto requestDto) {
+    public ResponseEntity<ResponseDto<WeekProgressResponseDto>> createWeekProgress(@AuthenticationPrincipal UserDetails userDetails,@RequestBody WeekProgressRequestDto requestDto) {
 
-        WeekProgress weekProgress = weekProgressService.createWeekProgress(requestDto.getName(), requestDto.getPeriodId());
+        User user = userService.getUserByEmail(userDetails.getUsername());
+
+        WeekProgress weekProgress = weekProgressService.createWeekProgress(requestDto.getName(), user.getPeriod().getId());
         WeekProgressResponseDto responseDto = WeekProgressResponseDto.builder()
                 .id(weekProgress.getId())
                 .periodId(weekProgress.getPeriod().getId())
