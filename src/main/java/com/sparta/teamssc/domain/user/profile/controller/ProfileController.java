@@ -81,12 +81,13 @@ public class ProfileController {
     }
 
     @GetMapping("/users/profiles")
-    public ResponseEntity<ResponseDto<Page<ProfileCardMapper>>> getAllProfiles(@RequestParam int page) {
+    public ResponseEntity<ResponseDto<Page<ProfileCardMapper>>> getAllProfiles(@RequestParam int page,
+                                                                               @AuthenticationPrincipal UserDetails userDetails) {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Page<ProfileCardMapper>>builder()
                         .message("프로필카드 목록 조회에 성공했습니다.")
-                        .data(profileService.getAllProfiles(page))
+                        .data(profileService.findMemberCards(page,userDetails.getUsername()))
                         .build());
     }
 }
