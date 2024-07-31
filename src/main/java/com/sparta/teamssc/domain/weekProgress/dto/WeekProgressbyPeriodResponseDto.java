@@ -6,9 +6,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class WeekProgressResponseDto {
+public class WeekProgressbyPeriodResponseDto {
     private Long id;
-    private Long periodId;
     private String name;
     private ProgressStatus status;
 }
