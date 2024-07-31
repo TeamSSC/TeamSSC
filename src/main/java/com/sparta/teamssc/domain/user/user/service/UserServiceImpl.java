@@ -126,6 +126,8 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .username(user.getUsername())
                 .periodId(user.getPeriod().getId())
+                .period(user.getPeriod().getPeriod())
+                .trackName(user.getPeriod().getTrack().getName())
                 .build();
     }
 
@@ -178,8 +180,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<ProfileCardMapper> findAllUsers(Pageable pageable) {
-        return userRepository.findAllByOrderByCreateAtDesc(pageable);
+    public Page<ProfileCardMapper> findMemberCards(Pageable pageable,String email) {
+
+        User user = getUserByEmail(email);
+        Period period = user.getPeriod();
+
+        return userRepository.findMemberCards(period,pageable);
     }
 
     @Override

@@ -25,5 +25,5 @@ public interface ProfileService {
     ProfileResponseDto searchProfile(Long email);
 
     //멤버카드들 조회
-    Page<ProfileCardMapper> getAllProfiles(int page);
+    Page<ProfileCardMapper> findMemberCards(int page,String email);
 }
