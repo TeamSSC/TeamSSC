@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface TrackRepository extends JpaRepository<Track, Long>, TrackRepositoryCustom {
     Optional<Track> findByIdAndDeletedIsFalse(Long id);
+
+    Optional<Track> findByName(String name);
 }
