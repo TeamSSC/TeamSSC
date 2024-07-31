@@ -3,10 +3,8 @@ package com.sparta.teamssc.domain.team.service;
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
-import com.sparta.teamssc.domain.team.dto.response.SimpleTeamNameResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamMemberResponseDto;
+import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
+import com.sparta.teamssc.domain.team.dto.response.*;
 import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
@@ -19,6 +17,8 @@ import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.userTeamMatches.service.UserTeamMatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -242,5 +242,48 @@ public class TeamServiceImpl implements TeamService {
                 .userIds(members.stream().map(User::getId).collect(Collectors.toList()))
                 .userNames(members.stream().map(User::getUsername).collect(Collectors.toList()))
                 .build();
+    }
+    @Transactional
+    @Override
+    public TeamUpdateResponseDto updateTeamInfo(Long weekProgressId, Long teamId, TeamUpdateRequestDto teamUpdateRequestDto) {
+        try {
+            // 현재 사용자 가져오기
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String currentUsername = userDetails.getUsername();
+            User currentUser = userService.getUserByEmail(currentUsername);
+
+            Team team = getTeamById(teamId);
+
+            // 현재 사용자가 팀원인지 확인
+            boolean isTeamMember = team.getUserTeamMatches().stream()
+                    .anyMatch(match -> match.getUser().getId().equals(currentUser.getId()));
+
+            if (!isTeamMember) {
+                throw new TeamCreationFailedException("팀원이 아닙니다.");
+            }
+
+            // 리더가 팀원인지 확인
+            User leader = userService.findById(teamUpdateRequestDto.getLeaderId());
+            boolean isLeaderTeamMember = team.getUserTeamMatches().stream()
+                    .anyMatch(match -> match.getUser().getId().equals(leader.getId()));
+
+            if (!isLeaderTeamMember) {
+                throw new TeamCreationFailedException("팀원이 아닙니다.");
+            }
+
+            team.updateTeamName(teamUpdateRequestDto.getName());
+            team.updateLeaderId(teamUpdateRequestDto.getLeaderId());
+            teamRepository.save(team);
+
+            return TeamUpdateResponseDto.builder()
+                    .id(team.getId())
+                    .name(team.getTeamName())
+                    .leaderId(team.getLeaderId())
+                    .build();
+        } catch (TeamNotFoundException e) {
+            throw new TeamNotFoundException("팀을 찾을 수 없습니다.");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("팀 정보 수정에 실패했습니다.");
+        }
     }
 }

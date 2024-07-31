@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.weekProgress.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
+import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.team.entity.Team;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -27,12 +28,17 @@ public class WeekProgress extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProgressStatus status;
 
+    @ManyToOne
+    @JoinColumn(name = "period_id", nullable = false)
+    private Period period;
+
     // 첫 생성은 진행 혜정 상태의 프로그래스
     @Builder
-    public WeekProgress(String name, ProgressStatus status) {
+    public WeekProgress(String name, ProgressStatus status, Period period) { // period 추가
         this.name = name;
         this.status = status;
         this.deleted = false;
+        this.period = period;
     }
 
     // 예정인 주차는 hardDelete가 되고, 진행중인 주차는 softDelete를 할것입니다.

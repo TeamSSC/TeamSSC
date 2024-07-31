@@ -2,8 +2,10 @@ package com.sparta.teamssc.domain.team.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
+import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
+import com.sparta.teamssc.domain.team.dto.response.TeamUpdateResponseDto;
 import com.sparta.teamssc.domain.team.service.TeamService;
 import com.sparta.teamssc.domain.weekProgress.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +59,7 @@ public class TeamController {
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @DeleteMapping("/{teamId}")
     public ResponseEntity<ResponseDto<Void>> deleteTeam(@PathVariable Long weekProgressId, @PathVariable Long teamId) {
-        teamService.deleteTeam(weekProgressId,teamId);
+        teamService.deleteTeam(weekProgressId, teamId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<Void>builder()
                         .message("팀 삭제에 성공했습니다.")
@@ -89,6 +91,20 @@ public class TeamController {
                 .body(ResponseDto.<List<SimpleTeamResponseDto>>builder()
                         .message("팀 편성표 조회 성공했습니다.")
                         .data(teams)
+                        .build());
+    }
+
+    // 팀 정보 수정하기 - Leader, 팀명
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/{teamId}/teamInfo")
+    public ResponseEntity<ResponseDto<TeamUpdateResponseDto>> updateTeamInfo(@PathVariable Long weekProgressId,
+                                                                             @PathVariable Long teamId,
+                                                                             @RequestBody TeamUpdateRequestDto teamUpdateRequestDto) {
+        TeamUpdateResponseDto teamResponseDto = teamService.updateTeamInfo(weekProgressId, teamId, teamUpdateRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<TeamUpdateResponseDto>builder()
+                        .message("팀 정보 수정에 성공했습니다.")
+                        .data(teamResponseDto)
                         .build());
     }
 }
