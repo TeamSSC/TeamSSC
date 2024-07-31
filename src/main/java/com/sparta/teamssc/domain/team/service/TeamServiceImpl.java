@@ -17,6 +17,8 @@ import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
 import com.sparta.teamssc.domain.userTeamMatches.service.UserTeamMatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -243,11 +245,32 @@ public class TeamServiceImpl implements TeamService {
     }
     @Transactional
     @Override
-    public TeamUpdateResponseDto updateTeamInfo(Long weekProgressId,
-                                                Long teamId,
-                                                TeamUpdateRequestDto teamUpdateRequestDto) {
+    public TeamUpdateResponseDto updateTeamInfo(Long weekProgressId, Long teamId, TeamUpdateRequestDto teamUpdateRequestDto) {
         try {
+            // 현재 사용자 가져오기
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String currentUsername = userDetails.getUsername();
+            User currentUser = userService.getUserByEmail(currentUsername);
+
             Team team = getTeamById(teamId);
+
+            // 현재 사용자가 팀원인지 확인
+            boolean isTeamMember = team.getUserTeamMatches().stream()
+                    .anyMatch(match -> match.getUser().getId().equals(currentUser.getId()));
+
+            if (!isTeamMember) {
+                throw new TeamCreationFailedException("팀원이 아닙니다.");
+            }
+
+            // 리더가 팀원인지 확인
+            User leader = userService.findById(teamUpdateRequestDto.getLeaderId());
+            boolean isLeaderTeamMember = team.getUserTeamMatches().stream()
+                    .anyMatch(match -> match.getUser().getId().equals(leader.getId()));
+
+            if (!isLeaderTeamMember) {
+                throw new TeamCreationFailedException("팀원이 아닙니다.");
+            }
+
             team.updateTeamName(teamUpdateRequestDto.getName());
             team.updateLeaderId(teamUpdateRequestDto.getLeaderId());
             teamRepository.save(team);
@@ -257,8 +280,10 @@ public class TeamServiceImpl implements TeamService {
                     .name(team.getTeamName())
                     .leaderId(team.getLeaderId())
                     .build();
-        } catch (Exception e) {
-            throw new TeamCreationFailedException("팀 정보 수정에 실패했습니다.");
+        } catch (TeamNotFoundException e) {
+            throw new TeamNotFoundException("팀을 찾을 수 없습니다.");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("팀 정보 수정에 실패했습니다.");
         }
     }
 }

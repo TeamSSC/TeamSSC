@@ -233,6 +233,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findPagedPendList(pageable, period);
     }
 
+
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
