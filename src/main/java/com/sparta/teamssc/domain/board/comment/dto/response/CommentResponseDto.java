@@ -12,11 +12,13 @@ public class CommentResponseDto {
     private String content;
     private LocalDateTime createAt;
     private String username;
+    private boolean isReply;
 
-    public CommentResponseDto(Long commentId, String content, LocalDateTime createAt, String username) {
+    public CommentResponseDto(Long commentId, String content, LocalDateTime createAt, String username, boolean isReply) {
         this.commentId = commentId;
         this.content = content;
         this.createAt = createAt;
         this.username = username;
+        this.isReply = isReply;
     }
 }

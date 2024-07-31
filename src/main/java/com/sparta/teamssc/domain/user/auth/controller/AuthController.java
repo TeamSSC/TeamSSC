@@ -5,6 +5,7 @@ import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/users/signup")
-    public ResponseEntity<ResponseDto<String>> signup(@RequestBody SignupRequestDto signupRequestDto) {
+    public ResponseEntity<ResponseDto<String>> signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
 
         userService.signup(signupRequestDto);
 

@@ -22,22 +22,10 @@ public class LikeController {
     public ResponseEntity<ResponseDto<String>> likeBoard(@PathVariable Long boardId,
                                                          @AuthenticationPrincipal UserDetails userDetails) {
 
-        likeService.likeBoard(boardId,userDetails.getUsername());
+        likeService.toggleLikeBoard(boardId,userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
-                        .message("게시물에 좋아요 성공했습니다")
-                        .build());
-    }
-
-    // 게시글 좋아요 취소
-    @DeleteMapping("/boards/{boardId}/like")
-    public ResponseEntity<ResponseDto<String>> unlikeBoard(@PathVariable Long boardId,
-                                                           @AuthenticationPrincipal UserDetails userDetails) {
-
-        likeService.unlikeBoard(boardId,userDetails.getUsername());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.<String>builder()
-                        .message("게시물에 좋아요를 취소했습니다")
+                        .message("게시물에 좋아요 상태 변경을 성공했습니다")
                         .build());
     }
 

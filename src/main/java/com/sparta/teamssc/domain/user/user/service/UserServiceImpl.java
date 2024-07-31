@@ -105,12 +105,21 @@ public class UserServiceImpl implements UserService {
                 .map(userRole -> userRole.getRole().getName())
                 .collect(Collectors.toList());
 
+
         String accessToken = JwtUtil.createAccessToken(user.getEmail(), roles);
         String refreshToken = JwtUtil.createRefreshToken(user.getEmail(), roles);
 
         refreshTokenService.updateRefreshToken(user, refreshToken);
 
         user.login();
+
+        if(user.getPeriod() == null){
+            return LoginResponseDto.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .username(user.getUsername())
+                    .build();
+        }
 
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
