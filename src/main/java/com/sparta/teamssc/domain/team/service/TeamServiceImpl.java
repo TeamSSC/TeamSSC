@@ -3,8 +3,10 @@ package com.sparta.teamssc.domain.team.service;
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
+import com.sparta.teamssc.domain.team.dto.response.SimpleTeamNameResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
+import com.sparta.teamssc.domain.team.dto.response.TeamMemberResponseDto;
 import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
@@ -211,6 +213,34 @@ public class TeamServiceImpl implements TeamService {
                 .leaderId(team.getLeaderId())
                 .weekProgress(team.getWeekProgress().getName())
                 .userEmails(users.stream().map(User::getEmail).collect(Collectors.toList()))
+                .build();
+    }
+    @Transactional(readOnly = true)
+    @Override
+    public List<SimpleTeamNameResponseDto> getMyTeams(Long userId) {
+        List<Team> teams = teamRepository.findTeamsByUserId(userId);
+        return teams.stream()
+                .map(team -> SimpleTeamNameResponseDto.builder()
+                        .id(team.getId())
+                        .teamName(team.getTeamName())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public TeamMemberResponseDto getMyTeamMembers(Long teamId, Long userId) {
+        Team team = teamRepository.findByIdAndNotDeleted(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("팀을 찾을 수 없습니다."));
+
+        List<User> members = team.getUserTeamMatches().stream()
+                .map(UserTeamMatch::getUser)
+                .collect(Collectors.toList());
+
+        return TeamMemberResponseDto.builder()
+                .currentWeekProgress(team.getWeekProgress().getName())
+                .teamName(team.getTeamName())
+                .userEmails(members.stream().map(User::getEmail).collect(Collectors.toList()))
+                .userNames(members.stream().map(User::getUsername).collect(Collectors.toList()))
                 .build();
     }
 }
