@@ -5,12 +5,14 @@ import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
 import com.sparta.teamssc.domain.weekProgress.exception.InvalidWeekProgressException;
+import jakarta.xml.bind.ValidationException;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.rmi.AlreadyBoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -64,4 +66,21 @@ public class GlobalExceptionHandler {
                 .data(null)
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }}
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseDto<Object>> handleUserBadRequestException(MethodArgumentNotValidException ex) {
+        StringBuilder errorMessage = new StringBuilder();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String message = ((FieldError) error).getDefaultMessage();
+            errorMessage.append(message);
+        });
+
+        ResponseDto<Object> errorResponse = ResponseDto.<Object>builder()
+                .message(errorMessage.toString())
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+}
