@@ -3,10 +3,8 @@ package com.sparta.teamssc.domain.team.service;
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
-import com.sparta.teamssc.domain.team.dto.response.SimpleTeamNameResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamMemberResponseDto;
+import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
+import com.sparta.teamssc.domain.team.dto.response.*;
 import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
@@ -242,5 +240,25 @@ public class TeamServiceImpl implements TeamService {
                 .userEmails(members.stream().map(User::getEmail).collect(Collectors.toList()))
                 .userNames(members.stream().map(User::getUsername).collect(Collectors.toList()))
                 .build();
+    }
+    @Transactional
+    @Override
+    public TeamUpdateResponseDto updateTeamInfo(Long weekProgressId,
+                                                Long teamId,
+                                                TeamUpdateRequestDto teamUpdateRequestDto) {
+        try {
+            Team team = getTeamById(teamId);
+            team.updateTeamName(teamUpdateRequestDto.getName());
+            team.updateLeaderId(teamUpdateRequestDto.getLeaderId());
+            teamRepository.save(team);
+
+            return TeamUpdateResponseDto.builder()
+                    .id(team.getId())
+                    .name(team.getTeamName())
+                    .leaderId(team.getLeaderId())
+                    .build();
+        } catch (Exception e) {
+            throw new TeamCreationFailedException("팀 정보 수정에 실패했습니다.");
+        }
     }
 }

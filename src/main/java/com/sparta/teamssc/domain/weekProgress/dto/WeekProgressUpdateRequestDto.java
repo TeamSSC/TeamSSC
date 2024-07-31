@@ -5,6 +5,5 @@ import lombok.Getter;
 
 @Getter
 public class WeekProgressUpdateRequestDto {
-    private String name;
     private ProgressStatus status;
 }
