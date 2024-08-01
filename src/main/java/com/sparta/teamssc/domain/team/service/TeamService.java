@@ -20,5 +20,5 @@ public interface TeamService {
 
     SimpleTeamResponseDto getTeamUsers(Long teamId);
 
-    boolean isSameTeam(Long id, Long teamId);
+    boolean isUserInTeam(Long userId, Long teamId);
 }

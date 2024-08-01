@@ -153,20 +153,6 @@ public class TeamServiceImpl implements TeamService {
                 .build();
     }
 
-    @Override
-    public boolean isSameTeam(Long userId1, Long userId2) {
-        List<Team> teamsUser1 = teamRepository.findTeamsByUserId(userId1);
-        List<Team> teamsUser2 = teamRepository.findTeamsByUserId(userId2);
-
-        for (Team team1 : teamsUser1) {
-            for (Team team2 : teamsUser2) {
-                if (team1.getId().equals(team2.getId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     // 팀 매치에 팀과 유저추가
     private void addUserTeamMatches(Team team, List<User> users) {
@@ -199,5 +185,14 @@ public class TeamServiceImpl implements TeamService {
                 .weekProgress(team.getWeekProgress().getName())
                 .userEmails(users.stream().map(User::getEmail).collect(Collectors.toList()))
                 .build();
+    }
+    @Override
+    public boolean isUserInTeam(Long userId, Long teamId) {
+        Team team = teamRepository.findById(teamId).orElse(null);
+        if (team == null) {
+            throw new IllegalArgumentException("해당 팀이 존재하지 않습니다.");
+        }
+        return team.getUserTeamMatches().stream()
+                .anyMatch(match -> match.getUser().getId().equals(userId));
     }
 }
