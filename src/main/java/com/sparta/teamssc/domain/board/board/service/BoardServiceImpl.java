@@ -118,10 +118,15 @@ public class BoardServiceImpl implements BoardService {
             for (MultipartFile imageFile : requestDto.getUploadImages()) {
                 Image image = uploadImage(imageFile);
                 boardImageService.boardImageSave(board, image);
-                board.update(requestDto.getTitle(), requestDto.getContent());
             }
-        } else {
-            board.update(requestDto.getTitle(), requestDto.getContent());
+        }
+
+        if (requestDto.getTitle() != null) {
+            board.updateTile(requestDto.getTitle());
+        }
+
+        if (requestDto.getContent() != null) {
+            board.updateContent(requestDto.getContent());
         }
     }
 
