@@ -55,7 +55,7 @@ public class ManagerServiceImpl implements ManagerService{
     @Override
     public Page<PendSignupResponseDto> getPendSignup(int page, String email) {
 
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createAt"));
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "createAt"));
 
         Period period = userService.getUserByEmail(email).getPeriod();
 

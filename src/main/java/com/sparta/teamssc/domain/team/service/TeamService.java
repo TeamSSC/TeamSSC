@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.team.service;
 
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
+import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.*;
 import com.sparta.teamssc.domain.team.entity.Team;
 
@@ -19,6 +20,10 @@ public interface TeamService {
     TeamMemberResponseDto getMyTeamMembers(Long teamId, Long userId); //내가 속한 팀의 팀원들
 
     SimpleTeamResponseDto getTeamUsers(Long teamId);
+
+    TeamUpdateResponseDto updateTeamInfo(Long weekProgressId,
+                                         Long teamId,
+                                         TeamUpdateRequestDto teamUpdateRequestDto);
 
     boolean isUserInTeam(Long userId, Long teamId);
 }

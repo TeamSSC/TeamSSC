@@ -106,4 +106,8 @@ public class Team extends BaseEntity {
     public void addTeamProject(TeamProject teamProject) {
         this.teamProject = teamProject;
     }
+
+    public void updateLeaderId(Long leaderId) {
+        this.leaderId = leaderId.toString();
+    }
 }
