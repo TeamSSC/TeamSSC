@@ -5,7 +5,9 @@ import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
+import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamUpdateResponseDto;
+import com.sparta.teamssc.domain.team.entity.Section;
 import com.sparta.teamssc.domain.team.service.TeamService;
 import com.sparta.teamssc.domain.weekProgress.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
@@ -83,12 +85,12 @@ public class TeamController {
     // 팀 전체 라인업 보기
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/lineup")
-    public ResponseEntity<ResponseDto<List<SimpleTeamResponseDto>>> getAllTeams(@PathVariable Long weekProgressId) {
+    public ResponseEntity<ResponseDto<List<TeamResponseDto>>> getAllTeams(@PathVariable Long weekProgressId, @RequestParam Section section) {
         weekProgressService.getWeekProgressById(weekProgressId);
 
-        List<SimpleTeamResponseDto> teams = teamService.getAllTeams(weekProgressId);
+        List<TeamResponseDto> teams = teamService.getAllTeamsBySection(weekProgressId, section);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.<List<SimpleTeamResponseDto>>builder()
+                .body(ResponseDto.<List<TeamResponseDto>>builder()
                         .message("팀 편성표 조회 성공했습니다.")
                         .data(teams)
                         .build());
