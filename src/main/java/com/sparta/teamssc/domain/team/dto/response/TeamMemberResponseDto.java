@@ -14,6 +14,6 @@ public class TeamMemberResponseDto {
 
     // 팀명
     private String teamName;
-    private List<String> userEmails;
+    private List<Long> userIds;
     private List<String> userNames;
 }

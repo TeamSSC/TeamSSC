@@ -24,4 +24,6 @@ public interface TeamService {
     TeamUpdateResponseDto updateTeamInfo(Long weekProgressId,
                                          Long teamId,
                                          TeamUpdateRequestDto teamUpdateRequestDto);
+
+    boolean isUserInTeam(Long userId, Long teamId);
 }
