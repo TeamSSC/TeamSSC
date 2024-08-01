@@ -15,14 +15,9 @@ public interface TeamService {
 
     void deleteTeam(Long weekProgressId, Long teamId);
 
-    //전체 라인업
-    List<TeamResponseDto> getAllTeams(Long weekProgressId);
-
     //전체 라인업 sesstion A, B에 따라
-
     List<TeamResponseDto> getAllTeamsBySection (Long weekProgressId, Section section);
-
-
+    
     Team getTeamById(Long teamId); //전체 팀 라인업
     List<SimpleTeamNameResponseDto> getMyTeams(Long userId); // 내가 속한 팀
     TeamMemberResponseDto getMyTeamMembers(Long teamId, Long userId); //내가 속한 팀의 팀원들

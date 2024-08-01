@@ -100,17 +100,6 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<TeamResponseDto> getAllTeams(Long weekProgressId) {
-        List<Team> teams = teamRepository.findAllByWeekProgressIdAndNotDeleted(weekProgressId);
-        return teams.stream()
-                .map(team -> TeamResponseDto.builder()
-                        .id(team.getId())
-
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<TeamResponseDto> getAllTeamsBySection(Long weekProgressId, Section section) {
         List<Team> teams = teamRepository.findAllByWeekProgressIdAndSectionAndNotDeleted(weekProgressId, section);
