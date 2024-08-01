@@ -263,4 +263,22 @@ public class TeamServiceImpl implements TeamService {
             throw new IllegalArgumentException("팀 정보 수정에 실패했습니다.");
         }
     }
+
+    // 팀 조회하기
+    @Transactional(readOnly = true)
+    @Override
+    public TeamInquiryResponseDto getTeamInfo(Long weekProgressId, Long teamId) {
+        Team team = teamRepository.findByIdAndNotDeleted(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+
+        User leader = userService.findById(Long.parseLong(team.getLeaderId()));
+
+        return TeamInquiryResponseDto.builder()
+                .id(team.getId())
+                .teamName(team.getTeamName())
+                .leaderId(team.getLeaderId())
+                .leaderName(leader.getUsername())
+                .teamInfo(team.getTeamDescription())
+                .build();
+    }
 }
