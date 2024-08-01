@@ -5,7 +5,7 @@ import com.sparta.teamssc.domain.chat.dto.MessageResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
 
 public interface MessageService {
-    MessageResponseDto sendMessageToTeam(Long teamId, MessageRequestDto messageRequestDto);
+    void sendTeamMessage(Long teamId, String content);
+     void sendPeriodMessage(Long periodId, String content);
 
-    MessageResponseDto sendMessageToPeriod(Long periodId, MessageRequestDto messageRequestDto);
 }
