@@ -71,13 +71,17 @@ public class User extends BaseEntity {
     @JoinColumn(name = "period_id")
     private Period period;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     @Builder
-    public User(String email, String password, String username, UserStatus status, Period period) {
+    public User(String email, String password, String username, UserStatus status, Period period, String fcmToken) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.status = status;
         this.period = period;
+        this.fcmToken = fcmToken;
     }
 
     public void login() {
@@ -114,4 +118,9 @@ public class User extends BaseEntity {
     public void withdrawn() {
         this.status = UserStatus.WITHDRAWN;
     }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
 }

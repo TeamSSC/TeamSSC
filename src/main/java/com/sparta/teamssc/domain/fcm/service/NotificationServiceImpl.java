@@ -1,5 +1,9 @@
 package com.sparta.teamssc.domain.fcm.service;
 
+import com.sparta.teamssc.domain.board.board.entity.Board;
+import com.sparta.teamssc.domain.board.board.service.BoardService;
+import com.sparta.teamssc.domain.fcm.dto.TokenNotificationRequestDto;
+import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +17,45 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final FCMService fcmService;
     private final UserService userService;
+    private final BoardService boardService;
 
+    @Override
+    public void sendPostLikeNotification(Long postId) {
+        //게시글찾아서 -> 작성자 찾기
+        Board post = boardService.findBoardByBoardId(postId);
 
+        User postAuthor = post.getUser();
+
+        // 알림 요청
+        TokenNotificationRequestDto requestDto = new TokenNotificationRequestDto();
+        requestDto.setTargetToken(postAuthor.getFcmToken());
+        requestDto.setTitle("게시글 좋아요 알림");
+        requestDto.setMessage("게시글 '" + post.getTitle() + "'에 좋아요가 눌렸습니다.");
+
+        // 알림 전송
+        fcmService.sendByToken(requestDto);
+    }
+
+    @Override
+    public void sendPostCommentNotification(Long postId) {
+        Board post = boardService.findBoardByBoardId(postId);
+        User postAuthor = post.getUser();
+
+        TokenNotificationRequestDto requestDto = new TokenNotificationRequestDto();
+        requestDto.setTargetToken(postAuthor.getFcmToken());
+        requestDto.setTitle("게시글 댓글 알림");
+        requestDto.setMessage("게시글 '" + post.getTitle() + "'에 댓글이 달렸습니다.");
+
+        fcmService.sendByToken(requestDto);
+    }
+
+    @Override
+    public void sendAnnouncementNotification(Long periodId) {
+
+    }
+
+    @Override
+    public void sendMessageNotification(Long periodId, String messageContent) {
+
+    }
 }

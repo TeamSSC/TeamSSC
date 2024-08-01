@@ -13,12 +13,14 @@ public class NotificationController {
     // 게시글 좋아요 알림 전송
     @PostMapping("/post-like/{postId}")
     public void sendPostLikeNotification(@PathVariable Long postId) {
+        notificationService.sendPostLikeNotification(postId);
 
     }
 
     // 게시글 댓글 알림 전송
     @PostMapping("/post-comment/{postId}")
     public void sendPostCommentNotification(@PathVariable Long postId) {
+        notificationService.sendPostCommentNotification(postId);
     }
 
     // 공지 알림 전송

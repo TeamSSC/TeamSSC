@@ -239,10 +239,23 @@ public class UserServiceImpl implements UserService {
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
                 .collect(Collectors.toList());
     }
+    // 기수에 대한 유저가져오기
     @Transactional(readOnly = true)
     public List<User> getUsersByPeriodId(Long periodId) {
+
         Period period = periodService.getPeriodById(periodId);
-        // periodId를 가진 모든 사용자들을 가져오기
+
         return userRepository.findAllByPeriodId(periodId);
+    }
+
+    // fcm토큰 저장
+    @Transactional
+    public void updateFcmToken(Long userId, String fcmToken) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        user.updateFcmToken(fcmToken);
+
+        userRepository.save(user);
     }
 }
