@@ -16,7 +16,6 @@ import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
 import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -238,5 +238,11 @@ public class UserServiceImpl implements UserService {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
                 .collect(Collectors.toList());
+    }
+    @Transactional(readOnly = true)
+    public List<User> getUsersByPeriodId(Long periodId) {
+        Period period = periodService.getPeriodById(periodId);
+        // periodId를 가진 모든 사용자들을 가져오기
+        return userRepository.findAllByPeriodId(periodId);
     }
 }
