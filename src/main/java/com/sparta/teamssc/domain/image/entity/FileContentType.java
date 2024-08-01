@@ -1,7 +1,7 @@
 package com.sparta.teamssc.domain.image.entity;
 
 public enum FileContentType {
-    JPG("image/jpeg"),
+    JPG("image/jpg"),
     PNG("image/png"),
     JPEG("image/jpeg"),
     MP4("video/mp4"),

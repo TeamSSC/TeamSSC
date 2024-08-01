@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+
 public class ResponseDto<T> {
 
     private final String message;

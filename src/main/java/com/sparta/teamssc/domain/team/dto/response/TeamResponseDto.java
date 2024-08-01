@@ -11,7 +11,4 @@ import java.util.List;
 public class TeamResponseDto {
     private final Long id;// 팀 아이디
     private final String teamName;
-    private final String leaderId;
-    private final String teamDescription;
-    private final List<String> users;
 }

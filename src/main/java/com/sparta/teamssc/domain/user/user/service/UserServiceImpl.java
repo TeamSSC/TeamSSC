@@ -125,6 +125,8 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .username(user.getUsername())
                 .periodId(user.getPeriod().getId())
+                .period(user.getPeriod().getPeriod())
+                .trackName(user.getPeriod().getTrack().getName())
                 .build();
     }
 
@@ -199,8 +201,12 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public Page<ProfileCardMapper> findAllUsers(Pageable pageable) {
-        return userRepository.findAllByOrderByCreateAtDesc(pageable);
+    public Page<ProfileCardMapper> findMemberCards(Pageable pageable,String email) {
+
+        User user = getUserByEmail(email);
+        Period period = user.getPeriod();
+
+        return userRepository.findMemberCards(period,pageable);
     }
 
     @Override
@@ -247,6 +253,7 @@ public class UserServiceImpl implements UserService {
     public Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period) {
         return userRepository.findPagedPendList(pageable, period);
     }
+
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
         return roles.stream()
