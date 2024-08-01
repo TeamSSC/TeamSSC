@@ -24,6 +24,15 @@ repositories {
 }
 
 dependencies {
+
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'javax.mail:mail:1.4.7'
+
+    // Spring Context Support
+    implementation 'org.springframework:spring-context-support:5.3.9'
+
+
     // QueryDSL
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
@@ -45,7 +54,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
