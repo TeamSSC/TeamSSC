@@ -10,8 +10,14 @@ import java.util.List;
 public interface PeriodService {
 
     Period getPeriodById(Long periodId);
+
     PeriodResponseDto createPeriod(PeriodRequestDto periodRequestDto);
+
     List<PeriodResponseDto> getAllPeriod();
+
     void updatePeriod(Long periodId, PeriodUpdateRequestDto periodUpdateRequestDto);
+
     void deletePeriod(Long periodId);
+
+    List<PeriodResponseDto> getTrackByPeriod(Long trackId);
 }

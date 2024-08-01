@@ -85,6 +85,13 @@ public class PeriodServiceImpl implements PeriodService {
         periodRepository.save(period);
     }
 
+    //트랙에 대한 기수 조회
+    @Override
+    @Transactional
+    public List<PeriodResponseDto> getTrackByPeriod(Long trackId){
+        return periodRepository.findPeriodDetailsByTrackId(trackId);
+    }
+
     public Period getPeriodById(Long periodId) {
 
         return periodRepository.findById(periodId)
