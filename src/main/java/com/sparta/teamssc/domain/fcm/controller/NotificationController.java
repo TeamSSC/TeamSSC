@@ -32,7 +32,6 @@ public class NotificationController {
     // 메시지 알림 전송
     @PostMapping("/message/{periodId}")
     public void sendMessageNotification(@PathVariable Long periodId, @RequestBody String messageContent) {
+        notificationService.sendMessageNotification(periodId, messageContent);
     }
-
-
 }

@@ -69,5 +69,14 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendMessageNotification(Long periodId, String messageContent) {
 
+        List<User> users = userService.getUsersByPeriodId(periodId);
+        for (User user : users) {
+
+            TokenNotificationRequestDto requestDto = new TokenNotificationRequestDto();
+            requestDto.setTargetToken(user.getFcmToken());
+            requestDto.setTitle("메시지 알림");
+            requestDto.setMessage(messageContent);
+            fcmService.sendByToken(requestDto);
+        }
     }
 }
