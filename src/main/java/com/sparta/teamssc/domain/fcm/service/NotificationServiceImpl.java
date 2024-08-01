@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
@@ -51,7 +53,17 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendAnnouncementNotification(Long periodId) {
+        // periodId를 기반으로 사용자 목록을 가져오기
+        List<User> users = userService.getUsersByPeriodId(periodId);
+        for (User user : users) {
 
+            // 각 사용자에게 알림을 전송
+            TokenNotificationRequestDto requestDto = new TokenNotificationRequestDto();
+            requestDto.setTargetToken(user.getFcmToken());
+            requestDto.setTitle("공지 알림");
+            requestDto.setMessage("새로운 공지가 도착했습니다.");
+            fcmService.sendByToken(requestDto);
+        }
     }
 
     @Override

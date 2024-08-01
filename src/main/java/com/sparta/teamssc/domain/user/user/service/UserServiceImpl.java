@@ -240,6 +240,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
     // 기수에 대한 유저가져오기
+    @Override
     @Transactional(readOnly = true)
     public List<User> getUsersByPeriodId(Long periodId) {
 

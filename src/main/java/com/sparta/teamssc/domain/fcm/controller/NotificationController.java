@@ -26,6 +26,7 @@ public class NotificationController {
     // 공지 알림 전송
     @PostMapping("/announcement/{periodId}")
     public void sendAnnouncementNotification(@PathVariable Long periodId) {
+        notificationService.sendAnnouncementNotification(periodId);
     }
 
     // 메시지 알림 전송
