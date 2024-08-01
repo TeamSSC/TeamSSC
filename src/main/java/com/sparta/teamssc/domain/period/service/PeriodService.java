@@ -20,4 +20,6 @@ public interface PeriodService {
     void deletePeriod(Long periodId);
 
     List<PeriodResponseDto> getTrackByPeriod(Long trackId);
+
+    boolean isUserInPeriod(Long userId, Long periodId);
 }
