@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.period.entity;
 
 import com.sparta.teamssc.domain.track.entity.Track;
+import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -28,6 +29,9 @@ public class Period {
 
     @OneToMany(mappedBy = "period", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeekProgress> weekProgresses;
+
+    @OneToMany(mappedBy = "period", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User> users;
 
     @Enumerated(EnumType.STRING)
     private PeriodStatus status;

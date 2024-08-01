@@ -14,4 +14,6 @@ public interface PeriodService {
     List<PeriodResponseDto> getAllPeriod();
     void updatePeriod(Long periodId, PeriodUpdateRequestDto periodUpdateRequestDto);
     void deletePeriod(Long periodId);
+
+    boolean isUserInPeriod(Long userId, Long periodId);
 }
