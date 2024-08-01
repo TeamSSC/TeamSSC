@@ -24,10 +24,13 @@ public class Message extends BaseEntity {
     @Column(nullable = false)
     private Long roomId;
 
+    @Column(nullable = false)
+    private RoomType roomType;
     @Builder
-    public Message(String content, String sender, Long roomId) {
+    public Message(String content, String sender, Long roomId, RoomType roomType) {
         this.content = content;
         this.sender = sender;
         this.roomId = roomId;
+        this.roomType = roomType;
     }
 }
