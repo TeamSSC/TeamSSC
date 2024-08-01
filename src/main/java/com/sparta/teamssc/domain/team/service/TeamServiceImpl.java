@@ -5,6 +5,7 @@ import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.*;
+import com.sparta.teamssc.domain.team.entity.Section;
 import com.sparta.teamssc.domain.team.entity.Team;
 import com.sparta.teamssc.domain.team.exception.TeamCreationFailedException;
 import com.sparta.teamssc.domain.team.exception.TeamNotFoundException;
@@ -47,6 +48,7 @@ public class TeamServiceImpl implements TeamService {
 
             Team team = Team.builder()
                     .period(period)
+                    .teamName("Team")
                     .section(teamCreateRequestDto.getSection())
                     .weekProgress(weekProgress)
                     .deleted(false)
@@ -98,43 +100,11 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<SimpleTeamResponseDto> getAllTeams(Long weekProgressId) {
-        List<Team> teams = teamRepository.findAllByWeekProgressIdAndNotDeleted(weekProgressId);
-        return teams.stream()
-                .map(team -> SimpleTeamResponseDto.builder()
-                        .id(team.getId())
-                        .userEmails(team.getUserTeamMatches().stream()
-                                .map(userTeamMatch -> userTeamMatch.getUser().getEmail())
-                                .collect(Collectors.toList()))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public SimpleTeamResponseDto getTeamUsers(Long teamId) {
-        Team team = getTeamById(teamId);
-        List<String> userEmails = team.getUserTeamMatches().stream()
-                .map(userTeamMatch -> userTeamMatch.getUser().getEmail())
-                .collect(Collectors.toList());
-        return SimpleTeamResponseDto.builder()
-                .id(team.getId())
-                .userEmails(userEmails)
-                .build();
-    }
-
-    @Override
-    public Team getTeamById(Long teamId) {
-        return teamRepository.findByIdAndNotDeleted(teamId)
-                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<SimpleTeamNameResponseDto> getMyTeams(Long userId) {
-        List<Team> teams = teamRepository.findTeamsByUserId(userId);
+    public List<TeamResponseDto> getAllTeamsBySection(Long weekProgressId, Section section) {
+        List<Team> teams = teamRepository.findAllByWeekProgressIdAndSectionAndNotDeleted(weekProgressId, section);
         return teams.stream()
-                .map(team -> SimpleTeamNameResponseDto.builder()
+                .map(team -> TeamResponseDto.builder()
                         .id(team.getId())
                         .teamName(team.getTeamName())
                         .build())
@@ -142,106 +112,149 @@ public class TeamServiceImpl implements TeamService {
     }
 
 
+// 단일 팀불러오기
+@Override
+@Transactional(readOnly = true)
+public SimpleTeamResponseDto getTeamUsers(Long teamId) {
+    Team team = getTeamById(teamId);
 
-    // 팀 매치에 팀과 유저추가
-    private void addUserTeamMatches(Team team, List<User> users) {
-        for (User user : users) {
-            try {
-                UserTeamMatch userTeamMatch = userTeamMatchService.create(user, team);
-                userTeamMatchService.save(userTeamMatch);
-                team.getUserTeamMatches().add(userTeamMatch);
-            } catch (TeamCreationFailedException e) {
-                throw new TeamCreationFailedException("UserTeamMatch 생성에 실패했습니다.");
-            }
-        }
-    }
+    List<Long> userIds = team.getUserTeamMatches().stream()
+            .map(UserTeamMatch::getUser)
+            .map(com.sparta.teamssc.domain.user.user.entity.User::getId)
+            .collect(Collectors.toList());
 
-    // 팀 매치에서 유저 제거
-    private void removeUserTeamMatches(Team team) {
-        List<UserTeamMatch> existingMatches = new ArrayList<>(team.getUserTeamMatches());
-        for (UserTeamMatch match : existingMatches) {
-            userTeamMatchService.delete(match);
-        }
-        team.getUserTeamMatches().clear();
-        teamRepository.save(team);
-    }
+    List<String> userNames = team.getUserTeamMatches().stream()
+            .map(UserTeamMatch::getUser)
+            .map(com.sparta.teamssc.domain.user.user.entity.User::getUsername)
+            .collect(Collectors.toList());
 
-    // entity ->dto
-    private TeamCreateResponseDto buildTeamCreateResponseDto(Team team, List<User> users) {
-        return TeamCreateResponseDto.builder()
-                .id(team.getId())
-                .leaderId(team.getLeaderId())
-                .weekProgress(team.getWeekProgress().getName())
-                .userEmails(users.stream().map(User::getEmail).collect(Collectors.toList()))
-                .build();
-    }
-    @Override
-    public boolean isUserInTeam(Long userId, Long teamId) {
-        Team team = teamRepository.findById(teamId).orElse(null);
-        if (team == null) {
-            throw new IllegalArgumentException("해당 팀이 존재하지 않습니다.");
-        }
-        return team.getUserTeamMatches().stream()
-                .anyMatch(match -> match.getUser().getId().equals(userId));
-    }
+    return SimpleTeamResponseDto.builder()
+            .id(team.getId())
+            .userIds(userIds)
+            .userNames(userNames)
+            .build();
+}
 
-    @Override
-    public TeamMemberResponseDto getMyTeamMembers(Long teamId, Long userId) {
-        Team team = teamRepository.findByIdAndNotDeleted(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("팀을 찾을 수 없습니다."));
+@Override
+public Team getTeamById(Long teamId) {
+    return teamRepository.findByIdAndNotDeleted(teamId)
+            .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+}
 
-        List<User> members = team.getUserTeamMatches().stream()
-                .map(UserTeamMatch::getUser)
-                .collect(Collectors.toList());
-
-        return TeamMemberResponseDto.builder()
-                .currentWeekProgress(team.getWeekProgress().getName())
-                .teamName(team.getTeamName())
-                .userIds(members.stream().map(User::getId).collect(Collectors.toList()))
-                .userNames(members.stream().map(User::getUsername).collect(Collectors.toList()))
-                .build();
-    }
-    @Transactional
-    @Override
-    public TeamUpdateResponseDto updateTeamInfo(Long weekProgressId, Long teamId, TeamUpdateRequestDto teamUpdateRequestDto) {
-        try {
-            // 현재 사용자 가져오기
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String currentUsername = userDetails.getUsername();
-            User currentUser = userService.getUserByEmail(currentUsername);
-
-            Team team = getTeamById(teamId);
-
-            // 현재 사용자가 팀원인지 확인
-            boolean isTeamMember = team.getUserTeamMatches().stream()
-                    .anyMatch(match -> match.getUser().getId().equals(currentUser.getId()));
-
-            if (!isTeamMember) {
-                throw new TeamCreationFailedException("팀원이 아닙니다.");
-            }
-
-            // 리더가 팀원인지 확인
-            User leader = userService.findById(teamUpdateRequestDto.getLeaderId());
-            boolean isLeaderTeamMember = team.getUserTeamMatches().stream()
-                    .anyMatch(match -> match.getUser().getId().equals(leader.getId()));
-
-            if (!isLeaderTeamMember) {
-                throw new TeamCreationFailedException("팀원이 아닙니다.");
-            }
-
-            team.updateTeamName(teamUpdateRequestDto.getName());
-            team.updateLeaderId(teamUpdateRequestDto.getLeaderId());
-            teamRepository.save(team);
-
-            return TeamUpdateResponseDto.builder()
+@Transactional(readOnly = true)
+@Override
+public List<SimpleTeamNameResponseDto> getMyTeams(Long userId) {
+    List<Team> teams = teamRepository.findTeamsByUserId(userId);
+    return teams.stream()
+            .map(team -> SimpleTeamNameResponseDto.builder()
                     .id(team.getId())
-                    .name(team.getTeamName())
-                    .leaderId(team.getLeaderId())
-                    .build();
-        } catch (TeamNotFoundException e) {
-            throw new TeamNotFoundException("팀을 찾을 수 없습니다.");
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("팀 정보 수정에 실패했습니다.");
+                    .teamName(team.getTeamName())
+                    .build())
+            .collect(Collectors.toList());
+}
+
+
+// 팀 매치에 팀과 유저추가
+private void addUserTeamMatches(Team team, List<User> users) {
+    for (User user : users) {
+        try {
+            UserTeamMatch userTeamMatch = userTeamMatchService.create(user, team);
+            userTeamMatchService.save(userTeamMatch);
+            team.getUserTeamMatches().add(userTeamMatch);
+        } catch (TeamCreationFailedException e) {
+            throw new TeamCreationFailedException("UserTeamMatch 생성에 실패했습니다.");
         }
     }
+}
+
+// 팀 매치에서 유저 제거
+private void removeUserTeamMatches(Team team) {
+    List<UserTeamMatch> existingMatches = new ArrayList<>(team.getUserTeamMatches());
+    for (UserTeamMatch match : existingMatches) {
+        userTeamMatchService.delete(match);
+    }
+    team.getUserTeamMatches().clear();
+    teamRepository.save(team);
+}
+
+// entity ->dto
+private TeamCreateResponseDto buildTeamCreateResponseDto(Team team, List<User> users) {
+    return TeamCreateResponseDto.builder()
+            .id(team.getId())
+            .leaderId(team.getLeaderId())
+            .weekProgress(team.getWeekProgress().getName())
+            .userEmails(users.stream().map(User::getEmail).collect(Collectors.toList()))
+            .build();
+}
+
+@Override
+public boolean isUserInTeam(Long userId, Long teamId) {
+    Team team = teamRepository.findById(teamId).orElse(null);
+    if (team == null) {
+        throw new IllegalArgumentException("해당 팀이 존재하지 않습니다.");
+    }
+    return team.getUserTeamMatches().stream()
+            .anyMatch(match -> match.getUser().getId().equals(userId));
+}
+
+@Override
+public TeamMemberResponseDto getMyTeamMembers(Long teamId, Long userId) {
+    Team team = teamRepository.findByIdAndNotDeleted(teamId)
+            .orElseThrow(() -> new IllegalArgumentException("팀을 찾을 수 없습니다."));
+
+    List<User> members = team.getUserTeamMatches().stream()
+            .map(UserTeamMatch::getUser)
+            .collect(Collectors.toList());
+
+    return TeamMemberResponseDto.builder()
+            .currentWeekProgress(team.getWeekProgress().getName())
+            .teamName(team.getTeamName())
+            .userIds(members.stream().map(User::getId).collect(Collectors.toList()))
+            .userNames(members.stream().map(User::getUsername).collect(Collectors.toList()))
+            .build();
+}
+
+@Transactional
+@Override
+public TeamUpdateResponseDto updateTeamInfo(Long weekProgressId, Long teamId, TeamUpdateRequestDto teamUpdateRequestDto) {
+    try {
+        // 현재 사용자 가져오기
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String currentUsername = userDetails.getUsername();
+        User currentUser = userService.getUserByEmail(currentUsername);
+
+        Team team = getTeamById(teamId);
+
+        // 현재 사용자가 팀원인지 확인
+        boolean isTeamMember = team.getUserTeamMatches().stream()
+                .anyMatch(match -> match.getUser().getId().equals(currentUser.getId()));
+
+        if (!isTeamMember) {
+            throw new TeamCreationFailedException("팀원이 아닙니다.");
+        }
+
+        // 리더가 팀원인지 확인
+        User leader = userService.findById(teamUpdateRequestDto.getLeaderId());
+        boolean isLeaderTeamMember = team.getUserTeamMatches().stream()
+                .anyMatch(match -> match.getUser().getId().equals(leader.getId()));
+
+        if (!isLeaderTeamMember) {
+            throw new TeamCreationFailedException("팀원이 아닙니다.");
+        }
+
+        team.updateTeamName(teamUpdateRequestDto.getName());
+        team.updateLeaderId(teamUpdateRequestDto.getLeaderId());
+        teamRepository.save(team);
+
+        return TeamUpdateResponseDto.builder()
+                .id(team.getId())
+                .name(team.getTeamName())
+                .leaderId(team.getLeaderId())
+                .build();
+    } catch (TeamNotFoundException e) {
+        throw new TeamNotFoundException("팀을 찾을 수 없습니다.");
+    } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("팀 정보 수정에 실패했습니다.");
+    }
+}
 }
