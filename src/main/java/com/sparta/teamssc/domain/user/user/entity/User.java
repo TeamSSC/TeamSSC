@@ -119,6 +119,8 @@ public class User extends BaseEntity {
         this.status = UserStatus.WITHDRAWN;
     }
 
+//    public void updateStatus() { this.status = UserStatus.PENDING; }
+
     public User kakaoIdUpdate(Long kakaoId) {
         this.kakaoId = kakaoId;
         return this;

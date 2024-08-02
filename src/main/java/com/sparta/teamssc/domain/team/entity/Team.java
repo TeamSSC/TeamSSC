@@ -110,4 +110,5 @@ public class Team extends BaseEntity {
     public void updateLeaderId(Long leaderId) {
         this.leaderId = leaderId.toString();
     }
+
 }

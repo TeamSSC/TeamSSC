@@ -7,5 +7,6 @@ import lombok.Setter;
 public class TeamUpdateRequestDto {
     private String name;
     private Long leaderId;
+    private String teamInfo;
 }
 

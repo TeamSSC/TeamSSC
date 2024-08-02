@@ -48,8 +48,11 @@ public class SecurityConfig {
                                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll() // 로그인, 회원가입 접근 허용
                                         .requestMatchers(HttpMethod.POST, "/boards/*").authenticated()
                                         .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("MANAGER")
+                                        .requestMatchers("/ws/**").permitAll() // WebSocket 엔드포인트 허용
+                                        .requestMatchers("/app/**").permitAll() // STOMP 허용
+                                        .requestMatchers("/topic/**").permitAll() // 구독 허용
 
-                                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                        //                                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                         .anyRequest().permitAll() // 그 외 모든 요청 접근 허용
                         //.anyRequest().authenticated() // 그 외 모든 요청 인증처리
                 );

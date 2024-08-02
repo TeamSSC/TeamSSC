@@ -1,6 +1,16 @@
 spring:
   application:
     name: TeamSsc
+
+    mail:
+      password: ${EMAIL_PASSWORD}
+      username: ${EMAIL_USERNAME}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
   servlet:
     multipart:
       enabled: true
@@ -37,7 +47,6 @@ server:
 logging:
   level:
     org.springframework: DEBUG
-    com.sparta.instahub: DEBUG
 
 secret:
   admin-key: ${ADMIN_SECRET_KEY}

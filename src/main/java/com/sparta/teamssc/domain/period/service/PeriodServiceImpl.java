@@ -85,9 +85,26 @@ public class PeriodServiceImpl implements PeriodService {
         periodRepository.save(period);
     }
 
+    //트랙에 대한 기수 조회
+    @Override
+    @Transactional
+    public List<PeriodResponseDto> getTrackByPeriod(Long trackId){
+        return periodRepository.findPeriodDetailsByTrackId(trackId);
+    }
+
     public Period getPeriodById(Long periodId) {
 
         return periodRepository.findById(periodId)
                 .orElseThrow(() -> new IllegalArgumentException("Period를 찾을수 없습니다.: " + periodId));
+    }
+
+    @Override
+    public boolean isUserInPeriod(Long userId, Long periodId) {
+        Period period = periodRepository.findById(periodId).orElse(null);
+        if (period == null) {
+            throw new IllegalArgumentException("해당 기간이 존재하지 않습니다.");
+        }
+        return period.getUsers().stream()
+                .anyMatch(user -> user.getId().equals(userId));
     }
 }
