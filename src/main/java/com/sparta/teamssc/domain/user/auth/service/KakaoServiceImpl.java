@@ -146,7 +146,6 @@ public class KakaoServiceImpl implements KakaoService {
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
 
-        log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + image_url + ", " + email);
         return new KakaoUserInfoDto(id, nickname, image_url, email);
     }
 
@@ -181,6 +180,7 @@ public class KakaoServiceImpl implements KakaoService {
                         .username(kakaoUserInfo.getNickname())
                         .status(UserStatus.PENDING)
                         .kakaoId(kakaoId)
+                        .profileImage(kakaoUserInfo.getImageUrl())
                         .build();
             }
 

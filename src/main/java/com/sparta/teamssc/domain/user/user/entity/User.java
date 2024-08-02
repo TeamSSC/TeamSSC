@@ -75,13 +75,14 @@ public class User extends BaseEntity {
     private Long kakaoId;
 
     @Builder
-    public User(String email, String password, String username, UserStatus status, Period period, Long kakaoId) {
+    public User(String email, String password, String username, UserStatus status, Period period, Long kakaoId, String profileImage) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.status = status;
         this.period = period;
         this.kakaoId = kakaoId;
+        this.profileImage = profileImage;
     }
 
     public void login() {
