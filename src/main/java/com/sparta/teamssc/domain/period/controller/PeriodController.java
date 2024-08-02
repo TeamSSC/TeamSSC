@@ -4,11 +4,13 @@ import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.period.dto.PeriodRequestDto;
 import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
 import com.sparta.teamssc.domain.period.dto.PeriodUpdateRequestDto;
+import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.entity.PeriodStatus;
 import com.sparta.teamssc.domain.period.service.PeriodServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -74,6 +76,16 @@ public class PeriodController {
         periodService.deletePeriod(periodId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<Void>builder()
                 .message("기수가 삭제 되었습니다.")
+                .build());
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/tracks/{trackId}/periods")
+    public ResponseEntity<ResponseDto<List<PeriodResponseDto>>> getAllTrackPeriods(@PathVariable Long trackId) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<List<PeriodResponseDto>>builder()
+                .message("트랙에 대한 기수 조회 성공")
+                .data(periodService.getTrackByPeriod(trackId))
                 .build());
     }
 
