@@ -6,7 +6,6 @@ import com.sparta.teamssc.domain.board.board.dto.response.BoardListResponseDto;
 import com.sparta.teamssc.domain.board.board.dto.response.BoardResponseDto;
 import com.sparta.teamssc.domain.board.board.entity.Board;
 import com.sparta.teamssc.domain.board.board.entity.BoardType;
-import com.sparta.teamssc.domain.board.board.exception.BoardCreationFailedException;
 import com.sparta.teamssc.domain.board.board.repository.BoardRepository;
 import com.sparta.teamssc.domain.board.boardImage.service.BoardImageService;
 import com.sparta.teamssc.domain.image.entity.Image;
@@ -118,10 +117,15 @@ public class BoardServiceImpl implements BoardService {
             for (MultipartFile imageFile : requestDto.getUploadImages()) {
                 Image image = uploadImage(imageFile);
                 boardImageService.boardImageSave(board, image);
-                board.update(requestDto.getTitle(), requestDto.getContent());
             }
-        } else {
-            board.update(requestDto.getTitle(), requestDto.getContent());
+        }
+
+        if (requestDto.getTitle() != null) {
+            board.updateTitle(requestDto.getTitle());
+        }
+
+        if (requestDto.getContent() != null) {
+            board.updateContent(requestDto.getContent());
         }
     }
 
