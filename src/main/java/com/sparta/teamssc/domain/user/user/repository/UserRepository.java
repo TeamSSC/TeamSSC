@@ -23,8 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
     Optional<User> findById(Long id);
 
     @Query("SELECT u.id AS id, u.username AS username " +
-            "FROM User u " +
-            "WHERE (u.period = :periodId) " +
+            "FROM User u JOIN u.roles r "+
+            "WHERE (u.period = :periodId AND r.role.name = :role) " +
             "ORDER BY u.createAt")
-    Page<ProfileCardMapper> findMemberCards(@Param("periodId") Period periodId, Pageable pageable);
+    Page<ProfileCardMapper> findMemberCards(@Param("periodId") Period periodId, @Param("role") String role, Pageable pageable);
 }
