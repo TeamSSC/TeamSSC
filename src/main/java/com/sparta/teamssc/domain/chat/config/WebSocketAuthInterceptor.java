@@ -40,6 +40,9 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                         log.info("WebSocket 연결 성공: 사용자명 - {}", username);
 
                         accessor.setUser(authentication);
+
+                        // 인증 정보 로그 추가
+                        log.info("SecurityContextHolder에 설정된 인증 정보: {}", SecurityContextHolder.getContext().getAuthentication());
                     } else {
                         log.warn("WebSocket 연결 실패: 유효하지 않은 토큰");
                     }

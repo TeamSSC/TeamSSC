@@ -5,12 +5,13 @@ import com.sparta.teamssc.domain.chat.entity.RoomType;
 import com.sparta.teamssc.domain.chat.repository.MessageRepository;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.service.TeamService;
-import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +26,8 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
 
     @Transactional
-    public void sendTeamMessage(Long teamId, String content, @Header("Authorization") String token) {
-        User user = getCurrentUserFromToken(token);
+    public void sendTeamMessage(Long teamId, String content) {
+        User user = getCurrentUser();
 
         if (!teamService.isUserInTeam(user.getId(), teamId)) {
             throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
@@ -44,8 +45,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Transactional
-    public void sendPeriodMessage(Long periodId, String content, @Header("Authorization") String token) {
-        User user = getCurrentUserFromToken(token);
+    public void sendPeriodMessage(Long periodId, String content) {
+        User user = getCurrentUser();
 
         if (!periodService.isUserInPeriod(user.getId(), periodId)) {
             throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
@@ -62,12 +63,13 @@ public class MessageServiceImpl implements MessageService {
         messagingTemplate.convertAndSend("/topic/period/" + periodId, message);
     }
 
-    private User getCurrentUserFromToken(String token) {
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-            String username = JwtUtil.getUsernameFromToken(token);
-            return userService.getUserByEmail(username);
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            return userService.getUserByEmail(userDetails.getUsername()); // UserService를 통해 User 객체를 가져옴
+        } else {
+            throw new IllegalStateException("인증된 사용자가 없습니다.");
         }
-        throw new IllegalStateException("JWT 토큰이 제공되지 않았습니다.");
     }
 }
