@@ -30,4 +30,6 @@ public interface TeamService {
                                          TeamUpdateRequestDto teamUpdateRequestDto);
 
     boolean isUserInTeam(Long userId, Long teamId);
+
+    TeamInquiryResponseDto getTeamInfo(Long weekProgressId, Long teamId);
 }

@@ -26,10 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final RefreshTokenService refreshTokenService;
     private final UserRoleService userRoleService;
     private final PeriodService periodService;
+//    private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${secret.admin-key}")
     String adminKey;
@@ -178,6 +176,28 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
     }
+
+//    /**
+//     * 이메일 인증: 입력한 인증 코드를 검증
+//     *
+//     * @param email         사용자 이름
+//     * @param verificationCode 입력한 인증 코드
+//     * @return 인증 성공 여부
+//     */
+//    @Override
+//    @Transactional
+//    public boolean verifyEmail(String email, String verificationCode) {
+//        String storedCode = redisTemplate.opsForValue().get(email);
+//        if (storedCode != null && storedCode.equals(verificationCode)) {
+//            Optional<User> userOptional = userRepository.findByEmail(email);
+//            if (userOptional.isPresent()) {
+//                User user = userOptional.get();
+//                user.updateStatus();
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     public Page<ProfileCardMapper> findMemberCards(Pageable pageable,String email) {

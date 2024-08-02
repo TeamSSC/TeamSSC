@@ -1,6 +1,16 @@
 spring:
   application:
     name: TeamSsc
+
+    mail:
+      password: ${EMAIL_PASSWORD}
+      username: ${EMAIL_USERNAME}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
   servlet:
     multipart:
       enabled: true
@@ -33,6 +43,9 @@ jwt:
       expiration: 1209600000
 server:
   port: 8080
+
+fcm:
+  firebase_config_path: classpath:firebase-service-account.json
 
 logging:
   level:
