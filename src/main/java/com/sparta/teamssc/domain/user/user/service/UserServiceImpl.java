@@ -5,6 +5,7 @@ import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.response.KakaoUserStatusResponse;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
@@ -259,5 +260,20 @@ public class UserServiceImpl implements UserService {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public KakaoUserStatusResponse getKakaoUserStatus(String email) {
+        User user = getUserByEmail(email);
+
+        if (user.getPeriod() == null) {
+            return KakaoUserStatusResponse.builder().build();
+        }
+
+        return KakaoUserStatusResponse.builder()
+                .period(user.getPeriod().getPeriod())
+                .periodId(user.getPeriod().getId())
+                .trackName(user.getPeriod().getTrack().getName())
+                .build();
     }
 }

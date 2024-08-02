@@ -18,6 +18,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -162,11 +163,16 @@ public class KakaoServiceImpl implements KakaoService {
         return new KakaoUserInfoDto(id, nickname, image_url, email);
     }
 
+    @Transactional
     public User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
 
         // DB 에 중복된 Kakao Id 가 있는지 확인
         Long kakaoId = kakaoUserInfo.getId();
         User kakaoUser = userRepository.findByKakaoId(kakaoId).orElse(null);
+
+        if (kakaoUser.getPeriod() == null) {
+            kakaoUser.updateKakaoUserStatus();
+        }
 
         if (kakaoUser == null) {
 

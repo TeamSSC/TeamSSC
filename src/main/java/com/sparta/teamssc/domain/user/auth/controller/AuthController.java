@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.response.KakaoUserStatusResponse;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.service.KakaoService;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
@@ -119,6 +120,19 @@ public class AuthController {
                 .body(ResponseDto.<LoginResponseDto>builder()
                         .message("카카오 로그인")
                         .data(loginResponseDto)
+                        .build());
+    }
+
+    // 카카오 가입 유저 기수 신청 상태 확인
+    @GetMapping("/kakao/users/status")
+    public ResponseEntity<ResponseDto<KakaoUserStatusResponse>> getKakaoUserStatus(@AuthenticationPrincipal UserDetails userDetails) {
+
+        KakaoUserStatusResponse kakaoUserStatusResponse = userService.getKakaoUserStatus(userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<KakaoUserStatusResponse>builder()
+                        .message("카카오 유저 기수 신청 상태를 조회했습니다.")
+                        .data(kakaoUserStatusResponse)
                         .build());
     }
 }

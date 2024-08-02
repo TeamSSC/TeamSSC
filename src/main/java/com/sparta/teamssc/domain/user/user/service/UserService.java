@@ -5,6 +5,7 @@ import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
 import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.response.KakaoUserStatusResponse;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.user.dto.response.PendSignupResponseDto;
 import com.sparta.teamssc.domain.user.user.entity.User;
@@ -51,6 +52,9 @@ public interface UserService {
 
     // 회원가입 대기 상태 유저 페이징
     Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period);
+
+    // 카카오 가입 유저 기수 신청 상태 확인
+    KakaoUserStatusResponse getKakaoUserStatus(String email);
 
 //    boolean verifyEmail(String username, String verificationCode);
 }

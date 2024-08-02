@@ -101,6 +101,10 @@ public class User extends BaseEntity {
         this.status = UserStatus.LOGOUT;
     }
 
+    public void updateKakaoUserStatus() {
+        this.status = UserStatus.PENDING;
+    }
+
     public void updateProfile(String gitLink, String vlogLink,String intro,UserMbti mbti) {
         this.gitLink = gitLink;
         this.vlogLink = vlogLink;
