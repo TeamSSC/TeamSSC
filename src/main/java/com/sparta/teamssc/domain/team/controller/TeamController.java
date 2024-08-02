@@ -3,10 +3,7 @@ package com.sparta.teamssc.domain.team.controller;
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamCreateRequestDto;
 import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
-import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamCreateResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.TeamUpdateResponseDto;
+import com.sparta.teamssc.domain.team.dto.response.*;
 import com.sparta.teamssc.domain.team.entity.Section;
 import com.sparta.teamssc.domain.team.service.TeamService;
 import com.sparta.teamssc.domain.weekProgress.service.WeekProgressService;
@@ -106,6 +103,19 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<TeamUpdateResponseDto>builder()
                         .message("팀 정보 수정에 성공했습니다.")
+                        .data(teamResponseDto)
+                        .build());
+    }
+
+    // 팀 정보 조회하기
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{teamId}")
+    public ResponseEntity<ResponseDto<TeamInquiryResponseDto>> getTeamInfo(@PathVariable Long weekProgressId,
+                                                                    @PathVariable Long teamId) {
+        TeamInquiryResponseDto teamResponseDto = teamService.getTeamInfo(weekProgressId, teamId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<TeamInquiryResponseDto>builder()
+                        .message("팀 정보 조회에 성공했습니다.")
                         .data(teamResponseDto)
                         .build());
     }
