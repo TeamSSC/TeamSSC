@@ -136,8 +136,6 @@ public class UserServiceImpl implements UserService {
 
         User user = getUserByEmail(email);
 
-        user.logout();
-
         refreshTokenService.deleteRefreshToken(user);
     }
 
