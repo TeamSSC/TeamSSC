@@ -71,13 +71,17 @@ public class User extends BaseEntity {
     @JoinColumn(name = "period_id")
     private Period period;
 
+    @Column(name = "kakaoId")
+    private Long kakaoId;
+
     @Builder
-    public User(String email, String password, String username, UserStatus status, Period period) {
+    public User(String email, String password, String username, UserStatus status, Period period, Long kakaoId) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.status = status;
         this.period = period;
+        this.kakaoId = kakaoId;
     }
 
     public void login() {
@@ -113,5 +117,10 @@ public class User extends BaseEntity {
 
     public void withdrawn() {
         this.status = UserStatus.WITHDRAWN;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }

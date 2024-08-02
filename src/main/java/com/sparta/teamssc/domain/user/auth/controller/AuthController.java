@@ -1,10 +1,15 @@
 package com.sparta.teamssc.domain.user.auth.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
+import com.sparta.teamssc.domain.user.auth.service.KakaoService;
+import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.user.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService userService;
+    private final KakaoService kakaoService;
 
     // 회원가입
     @PostMapping("/users/signup")
@@ -98,6 +104,21 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDto.<String>builder()
                         .message("회원탈퇴 성공했습니다.")
+                        .build());
+    }
+
+    /**
+     * 카카오 로그인
+     */
+    @GetMapping("/user/kakao/callback")
+    public ResponseEntity<ResponseDto<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+
+        LoginResponseDto loginResponseDto = kakaoService.kakaoLogin(code);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<LoginResponseDto>builder()
+                        .message("카카오 로그인")
+                        .data(loginResponseDto)
                         .build());
     }
 }
