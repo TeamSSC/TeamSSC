@@ -69,7 +69,14 @@ public class ManagerServiceImpl implements ManagerService{
     public void approveManager(ApproveManagerRequestDto approveManagerRequestDto) {
 
         User user = userService.getUserByEmail(approveManagerRequestDto.getUserEmail());
+        //매니저인지 확인
+        boolean hasManagerRole = user.getRoles().stream()
+                        .anyMatch(role -> role.getRole().getName().equals("MANAGER"));
+        if (hasManagerRole) {
+            throw new IllegalArgumentException("이미 매니저 권한입니다.");
+        }
 
         userRoleService.userRoleAdd(user,"manager");
     }
+
 }
