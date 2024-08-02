@@ -59,7 +59,7 @@ public class Board extends BaseEntity {
         this.period = period;
     }
 
-    public void updateTile(String title) {
+    public void updateTitle(String title) {
         this.title = title;
     }
 
