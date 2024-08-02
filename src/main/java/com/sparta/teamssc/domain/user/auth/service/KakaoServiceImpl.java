@@ -68,6 +68,7 @@ public class KakaoServiceImpl implements KakaoService {
                     .accessToken(newAccessToken)
                     .refreshToken(newRefreshToken)
                     .username(kakaoUser.getUsername())
+                    .userStatus(kakaoUser.getStatus())
                     .build();
         }
 
@@ -78,6 +79,7 @@ public class KakaoServiceImpl implements KakaoService {
                 .username(kakaoUser.getUsername())
                 .periodId(kakaoUser.getPeriod().getId())
                 .period(kakaoUser.getPeriod().getPeriod())
+                .userStatus(kakaoUser.getStatus())
                 .trackName(kakaoUser.getPeriod().getTrack().getName())
                 .build();
 
