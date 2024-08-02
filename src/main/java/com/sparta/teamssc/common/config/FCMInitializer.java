@@ -20,7 +20,10 @@ public class FCMInitializer {
 
     @PostConstruct
     public void initialize() {
+        log.info("FCMInitializer 초기화");
         try {
+            log.info("Loading Firebase service account key from path: {}", firebaseConfigPath);
+
             // Firebase 서비스 계정 키 파일로드
             GoogleCredentials googleCredentials = GoogleCredentials
                     .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream());
@@ -34,7 +37,9 @@ public class FCMInitializer {
                 log.info("firebase 초기화성공");
             }
         } catch (IOException e) {
-            log.info("firebase 초기화실패"); // 다른 동작 넣을거임
+            log.error("firebase 초기화실패: IOException - {}", e.getMessage(), e); // 예외 메시지 출력
+        } catch (Exception e) {
+            log.error("firebase 초기화실패: 기타 예외 - {}", e.getMessage(), e); // 기타 예외 처리
         }
     }
 }

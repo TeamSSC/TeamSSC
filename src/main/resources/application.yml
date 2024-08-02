@@ -45,7 +45,7 @@ server:
   port: 8080
 
 fcm:
-  firebase_config_path: classpath:firebase-service-account.json
+  firebase_config_path: firebase-service-account.json
 
 logging:
   level:

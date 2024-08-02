@@ -110,9 +110,14 @@ public class UserServiceImpl implements UserService {
 
         refreshTokenService.updateRefreshToken(user, refreshToken);
 
+        // FCM 토큰 업데이트
+        user.updateFcmToken(loginRequestDto.getFcmToken());
+        userRepository.save(user);
+
+
         user.login();
 
-        if(user.getPeriod() == null){
+        if (user.getPeriod() == null) {
             return LoginResponseDto.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
@@ -127,6 +132,7 @@ public class UserServiceImpl implements UserService {
                 .periodId(user.getPeriod().getId())
                 .period(user.getPeriod().getPeriod())
                 .trackName(user.getPeriod().getTrack().getName())
+                .fcmToken(user.getFcmToken())
                 .build();
     }
 
@@ -201,12 +207,12 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public Page<ProfileCardMapper> findMemberCards(Pageable pageable,String email) {
+    public Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email) {
 
         User user = getUserByEmail(email);
         Period period = user.getPeriod();
 
-        return userRepository.findMemberCards(period,pageable);
+        return userRepository.findMemberCards(period, pageable);
     }
 
     @Override
@@ -260,6 +266,7 @@ public class UserServiceImpl implements UserService {
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
                 .collect(Collectors.toList());
     }
+
     // 기수에 대한 유저가져오기
     @Override
     @Transactional(readOnly = true)
@@ -270,7 +277,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllByPeriodId(periodId);
     }
 
-    // fcm토큰 저장
+    // fcm토큰 수정
     @Transactional
     public void updateFcmToken(Long userId, String fcmToken) {
 

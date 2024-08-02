@@ -39,3 +39,5 @@ out/
 src/main/resources/firebase-service-account.json
 
 *.json
+
+src/main/.DS_Store
