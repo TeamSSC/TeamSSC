@@ -22,12 +22,13 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
 
     Optional<User> findById(Long id);
 
-    @Query("SELECT u.id AS id, u.username AS username " +
-            "FROM User u " +
-            "WHERE (u.period = :periodId) " +
-            "ORDER BY u.createAt")
-    Page<ProfileCardMapper> findMemberCards(@Param("periodId") Period periodId, Pageable pageable);
+    Optional<User> findByKakaoId(Long kakaoId);
 
+    @Query("SELECT u.id AS id, u.username AS username " +
+            "FROM User u JOIN u.roles r "+
+            "WHERE (u.period = :periodId AND r.role.name = :role) " +
+            "ORDER BY u.createAt")
+    Page<ProfileCardMapper> findMemberCards(@Param("periodId") Period periodId, @Param("role") String role, Pageable pageable);
     //기수로 사용자 찾기
     @Query("SELECT u FROM User u WHERE u.period.id = :periodId")
     List<User> findAllByPeriodId(@Param("periodId") Long periodId);

@@ -23,6 +23,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserService userService;
     private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
+
     /**
      * 프로필 생성
      *
@@ -44,7 +45,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void confirmPassword(PasswordRequestDto passwordRequestDto, String email){
+    public void confirmPassword(PasswordRequestDto passwordRequestDto, String email) {
 
         User existUser = userService.getUserByEmail(email);
 
@@ -55,7 +56,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void updatePassword(PasswordRequestDto passwordRequestDto, String email){
+    public void updatePassword(PasswordRequestDto passwordRequestDto, String email) {
 
         userService.inValidPassword(passwordRequestDto.getPassword());
 
@@ -93,10 +94,10 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Page<ProfileCardMapper> findMemberCards(int page,String email) {
+    public Page<ProfileCardMapper> findMemberCards(int page, String email, String role) {
 
-            Pageable pageable = PageRequest.of(page - 1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 20);
 
-        return userService.findMemberCards(pageable,email);
+        return userService.findMemberCards(pageable, email, role);
     }
 }

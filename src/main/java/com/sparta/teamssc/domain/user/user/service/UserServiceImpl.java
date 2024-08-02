@@ -207,12 +207,12 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email) {
+    public Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email, String role) {
 
         User user = getUserByEmail(email);
         Period period = user.getPeriod();
 
-        return userRepository.findMemberCards(period, pageable);
+        return userRepository.findMemberCards(period, role, pageable);
     }
 
     @Override
