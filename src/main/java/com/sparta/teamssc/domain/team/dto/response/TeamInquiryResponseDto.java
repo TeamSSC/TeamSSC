@@ -5,9 +5,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TeamUpdateResponseDto {
+public class TeamInquiryResponseDto {
     private Long id;
-    private String name;
+    private String teamName;
     private String leaderId;
+    private String leaderName;
     private String teamInfo;
 }

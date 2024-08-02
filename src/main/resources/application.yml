@@ -1,6 +1,16 @@
 spring:
   application:
     name: TeamSsc
+
+    mail:
+      password: ${EMAIL_PASSWORD}
+      username: ${EMAIL_USERNAME}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
   servlet:
     multipart:
       enabled: true
