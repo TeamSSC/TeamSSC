@@ -47,7 +47,7 @@ public interface UserService {
     User findById(Long id);
 
     //유저 페이징
-    Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email);
+    Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email, String role);
 
     // 회원가입 대기 상태 유저 페이징
     Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period);
