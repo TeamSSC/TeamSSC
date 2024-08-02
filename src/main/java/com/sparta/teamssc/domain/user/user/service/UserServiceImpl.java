@@ -260,8 +260,10 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    // 카카오 가입 유저 기수 신청 상태 확인
     @Override
     public KakaoUserStatusResponse getKakaoUserStatus(String email) {
+
         User user = getUserByEmail(email);
 
         if (user.getPeriod() == null) {
@@ -273,5 +275,19 @@ public class UserServiceImpl implements UserService {
                 .periodId(user.getPeriod().getId())
                 .trackName(user.getPeriod().getTrack().getName())
                 .build();
+    }
+
+    // 카카오 유저 기수 신청
+    @Transactional
+    @Override
+    public void kakaoUserUpdatePeriod(Long periodId, String email) {
+
+        Period period = periodService.getPeriodById(periodId);
+        User user = getUserByEmail(email);
+        if (user.getPeriod() != null) {
+            throw new IllegalArgumentException("이미 트랙을 신청한 상태입니다.");
+        }
+
+        user.updateKakaoUserPeriod(period);
     }
 }

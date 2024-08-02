@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -133,6 +134,20 @@ public class AuthController {
                 .body(ResponseDto.<KakaoUserStatusResponse>builder()
                         .message("카카오 유저 기수 신청 상태를 조회했습니다.")
                         .data(kakaoUserStatusResponse)
+                        .build());
+    }
+
+    // 카카오 유저 기수 신청
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/kakao/users/periods/{periodId}")
+    public ResponseEntity<ResponseDto<String>> kakaoUserUpdatePeriod(@PathVariable Long periodId,
+                                                                     @AuthenticationPrincipal UserDetails userDetails) {
+
+        userService.kakaoUserUpdatePeriod(periodId, userDetails.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseDto.<String>builder()
+                        .message("기수 신청에 성공했습니다.")
                         .build());
     }
 }

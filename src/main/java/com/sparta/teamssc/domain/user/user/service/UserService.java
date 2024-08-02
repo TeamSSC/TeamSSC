@@ -56,5 +56,7 @@ public interface UserService {
     // 카카오 가입 유저 기수 신청 상태 확인
     KakaoUserStatusResponse getKakaoUserStatus(String email);
 
+    void kakaoUserUpdatePeriod(Long periodId, String email);
+
 //    boolean verifyEmail(String username, String verificationCode);
 }
