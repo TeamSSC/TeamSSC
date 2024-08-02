@@ -114,4 +114,6 @@ public class User extends BaseEntity {
     public void withdrawn() {
         this.status = UserStatus.WITHDRAWN;
     }
+
+//    public void updateStatus() { this.status = UserStatus.PENDING; }
 }
