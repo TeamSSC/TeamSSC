@@ -219,44 +219,21 @@ public class TeamServiceImpl implements TeamService {
     public TeamUpdateResponseDto updateTeamInfo(Long weekProgressId, Long teamId, TeamUpdateRequestDto teamUpdateRequestDto) {
         try {
             // 현재 사용자 가져오기
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String currentUsername = userDetails.getUsername();
-            User currentUser = userService.getUserByEmail(currentUsername);
+            User currentUser = getCurrentUser();
 
             Team team = getTeamById(teamId);
 
             // 현재 사용자가 팀원인지 확인
-            boolean isTeamMember = team.getUserTeamMatches().stream()
-                    .anyMatch(match -> match.getUser().getId().equals(currentUser.getId()));
-
-            if (!isTeamMember) {
-                throw new TeamCreationFailedException("팀원이 아닙니다.");
-            }
+            validateTeamMember(team, currentUser);
 
             // 리더가 팀원인지 확인
-            User leader = userService.findById(teamUpdateRequestDto.getLeaderId());
-            boolean isLeaderTeamMember = team.getUserTeamMatches().stream()
-                    .anyMatch(match -> match.getUser().getId().equals(leader.getId()));
+            validateTeamLeader(team, teamUpdateRequestDto.getLeaderId());
 
-            if (!isLeaderTeamMember) {
-                throw new TeamCreationFailedException("리더가 팀원이 아닙니다.");
-            }
+            // 팀의 정보 변경
+            updateTeamDetails(team, teamUpdateRequestDto);
 
-            // 팀 정보 업데이트
-            if (teamUpdateRequestDto.getTeamInfo() != null) {
-                team.updateTeamDescription(teamUpdateRequestDto.getTeamInfo());
-            }
+            return buildTeamUpdateResponseDto(team);
 
-            team.updateTeamName(teamUpdateRequestDto.getName());
-            team.updateLeaderId(teamUpdateRequestDto.getLeaderId());
-            teamRepository.save(team);
-
-            return TeamUpdateResponseDto.builder()
-                    .id(team.getId())
-                    .name(team.getTeamName())
-                    .leaderId(team.getLeaderId())
-                    .teamInfo(team.getTeamDescription())
-                    .build();
         } catch (TeamNotFoundException e) {
             throw new TeamNotFoundException("팀을 찾을 수 없습니다.");
         } catch (IllegalArgumentException e) {
@@ -281,4 +258,50 @@ public class TeamServiceImpl implements TeamService {
                 .teamInfo(team.getTeamDescription())
                 .build();
     }
+
+    // 현재 사용자가 맞는지 확인
+    private User getCurrentUser() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String currentUsername = userDetails.getUsername();
+        return userService.getUserByEmail(currentUsername);
+    }
+
+    // 팀 멤버인지
+    private void validateTeamMember(Team team, User currentUser) {
+        boolean isTeamMember = team.getUserTeamMatches().stream()
+                .anyMatch(match -> match.getUser().getId().equals(currentUser.getId()));
+
+        if (!isTeamMember) {
+            throw new TeamCreationFailedException("팀원이 아닙니다.");
+        }
+    }
+
+    // 리더가 팀원인지
+    private void validateTeamLeader(Team team, Long leaderId) {
+        User leader = userService.findById(leaderId);
+        boolean isLeaderTeamMember = team.getUserTeamMatches().stream()
+                .anyMatch(match -> match.getUser().getId().equals(leader.getId()));
+
+        if (!isLeaderTeamMember) {
+            throw new TeamCreationFailedException("리더가 팀원이 아닙니다.");
+        }
+    }
+
+    //
+    private void updateTeamDetails(Team team, TeamUpdateRequestDto teamUpdateRequestDto) {
+        team.updateTeamName(teamUpdateRequestDto.getName());
+        team.updateLeaderId(teamUpdateRequestDto.getLeaderId());
+        team.updateTeamDescription(teamUpdateRequestDto.getTeamInfo());
+        teamRepository.save(team);
+    }
+
+    private TeamUpdateResponseDto buildTeamUpdateResponseDto(Team team) {
+        return TeamUpdateResponseDto.builder()
+                .id(team.getId())
+                .name(team.getTeamName())
+                .leaderId(team.getLeaderId())
+                .teamInfo(team.getTeamDescription())
+                .build();
+    }
+
 }
