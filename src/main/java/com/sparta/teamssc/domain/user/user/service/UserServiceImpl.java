@@ -23,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 //import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -259,6 +261,7 @@ public class UserServiceImpl implements UserService {
     public Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period) {
         return userRepository.findPagedPendList(pageable, period);
     }
+
 
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
