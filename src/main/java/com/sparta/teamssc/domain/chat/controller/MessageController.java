@@ -41,7 +41,7 @@ public class MessageController {
         if (principal == null) {
             throw new IllegalStateException("인증된 사용자가 없습니다.");
         }
-        messageService.sendTeamMessage(teamId, messageRequestDto.getContent(), principal);
+        messageService.sendTeamMessage(teamId, messageRequestDto.getContent());
     }
 
     @MessageMapping("/chat/period/{periodId}")
@@ -62,7 +62,7 @@ public class MessageController {
         if (principal == null) {
             throw new IllegalStateException("인증된 사용자가 없습니다.");
         }
-        messageService.sendPeriodMessage(periodId, messageRequestDto.getContent(), principal);
+        messageService.sendPeriodMessage(periodId, messageRequestDto.getContent());
     }
 
     // 새로운 API: 특정 팀의 모든 메시지를 불러오기

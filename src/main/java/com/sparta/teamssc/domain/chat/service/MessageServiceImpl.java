@@ -11,12 +11,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +33,9 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
 
     @Transactional
-    public void sendTeamMessage(Long teamId, String content, Principal principal) {
+    public void sendTeamMessage(Long teamId, String content) {
 
-        if (principal == null) {
-            throw new IllegalStateException("인증된 사용자가 없습니다.");
-        }
-        User user = getCurrentUser(principal);
+        User user = getCurrentUser();
 
         if (!teamService.isUserInTeam(user.getId(), teamId)) {
             throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
@@ -53,12 +53,9 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Transactional
-    public void sendPeriodMessage(Long periodId, String content, Principal principal) {
+    public void sendPeriodMessage(Long periodId, String content) {
 
-        if (principal == null) {
-            throw new IllegalStateException("인증된 사용자가 없습니다.");
-        }
-        User user = getCurrentUser(principal);
+        User user = getCurrentUser();
 
         if (!periodService.isUserInPeriod(user.getId(), periodId)) {
             throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
@@ -79,6 +76,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional(readOnly = true)
     public List<Message> getMessagesForTeam(Long teamId) {
+
         return messageRepository.findByRoomIdAndRoomType(teamId, RoomType.TEAM);
     }
 
@@ -86,6 +84,12 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional(readOnly = true)
     public List<Message> getMessagesForPeriod(Long periodId) {
+
+        User user = getCurrentUser();
+
+        if (!periodService.isUserInPeriod(user.getId(), periodId) && !isManager(user)) {
+            throw new IllegalArgumentException("사용자가 해당 기수에 속해 있지 않거나 관리자 권한이 없습니다.");
+        }
         return messageRepository.findByRoomIdAndRoomType(periodId, RoomType.PERIOD);
     }
 
@@ -95,9 +99,19 @@ public class MessageServiceImpl implements MessageService {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         messageRepository.deleteByCreateAtBefore(threeDaysAgo);
     }
-    private User getCurrentUser(Principal principal) {
-        log.info("현재사용자 Principal: {}", principal);
-        String username = principal.getName();
-        return userService.getUserByEmail(username);
+    private User getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            return userService.getUserByEmail(username);
+        } else {
+            throw new IllegalStateException("인증된 사용자가 없습니다.");
+        }
     }
+    private boolean isManager(User user) {
+        return user.getRoles().stream()
+                .anyMatch(role -> role.getRole().equals("MANAGER"));
+    }
+
+
 }

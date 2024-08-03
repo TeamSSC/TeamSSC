@@ -10,8 +10,8 @@ import java.security.Principal;
 import java.util.List;
 
 public interface MessageService {
-    void sendTeamMessage(Long teamId, String content, Principal principal);
-     void sendPeriodMessage(Long periodId, String content,Principal principal);
+    void sendTeamMessage(Long teamId, String content);
+     void sendPeriodMessage(Long periodId, String content);
 
     List<Message> getMessagesForTeam(Long teamId);
     List<Message> getMessagesForPeriod(Long periodId);
