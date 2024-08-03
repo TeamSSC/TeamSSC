@@ -101,6 +101,10 @@ public class User extends BaseEntity {
         this.status = UserStatus.REFUSAL;
     }
 
+    public void updateKakaoUserPeriod(Period period) {
+        this.period = period;
+    }
+
     public void logout() {
         this.status = UserStatus.LOGOUT;
     }

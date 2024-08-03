@@ -5,6 +5,7 @@ import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.response.KakaoUserStatusResponse;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
@@ -142,8 +143,6 @@ public class UserServiceImpl implements UserService {
     public void logout(String email) {
 
         User user = getUserByEmail(email);
-
-        user.logout();
 
         refreshTokenService.deleteRefreshToken(user);
     }
@@ -289,5 +288,36 @@ public class UserServiceImpl implements UserService {
         user.updateFcmToken(fcmToken);
 
         userRepository.save(user);
+    }
+
+    // 카카오 가입 유저 기수 신청 상태 확인
+    @Override
+    public KakaoUserStatusResponse getKakaoUserStatus(String email) {
+
+        User user = getUserByEmail(email);
+
+        if (user.getPeriod() == null) {
+            return KakaoUserStatusResponse.builder().build();
+        }
+
+        return KakaoUserStatusResponse.builder()
+                .period(user.getPeriod().getPeriod())
+                .periodId(user.getPeriod().getId())
+                .trackName(user.getPeriod().getTrack().getName())
+                .build();
+    }
+
+    // 카카오 유저 기수 신청
+    @Transactional
+    @Override
+    public void kakaoUserUpdatePeriod(Long periodId, String email) {
+
+        Period period = periodService.getPeriodById(periodId);
+        User user = getUserByEmail(email);
+        if (user.getPeriod() != null) {
+            throw new IllegalArgumentException("이미 트랙을 신청한 상태입니다.");
+        }
+
+        user.updateKakaoUserPeriod(period);
     }
 }

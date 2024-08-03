@@ -18,6 +18,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -62,10 +63,24 @@ public class KakaoServiceImpl implements KakaoService {
 
         refreshTokenService.updateRefreshToken(kakaoUser, newRefreshToken); // 리프레시 토큰 업데이트
 
+        if (kakaoUser.getPeriod() == null) {
+            return LoginResponseDto.builder()
+                    .accessToken(newAccessToken)
+                    .refreshToken(newRefreshToken)
+                    .username(kakaoUser.getUsername())
+                    .userStatus(kakaoUser.getStatus())
+                    .build();
+        }
+
+
         return LoginResponseDto.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .username(kakaoUser.getUsername())
+                .periodId(kakaoUser.getPeriod().getId())
+                .period(kakaoUser.getPeriod().getPeriod())
+                .userStatus(kakaoUser.getStatus())
+                .trackName(kakaoUser.getPeriod().getTrack().getName())
                 .build();
 
     }
@@ -90,7 +105,8 @@ public class KakaoServiceImpl implements KakaoService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "7cf9695ccd3477922a5d6ddef0793d97");
-        body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
+//        body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000");
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
@@ -149,6 +165,7 @@ public class KakaoServiceImpl implements KakaoService {
         return new KakaoUserInfoDto(id, nickname, image_url, email);
     }
 
+    @Transactional
     public User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
 
         // DB 에 중복된 Kakao Id 가 있는지 확인
