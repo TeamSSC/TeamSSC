@@ -11,6 +11,8 @@ import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMap
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface UserService {
     // 회원가입
     void signup(SignupRequestDto signupRequestDto);

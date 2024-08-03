@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.user.auth.dto.response;
 
+import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import lombok.Builder;
 import lombok.Getter;
 
