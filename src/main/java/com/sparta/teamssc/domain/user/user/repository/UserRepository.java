@@ -22,6 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
 
     Optional<User> findById(Long id);
 
+    Optional<User> findByKakaoId(Long kakaoId);
+
     @Query("SELECT u.id AS id, u.username AS username " +
             "FROM User u JOIN u.roles r "+
             "WHERE (u.period = :periodId AND r.role.name = :role) " +
