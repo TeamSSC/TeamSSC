@@ -44,6 +44,9 @@ jwt:
 server:
   port: 8080
 
+fcm:
+  firebase_config_path: firebase-service-account.json
+
 logging:
   level:
     org.springframework: DEBUG
