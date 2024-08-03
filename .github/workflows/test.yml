@@ -86,6 +86,7 @@ jobs:
             fi
             
             sudo lsof -i :8080 -t | xargs -r sudo kill -9
+            sudo systemctl restart docker
 
             # 여기서의 환경 변수도 여러분 상황에 맞게 작성하시면 됩니다!!!
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
