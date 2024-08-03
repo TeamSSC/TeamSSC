@@ -25,43 +25,16 @@ public class MessageController {
 
     @MessageMapping("/chat/team/{teamId}")
     public void sendTeamMessage(@Payload MessageRequestDto messageRequestDto,
-                                @DestinationVariable Long teamId,
-                                SimpMessageHeaderAccessor headerAccessor) {
-        Principal principal = headerAccessor.getUser();
+                                @DestinationVariable Long teamId){
 
-        if (principal == null) {
 
-            SecurityContext securityContext = (SecurityContext) headerAccessor.getSessionAttributes()
-                    .get("SPRING_SECURITY_CONTEXT");
-
-            if (securityContext != null) {
-                principal = securityContext.getAuthentication();
-            }
-        }
-        if (principal == null) {
-            throw new IllegalStateException("인증된 사용자가 없습니다.");
-        }
         messageService.sendTeamMessage(teamId, messageRequestDto.getContent());
     }
 
     @MessageMapping("/chat/period/{periodId}")
     public void sendPeriodMessage(@Payload MessageRequestDto messageRequestDto,
-                                  @DestinationVariable Long periodId,
-                                  SimpMessageHeaderAccessor headerAccessor) {
+                                  @DestinationVariable Long periodId) {
 
-        Principal principal = headerAccessor.getUser();
-
-        if (principal == null) {
-            SecurityContext securityContext = (SecurityContext) headerAccessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
-
-            if (securityContext != null) {
-                principal = securityContext.getAuthentication();
-            }
-        }
-
-        if (principal == null) {
-            throw new IllegalStateException("인증된 사용자가 없습니다.");
-        }
         messageService.sendPeriodMessage(periodId, messageRequestDto.getContent());
     }
 
