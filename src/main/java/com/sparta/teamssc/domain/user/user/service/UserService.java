@@ -48,6 +48,7 @@ public interface UserService {
     // 회원가입 대기 상태 유저 페이징
     Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period);
 
+    List<User> getUsersByPeriodId(Long periodId);
     // 카카오 가입 유저 기수 신청 상태 확인
     KakaoUserStatusResponse getKakaoUserStatus(String email);
 

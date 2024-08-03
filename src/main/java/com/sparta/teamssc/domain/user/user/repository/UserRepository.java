@@ -29,4 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
             "WHERE (u.period = :periodId AND r.role.name = :role) " +
             "ORDER BY u.createAt")
     Page<ProfileCardMapper> findMemberCards(@Param("periodId") Period periodId, @Param("role") String role, Pageable pageable);
+    //기수로 사용자 찾기
+    @Query("SELECT u FROM User u WHERE u.period.id = :periodId")
+    List<User> findAllByPeriodId(@Param("periodId") Long periodId);
 }

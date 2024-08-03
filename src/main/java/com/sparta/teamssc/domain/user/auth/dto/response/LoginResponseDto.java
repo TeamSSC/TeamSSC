@@ -1,6 +1,5 @@
 package com.sparta.teamssc.domain.user.auth.dto.response;
 
-import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,9 +13,10 @@ public class LoginResponseDto {
     private final String trackName;
     private final int period;
     private final UserStatus userStatus;
+    private final String fcmToken;
 
     @Builder
-    public LoginResponseDto(String accessToken, String refreshToken, String username, Long periodId, String trackName, int period, UserStatus userStatus) {
+    public LoginResponseDto(String accessToken, String refreshToken, String username, Long periodId, String trackName, int period, UserStatus userStatus, String fcmToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.username = username;
@@ -24,5 +24,6 @@ public class LoginResponseDto {
         this.trackName = trackName;
         this.period = period;
         this.userStatus = userStatus;
+        this.fcmToken = fcmToken;
     }
 }
