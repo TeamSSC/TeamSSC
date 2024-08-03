@@ -77,6 +77,12 @@ public class MessageServiceImpl implements MessageService {
     @Transactional(readOnly = true)
     public List<Message> getMessagesForTeam(Long teamId) {
 
+        User user = getCurrentUser();
+
+        if (!teamService.isUserInTeam(user.getId(), teamId)) {
+            throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
+        }
+
         return messageRepository.findByRoomIdAndRoomType(teamId, RoomType.TEAM);
     }
 
