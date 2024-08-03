@@ -53,6 +53,5 @@ public interface UserService {
     // 회원가입 대기 상태 유저 페이징
     Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period);
 
-
-//    boolean verifyEmail(String username, String verificationCode);
+    List<User> getUsersByPeriodId(Long periodId);
 }

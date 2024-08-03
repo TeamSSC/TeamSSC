@@ -16,7 +16,6 @@ import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
 import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,6 +112,11 @@ public class UserServiceImpl implements UserService {
 
         refreshTokenService.updateRefreshToken(user, refreshToken);
 
+        // FCM 토큰 업데이트
+        user.updateFcmToken(loginRequestDto.getFcmToken());
+        userRepository.save(user);
+
+
         user.login();
 
         if (user.getPeriod() == null) {
@@ -129,6 +134,7 @@ public class UserServiceImpl implements UserService {
                 .periodId(user.getPeriod().getId())
                 .period(user.getPeriod().getPeriod())
                 .trackName(user.getPeriod().getTrack().getName())
+                .fcmToken(user.getFcmToken())
                 .build();
     }
 
@@ -262,5 +268,26 @@ public class UserServiceImpl implements UserService {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
                 .collect(Collectors.toList());
+    }
+
+    // 기수에 대한 유저가져오기
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getUsersByPeriodId(Long periodId) {
+
+        Period period = periodService.getPeriodById(periodId);
+
+        return userRepository.findAllByPeriodId(periodId);
+    }
+
+    // fcm토큰 수정
+    @Transactional
+    public void updateFcmToken(Long userId, String fcmToken) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        user.updateFcmToken(fcmToken);
+
+        userRepository.save(user);
     }
 }

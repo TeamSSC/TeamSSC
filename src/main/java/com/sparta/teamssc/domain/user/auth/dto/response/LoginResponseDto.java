@@ -12,14 +12,16 @@ public class LoginResponseDto {
     private final Long periodId;
     private final String trackName;
     private final int period;
+    private final String fcmToken;
 
     @Builder
-    public LoginResponseDto(String accessToken, String refreshToken, String username, Long periodId, String trackName, int period) {
+    public LoginResponseDto(String accessToken, String refreshToken, String username, Long periodId, String trackName, int period, String fcmToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.username = username;
         this.periodId = periodId;
         this.trackName = trackName;
         this.period = period;
+        this.fcmToken = fcmToken;
     }
 }
