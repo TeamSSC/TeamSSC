@@ -1,6 +1,16 @@
 spring:
   application:
     name: TeamSsc
+
+    mail:
+      password: ${EMAIL_PASSWORD}
+      username: ${EMAIL_USERNAME}
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
   servlet:
     multipart:
       enabled: true
@@ -8,7 +18,9 @@ spring:
       max-request-size: 10MB
 
   datasource:
-    url: jdbc:mysql://localhost:3306/teamSSC
+#    url: jdbc:mysql://localhost:3306/teamSSC
+#    url: jdbc:mysql://43.202.54.250:3306/teamSSC
+    url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -33,6 +45,9 @@ jwt:
       expiration: 1209600000
 server:
   port: 8080
+
+fcm:
+  firebase_config_path: firebase-service-account.json
 
 logging:
   level:

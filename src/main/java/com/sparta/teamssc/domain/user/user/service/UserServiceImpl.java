@@ -5,6 +5,7 @@ import com.sparta.teamssc.domain.period.entity.Period;
 import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.user.auth.dto.request.LoginRequestDto;
 import com.sparta.teamssc.domain.user.auth.dto.request.SignupRequestDto;
+import com.sparta.teamssc.domain.user.auth.dto.response.KakaoUserStatusResponse;
 import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 import com.sparta.teamssc.domain.user.refreshToken.entity.RefreshToken;
@@ -16,20 +17,20 @@ import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
 import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final RefreshTokenService refreshTokenService;
     private final UserRoleService userRoleService;
     private final PeriodService periodService;
+//    private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${secret.admin-key}")
     String adminKey;
@@ -111,9 +113,14 @@ public class UserServiceImpl implements UserService {
 
         refreshTokenService.updateRefreshToken(user, refreshToken);
 
+        // FCM 토큰 업데이트
+        user.updateFcmToken(loginRequestDto.getFcmToken());
+        userRepository.save(user);
+
+
         user.login();
 
-        if(user.getPeriod() == null){
+        if (user.getPeriod() == null) {
             return LoginResponseDto.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
@@ -128,6 +135,7 @@ public class UserServiceImpl implements UserService {
                 .periodId(user.getPeriod().getId())
                 .period(user.getPeriod().getPeriod())
                 .trackName(user.getPeriod().getTrack().getName())
+                .fcmToken(user.getFcmToken())
                 .build();
     }
 
@@ -135,8 +143,6 @@ public class UserServiceImpl implements UserService {
     public void logout(String email) {
 
         User user = getUserByEmail(email);
-
-        user.logout();
 
         refreshTokenService.deleteRefreshToken(user);
     }
@@ -179,13 +185,35 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+//    /**
+//     * 이메일 인증: 입력한 인증 코드를 검증
+//     *
+//     * @param email         사용자 이름
+//     * @param verificationCode 입력한 인증 코드
+//     * @return 인증 성공 여부
+//     */
+//    @Override
+//    @Transactional
+//    public boolean verifyEmail(String email, String verificationCode) {
+//        String storedCode = redisTemplate.opsForValue().get(email);
+//        if (storedCode != null && storedCode.equals(verificationCode)) {
+//            Optional<User> userOptional = userRepository.findByEmail(email);
+//            if (userOptional.isPresent()) {
+//                User user = userOptional.get();
+//                user.updateStatus();
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
     @Override
-    public Page<ProfileCardMapper> findMemberCards(Pageable pageable,String email) {
+    public Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email, String role) {
 
         User user = getUserByEmail(email);
         Period period = user.getPeriod();
 
-        return userRepository.findMemberCards(period,pageable);
+        return userRepository.findMemberCards(period, role, pageable);
     }
 
     @Override
@@ -234,9 +262,62 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getName()))
                 .collect(Collectors.toList());
+    }
+
+    // 기수에 대한 유저가져오기
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getUsersByPeriodId(Long periodId) {
+
+        Period period = periodService.getPeriodById(periodId);
+
+        return userRepository.findAllByPeriodId(periodId);
+    }
+
+    // fcm토큰 수정
+    @Transactional
+    public void updateFcmToken(Long userId, String fcmToken) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        user.updateFcmToken(fcmToken);
+
+        userRepository.save(user);
+    }
+
+    // 카카오 가입 유저 기수 신청 상태 확인
+    @Override
+    public KakaoUserStatusResponse getKakaoUserStatus(String email) {
+
+        User user = getUserByEmail(email);
+
+        if (user.getPeriod() == null) {
+            return KakaoUserStatusResponse.builder().build();
+        }
+
+        return KakaoUserStatusResponse.builder()
+                .period(user.getPeriod().getPeriod())
+                .periodId(user.getPeriod().getId())
+                .trackName(user.getPeriod().getTrack().getName())
+                .build();
+    }
+
+    // 카카오 유저 기수 신청
+    @Transactional
+    @Override
+    public void kakaoUserUpdatePeriod(Long periodId, String email) {
+
+        Period period = periodService.getPeriodById(periodId);
+        User user = getUserByEmail(email);
+        if (user.getPeriod() != null) {
+            throw new IllegalArgumentException("이미 트랙을 신청한 상태입니다.");
+        }
+
+        user.updateKakaoUserPeriod(period);
     }
 }

@@ -9,5 +9,6 @@ import java.util.List;
 @Builder
 public class SimpleTeamResponseDto {
     private final Long id;// 팀 아이디
-    private final List<String> userEmails;
+    private final List<Long> userIds;
+    private final List<String> userNames;
 }

@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.team.repository;
 
+import com.sparta.teamssc.domain.team.entity.Section;
 import com.sparta.teamssc.domain.team.entity.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,8 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("SELECT DISTINCT t FROM Team t JOIN t.userTeamMatches utm WHERE utm.user.id = :userId AND t.deleted = false")
     List<Team> findTeamsByUserId(@Param("userId") Long userId);
+
+    // weekProgressId와 section을 통한 삭제되지 않은 팀 찾기
+    @Query("SELECT DISTINCT t FROM Team t WHERE t.weekProgress.id = :weekProgressId AND t.section = :section AND t.deleted = false")
+    List<Team> findAllByWeekProgressIdAndSectionAndNotDeleted(@Param("weekProgressId") Long weekProgressId, @Param("section") Section section);
 }

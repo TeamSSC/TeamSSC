@@ -9,4 +9,5 @@ public class TeamUpdateResponseDto {
     private Long id;
     private String name;
     private String leaderId;
+    private String teamInfo;
 }
