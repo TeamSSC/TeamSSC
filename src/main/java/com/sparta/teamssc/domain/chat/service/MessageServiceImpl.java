@@ -8,15 +8,19 @@ import com.sparta.teamssc.domain.team.service.TeamService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
@@ -26,8 +30,12 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
 
     @Transactional
-    public void sendTeamMessage(Long teamId, String content) {
-        User user = getCurrentUser();
+    public void sendTeamMessage(Long teamId, String content, Principal principal) {
+
+        if (principal == null) {
+            throw new IllegalStateException("인증된 사용자가 없습니다.");
+        }
+        User user = getCurrentUser(principal);
 
         if (!teamService.isUserInTeam(user.getId(), teamId)) {
             throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
@@ -41,12 +49,16 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         messageRepository.save(message);
-        messagingTemplate.convertAndSend("/topic/team/" + teamId, message);
+        messagingTemplate.convertAndSend("/app/chat/team/" + teamId, message);
     }
 
     @Transactional
-    public void sendPeriodMessage(Long periodId, String content) {
-        User user = getCurrentUser();
+    public void sendPeriodMessage(Long periodId, String content, Principal principal) {
+
+        if (principal == null) {
+            throw new IllegalStateException("인증된 사용자가 없습니다.");
+        }
+        User user = getCurrentUser(principal);
 
         if (!periodService.isUserInPeriod(user.getId(), periodId)) {
             throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
@@ -60,16 +72,32 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         messageRepository.save(message);
-        messagingTemplate.convertAndSend("/topic/period/" + periodId, message);
+        messagingTemplate.convertAndSend("/app/chat/period/" + periodId, message);
     }
 
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            return userService.getUserByEmail(userDetails.getUsername()); // UserService를 통해 User 객체를 가져옴
-        } else {
-            throw new IllegalStateException("인증된 사용자가 없습니다.");
-        }
+    // 팀 메시지을 불러오기
+    @Override
+    @Transactional(readOnly = true)
+    public List<Message> getMessagesForTeam(Long teamId) {
+        return messageRepository.findByRoomIdAndRoomType(teamId, RoomType.TEAM);
+    }
+
+    // 기수 메시지 불러오기
+    @Override
+    @Transactional(readOnly = true)
+    public List<Message> getMessagesForPeriod(Long periodId) {
+        return messageRepository.findByRoomIdAndRoomType(periodId, RoomType.PERIOD);
+    }
+
+    @Override
+    @Transactional
+    public void deleteOldMessages() {
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        messageRepository.deleteByCreateAtBefore(threeDaysAgo);
+    }
+    private User getCurrentUser(Principal principal) {
+        log.info("현재사용자 Principal: {}", principal);
+        String username = principal.getName();
+        return userService.getUserByEmail(username);
     }
 }
