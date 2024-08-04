@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DataLoader implements ApplicationRunner {
 
+
+
+
     private final RoleRepository roleRepository;
 
     @Override
