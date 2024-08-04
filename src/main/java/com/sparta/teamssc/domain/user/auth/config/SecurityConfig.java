@@ -3,6 +3,7 @@ package com.sparta.teamssc.domain.user.auth.config;
 
 import com.sparta.teamssc.domain.user.auth.filter.JwtAuthenticationFilter;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +26,14 @@ import org.springframework.security.concurrent.DelegatingSecurityContextExecutor
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Configuration
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -81,8 +84,8 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true); // 자격 증명 허용
-        config.addAllowedOriginPattern("http://localhost:3000"); // 모든 오리진 허용
-        config.addAllowedOriginPattern( "https://apic.app"); // 모든 오리진 허용
+
+        config.addAllowedOriginPattern("*"); // 모든 오리진 허용
 
         config.addAllowedHeader("*"); // 모든 헤더 허용
         config.addAllowedMethod("*"); // 모든 메서드 허용

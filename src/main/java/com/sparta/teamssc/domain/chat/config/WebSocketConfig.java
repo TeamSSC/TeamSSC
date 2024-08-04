@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.chat.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -30,8 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/init")
-                .setAllowedOriginPatterns("https://apic.app","http://localhost:3000") ;// CORS 추가
-        // .withSockJS();
+                .setAllowedOriginPatterns("*");        // .withSockJS();
     }
 
     // 클라이언트 인바운드 채널에 인터셉터 (인증정보랑 컨텍스트 홀더 세팅 관련 인터셉트)
