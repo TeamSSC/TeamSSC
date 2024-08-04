@@ -3,8 +3,8 @@ spring:
     name: TeamSsc
 
     mail:
-      password: ${EMAIL_PASSWORD}
-      username: ${EMAIL_USERNAME}
+      password: fprmzufswvwwtchz
+      username: teamssc2@gmail.com
       properties:
         mail:
           smtp:
@@ -18,11 +18,11 @@ spring:
       max-request-size: 10MB
 
   datasource:
-#    url: jdbc:mysql://localhost:3306/teamSSC
+    url: jdbc:mysql://localhost:3306/teamSSC
 #    url: jdbc:mysql://43.202.54.250:3306/teamSSC
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+#    url: ${DB_URL}
+    username: dami
+    password: asdf1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -35,7 +35,7 @@ spring:
         use_sql_comments: true
 jwt:
   secret:
-    key: ${JWT_SECRET_KEY}
+    key: 7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg==
   token:
     expiration: 1800000
   refresh:
@@ -52,4 +52,4 @@ logging:
     org.springframework: DEBUG
 
 secret:
-  admin-key: ${ADMIN_SECRET_KEY}
+  admin-key: AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC
