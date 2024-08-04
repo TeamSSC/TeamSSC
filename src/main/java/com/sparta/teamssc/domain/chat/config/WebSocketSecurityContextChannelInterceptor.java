@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
+// contextHolder의 정보 set, clear(쓰레드 풀의 쓰레드 재사용)
 @Slf4j
 @Component
 public class WebSocketSecurityContextChannelInterceptor implements ChannelInterceptor {

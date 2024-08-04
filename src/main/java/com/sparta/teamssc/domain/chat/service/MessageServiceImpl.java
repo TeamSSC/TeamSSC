@@ -105,6 +105,7 @@ public class MessageServiceImpl implements MessageService {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         messageRepository.deleteByCreateAtBefore(threeDaysAgo);
     }
+
     private User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
@@ -114,10 +115,9 @@ public class MessageServiceImpl implements MessageService {
             throw new IllegalStateException("인증된 사용자가 없습니다.");
         }
     }
+
     private boolean isManager(User user) {
         return user.getRoles().stream()
                 .anyMatch(role -> role.getRole().equals("MANAGER"));
     }
-
-
 }
