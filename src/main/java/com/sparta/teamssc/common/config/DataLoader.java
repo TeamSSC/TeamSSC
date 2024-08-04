@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class DataLoader implements ApplicationRunner {
-//대다미
+
     private final RoleRepository roleRepository;
 
     @Override
