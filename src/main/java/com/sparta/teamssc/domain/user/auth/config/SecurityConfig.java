@@ -14,14 +14,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,5 +74,19 @@ public class SecurityConfig {
     @Bean
     public ExecutorService delegatingSecurityContextExecutorService() {
         return new DelegatingSecurityContextExecutorService(Executors.newCachedThreadPool());
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true); // 자격 증명 허용
+        config.addAllowedOriginPattern("http://localhost:3000"); // 모든 오리진 허용
+        config.addAllowedOriginPattern( "https://apic.app"); // 모든 오리진 허용
+
+        config.addAllowedHeader("*"); // 모든 헤더 허용
+        config.addAllowedMethod("*"); // 모든 메서드 허용
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 }

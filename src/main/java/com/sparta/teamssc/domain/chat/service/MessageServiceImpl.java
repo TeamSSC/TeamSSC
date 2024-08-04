@@ -118,6 +118,4 @@ public class MessageServiceImpl implements MessageService {
         return user.getRoles().stream()
                 .anyMatch(role -> role.getRole().equals("MANAGER"));
     }
-
-
 }
