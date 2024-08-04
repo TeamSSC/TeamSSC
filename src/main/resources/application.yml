@@ -18,8 +18,8 @@ spring:
       max-request-size: 10MB
 
   datasource:
-#    url: jdbc:mysql://localhost:3306/teamSSC
-    url: jdbc:mysql://3.38.181.152:3306/teamSSC
+    url: jdbc:mysql://localhost:3306/teamSSC
+#    url: jdbc:mysql://3.38.181.152:3306/teamSSC
 #    url: ${DB_URL}
     username: dami
     password: asdf1234
