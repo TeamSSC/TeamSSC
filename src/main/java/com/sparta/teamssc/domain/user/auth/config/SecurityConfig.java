@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("MANAGER")
                                 .requestMatchers("/ws/**").permitAll()
                                 .requestMatchers("/app/**").permitAll()
+                                .requestMatchers("/**").permitAll()
                                 .anyRequest().permitAll()
                 );
 
