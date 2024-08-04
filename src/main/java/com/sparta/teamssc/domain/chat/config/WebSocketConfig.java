@@ -1,5 +1,7 @@
 package com.sparta.teamssc.domain.chat.config;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,15 +13,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketAuthInterceptor webSocketAuthInterceptor;
-    private final WebSocketSecurityContextChannelInterceptor securityContextChannelInterceptor;
+    private final WebSocketAuthInterceptor webSocketAuthInterceptor; // 인증정보 보안 컨텍스트에 세팅
+    private final WebSocketSecurityContextChannelInterceptor securityContextChannelInterceptor; // 보안 컨텍스트에 있는걸 쓰레드 컨텍트스 홀더에 셍팅 및 지춤
 
-    public WebSocketConfig(WebSocketAuthInterceptor webSocketAuthInterceptor, WebSocketSecurityContextChannelInterceptor securityContextChannelInterceptor) {
-        this.webSocketAuthInterceptor = webSocketAuthInterceptor;
-        this.securityContextChannelInterceptor = securityContextChannelInterceptor;
-    }
 
     // 메시지 브로커 app인걸 라우팅
     @Override
@@ -32,10 +31,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/init")
-                .setAllowedOriginPatterns("*"); // CORS 추가
+                .setAllowedOriginPatterns("*");        // .withSockJS();
     }
 
-    // 클라이언트 인바운드 채널에 인터셉터
+    // 클라이언트 인바운드 채널에 인터셉터 (인증정보랑 컨텍스트 홀더 세팅 관련 인터셉트)
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(webSocketAuthInterceptor, securityContextChannelInterceptor);
@@ -44,6 +43,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // // 클라이언트 아웃바인드 채널에 인터셉터
     @Override
     public void configureClientOutboundChannel(ChannelRegistration registration) {
-        registration.taskExecutor().corePoolSize(10);
+        registration.taskExecutor().corePoolSize(10); //스레드 풀 크기를 설정해서 병렬 처리
     }
 }
