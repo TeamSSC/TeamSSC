@@ -7,8 +7,10 @@ import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.service.TeamService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
+import com.sparta.teamssc.rabbitmq.RabbitMQConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +34,8 @@ public class MessageServiceImpl implements MessageService {
     private final PeriodService periodService;
     private final UserService userService;
 
+    private final RabbitTemplate rabbitTemplate;
+
     @Transactional
     public void sendTeamMessage(Long teamId, String content) {
 
@@ -49,7 +53,9 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         messageRepository.save(message);
-        messagingTemplate.convertAndSend("/app/chat/team/" + teamId, message);
+      //  messagingTemplate.convertAndSend("/app/chat/team/" + teamId, message);
+        // 메시지를 RabbitMQ로 발행
+        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, message);
     }
 
     @Transactional
@@ -69,7 +75,8 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         messageRepository.save(message);
-        messagingTemplate.convertAndSend("/app/chat/period/" + periodId, message);
+      //  messagingTemplate.convertAndSend("/app/chat/period/" + periodId, message);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, message);
     }
 
     // 팀 메시지을 불러오기
