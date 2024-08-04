@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataLoader implements ApplicationRunner {
 
 
-
-
     private final RoleRepository roleRepository;
 
     @Override
