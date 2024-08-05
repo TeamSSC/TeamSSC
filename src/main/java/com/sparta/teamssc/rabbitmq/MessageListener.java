@@ -1,6 +1,7 @@
 package com.sparta.teamssc.rabbitmq;
 
 import com.sparta.teamssc.domain.chat.entity.Message;
+import com.sparta.teamssc.domain.chat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -13,11 +14,19 @@ import org.springframework.stereotype.Service;
 public class MessageListener {
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final MessageRepository messageRepository;
 
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
     public void handleMessage(Message message) {
+        log.debug("받은 RabbitMQ 메시지: {}", message);
+        // 받은 메시지를 데이터베이스에 저장
+        messageRepository.save(message);
+
         // 받은 메시지를 WebSocket으로 전송
+       // String destination = "/topic/" + message.getRoomType().name().toLowerCase() + "/" + message.getRoomId();
         String destination = "/app/chat/" + message.getRoomType().name().toLowerCase() + "/" + message.getRoomId();
+        log.debug("보낸 WebSocket 도착지: {}", destination);
+
         messagingTemplate.convertAndSend(destination, message);
     }
 }

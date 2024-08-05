@@ -1,6 +1,7 @@
 package com.sparta.teamssc.domain.chat.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -14,6 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
+@Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebSocketAuthInterceptor webSocketAuthInterceptor; // 인증정보 보안 컨텍스트에 세팅
@@ -21,6 +23,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 
     // 메시지 브로커 app인걸 라우팅
+//    @Override
+//    public void configureMessageBroker(MessageBrokerRegistry registry) {
+//        log.debug("STOMP Broker Relay중");
+//
+//        registry.enableStompBrokerRelay("/topic")
+//                .setRelayHost("localhost")
+//                .setRelayPort(61613)
+//                .setClientLogin("guest")
+//                .setClientPasscode("guest");
+//        registry.setApplicationDestinationPrefixes("/app");
+//    }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");

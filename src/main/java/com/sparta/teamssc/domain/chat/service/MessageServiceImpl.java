@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
-    private final SimpMessagingTemplate messagingTemplate;
     private final TeamService teamService;
     private final PeriodService periodService;
     private final UserService userService;
@@ -52,10 +51,10 @@ public class MessageServiceImpl implements MessageService {
                 .roomType(RoomType.TEAM)
                 .build();
 
-        messageRepository.save(message);
-      //  messagingTemplate.convertAndSend("/app/chat/team/" + teamId, message);
+
         // 메시지를 RabbitMQ로 발행
-        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, message);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
+        log.info("팀Message 보내기 RabbitMQ: {}", message);
     }
 
     @Transactional
@@ -74,9 +73,12 @@ public class MessageServiceImpl implements MessageService {
                 .roomType(RoomType.PERIOD)
                 .build();
 
-        messageRepository.save(message);
-      //  messagingTemplate.convertAndSend("/app/chat/period/" + periodId, message);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, message);
+        // 메시지를 RabbitMQ로 발행
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
+
+
+        log.info("기수Message 보내기 RabbitMQ: {}", message);
+
     }
 
     // 팀 메시지을 불러오기

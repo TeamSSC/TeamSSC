@@ -27,6 +27,7 @@ public class MessageController {
     public void sendTeamMessage(@Payload MessageRequestDto messageRequestDto,
                                 @DestinationVariable Long teamId){
 
+
         messageService.sendTeamMessage(teamId, messageRequestDto.getContent());
     }
 
