@@ -37,11 +37,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setSystemHeartbeatReceiveInterval(10000);
         registry.setApplicationDestinationPrefixes("/app");
     }
-//    @Override
-//    public void configureMessageBroker(MessageBrokerRegistry registry) {
-//        registry.enableSimpleBroker("/topic");
-//        registry.setApplicationDestinationPrefixes("/app");
-//    }
 
     // STOMP 엔드포인트를 등록
     @Override
