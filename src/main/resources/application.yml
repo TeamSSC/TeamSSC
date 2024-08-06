@@ -63,7 +63,7 @@ server:
 #  firebase_config_path: firebase-service-account.json
 
 fcm:
-  firebase_config_path: /apps/config/firebase-service-account.json
+  firebase_config_path: /home/ubuntu/firebase-service-account.json
 
 logging:
   level:
