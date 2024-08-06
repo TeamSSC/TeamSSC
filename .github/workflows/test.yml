@@ -100,6 +100,4 @@ jobs:
                 -e S3_SECRET=${{ secrets.S3_SECRET }} \
                 -e S3_REGION=${{ secrets.S3_REGION }} \
                 -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
-#                -e FIREBASE_JSON=${{ secrets.FIREBASE_JSON }} \
-                -e SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} \
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
