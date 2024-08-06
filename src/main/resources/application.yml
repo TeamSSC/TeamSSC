@@ -35,6 +35,13 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
+
+  rabbitmq:
+    host: localhost
+    username: guest
+    password: guest
+    port: 5672
+
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
@@ -51,7 +58,10 @@ fcm:
 
 logging:
   level:
-    org.springframework: DEBUG
+    org.springframework.messaging: DEBUG
+    org.springframework.amqp: DEBUG
+    org.springframework.web.socket: DEBUG
+    com.sparta.teamssc: DEBUG
 
 secret:
   admin-key: ${ADMIN_SECRET_KEY}

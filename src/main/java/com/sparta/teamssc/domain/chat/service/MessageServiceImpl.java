@@ -7,8 +7,10 @@ import com.sparta.teamssc.domain.period.service.PeriodService;
 import com.sparta.teamssc.domain.team.service.TeamService;
 import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.service.UserService;
+import com.sparta.teamssc.rabbitmq.RabbitMQConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,10 +29,11 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
-    private final SimpMessagingTemplate messagingTemplate;
     private final TeamService teamService;
     private final PeriodService periodService;
     private final UserService userService;
+
+    private final RabbitTemplate rabbitTemplate;
 
     @Transactional
     public void sendTeamMessage(Long teamId, String content) {
@@ -48,8 +51,10 @@ public class MessageServiceImpl implements MessageService {
                 .roomType(RoomType.TEAM)
                 .build();
 
-        messageRepository.save(message);
-        messagingTemplate.convertAndSend("/app/chat/team/" + teamId, message);
+
+        // 메시지를 RabbitMQ로 발행
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
+        log.info("팀Message 보내기 RabbitMQ: {}", message);
     }
 
     @Transactional
@@ -68,8 +73,12 @@ public class MessageServiceImpl implements MessageService {
                 .roomType(RoomType.PERIOD)
                 .build();
 
-        messageRepository.save(message);
-        messagingTemplate.convertAndSend("/app/chat/period/" + periodId, message);
+        // 메시지를 RabbitMQ로 발행
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
+
+
+        log.info("기수Message 보내기 RabbitMQ: {}", message);
+
     }
 
     // 팀 메시지을 불러오기
