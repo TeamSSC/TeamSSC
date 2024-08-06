@@ -66,40 +66,38 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
 
-  deploy-to-ec2:
-    needs: build-and-docker-push # 위의 build-and-docker-push이 끝나고 실행
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "status=running" --filter "publish=8080")
-
-            if [ ! -z "$CONTAINER_ID" ]; then
-              sudo docker stop $CONTAINER_ID
-              sudo docker rm $CONTAINER_ID
-            fi
-            
-            sudo lsof -i :8080 -t | xargs -r sudo kill -9
-            sudo systemctl restart docker
-
-            # 여기서의 환경 변수도 여러분 상황에 맞게 작성하시면 됩니다!!!
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-            sudo docker run -d -p 8080:8080 \
-                -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
-                -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-                -e DB_URL=${{ secrets.DB_URL }} \
-                -e ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }} \
-                -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-                -e EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }} \
-                -e EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} \
-                -e S3_ACCESS=${{ secrets.S3_ACCESS }} \
-                -e S3_SECRET=${{ secrets.S3_SECRET }} \
-                -e S3_REGION=${{ secrets.S3_REGION }} \
-                -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
-                ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
+#  deploy-to-ec2:
+#    needs: build-and-docker-push # 위의 build-and-docker-push이 끝나고 실행
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Deploy to EC2
+#        uses: appleboy/ssh-action@v1.0.3
+#        with:
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ${{ secrets.EC2_USER }}
+#          key: ${{ secrets.EC2_KEY }}
+#          script: |
+#            CONTAINER_ID=$(sudo docker ps -q --filter "status=running" --filter "publish=8080")
+#
+#            if [ ! -z "$CONTAINER_ID" ]; then
+#              sudo docker stop $CONTAINER_ID
+#              sudo docker rm $CONTAINER_ID
+#            fi
+#
+#
+#            # 여기서의 환경 변수도 여러분 상황에 맞게 작성하시면 됩니다!!!
+#            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
+#            sudo docker run -d -p 8080:8080 \
+#                -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+#                -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+#                -e DB_URL=${{ secrets.DB_URL }} \
+#                -e ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }} \
+#                -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+#                -e EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }} \
+#                -e EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} \
+#                -e S3_ACCESS=${{ secrets.S3_ACCESS }} \
+#                -e S3_SECRET=${{ secrets.S3_SECRET }} \
+#                -e S3_REGION=${{ secrets.S3_REGION }} \
+#                -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
+#                ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
