@@ -100,14 +100,5 @@ jobs:
                 -e S3_SECRET=${{ secrets.S3_SECRET }} \
                 -e S3_REGION=${{ secrets.S3_REGION }} \
                 -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
-                -e FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }} \
-                -e FIREBASE_PRIVATE_KEY_ID=${{ secrets.FIREBASE_PRIVATE_KEY_ID }} \
-                -e FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }} \
-                -e FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }} \
-                -e FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }} \
-                -e FIREBASE_AUTH_URI=${{ secrets.FIREBASE_AUTH_URI }} \
-                -e FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI }} \
-                -e FIREBASE_AUTH_PROVIDER_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_CERT_URL }} \
-                -e FIREBASE_CLIENT_CERT_URL=${{ secrets.FIREBASE_CLIENT_CERT_URL }} \
-                -e FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN }} \
+                -e FIREBASE_JSON=${{ secrets.FIREBASE_JSON }} \
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest

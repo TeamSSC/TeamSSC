@@ -62,19 +62,6 @@ server:
 #fcm:
 #  firebase_config_path: firebase-service-account.json
 
-fcm:
-  firebase_project_id: ${FIREBASE_PROJECT_ID}
-  firebase_private_key_id: ${FIREBASE_PRIVATE_KEY_ID}
-  firebase_private_key: ${FIREBASE_PRIVATE_KEY}
-  firebase_client_email: ${FIREBASE_CLIENT_EMAIL}
-  firebase_client_id: ${FIREBASE_CLIENT_ID}
-  firebase_auth_uri: ${FIREBASE_AUTH_URI}
-  firebase_token_uri: ${FIREBASE_TOKEN_URI}
-  firebase_auth_provider_cert_url: ${FIREBASE_AUTH_PROVIDER_CERT_URL}
-  firebase_client_cert_url: ${FIREBASE_CLIENT_CERT_URL}
-  firebase_universe_domain: ${FIREBASE_UNIVERSE_DOMAIN}
-
-
 logging:
   level:
     org.springframework.messaging: DEBUG
