@@ -70,9 +70,9 @@ logging:
     com.sparta.teamssc: DEBUG
 
 
-slack:
-  webhook:
-    url: ${SLACK_WEBHOOK_URL}
+#slack:
+#  webhook:
+#    url: ${SLACK_WEBHOOK_URL}
 
 secret:
   admin-key: ${ADMIN_SECRET_KEY}
