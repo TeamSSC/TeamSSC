@@ -89,7 +89,6 @@ jobs:
             # 여기서의 환경 변수도 여러분 상황에 맞게 작성하시면 됩니다!!!
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
             sudo docker run -d -p 8080:8080 \
-                -v /home/ubuntu/firebase-service-account.json:/apps/firebase-service-account.json \
                 -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
                 -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
                 -e DB_URL=${{ secrets.DB_URL }} \
@@ -101,4 +100,14 @@ jobs:
                 -e S3_SECRET=${{ secrets.S3_SECRET }} \
                 -e S3_REGION=${{ secrets.S3_REGION }} \
                 -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
+                -e FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }} \
+                -e FIREBASE_PRIVATE_KEY_ID=${{ secrets.FIREBASE_PRIVATE_KEY_ID }} \
+                -e FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }} \
+                -e FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }} \
+                -e FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }} \
+                -e FIREBASE_AUTH_URI=${{ secrets.FIREBASE_AUTH_URI }} \
+                -e FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI }} \
+                -e FIREBASE_AUTH_PROVIDER_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_CERT_URL }} \
+                -e FIREBASE_CLIENT_CERT_URL=${{ secrets.FIREBASE_CLIENT_CERT_URL }} \
+                -e FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN }} \
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
