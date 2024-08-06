@@ -53,6 +53,9 @@ public class FCMInitializer {
         try {
             log.info("Loading Firebase service account key from environment variables");
 
+            // 줄 바꿈 문자를 적절히 처리
+            String privateKey = System.getenv("FIREBASE_PRIVATE_KEY").replace("\\n", "\n");
+
             // 환경 변수를 JSON 형식으로 변환
             String json = String.format(
                     "{"
