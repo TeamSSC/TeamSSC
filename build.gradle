@@ -16,6 +16,13 @@ sourceSets {
     }
 }
 
+jar {
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+    with jar
+}
+
 group = 'com.sparta'
 version = '0.0.1-SNAPSHOT'
 
