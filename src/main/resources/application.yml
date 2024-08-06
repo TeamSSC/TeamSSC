@@ -35,17 +35,17 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-  rabbitmq:
-    host: localhost
-    username: guest
-    password: guest
-    port: 61613
-
 #  rabbitmq:
-#    host: ${RABBITMQ_HOST}
-#    username: ${RABBITMQ_USERNAME}
-#    password: ${RABBITMQ_PASSWORD}
-#    port: ${RABBITMQ_PORT}
+#    host: localhost
+#    username: guest
+#    password: guest
+#    port: 61613
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    port: ${RABBITMQ_PORT}
 
 
 jwt:
