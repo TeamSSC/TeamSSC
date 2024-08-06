@@ -23,7 +23,7 @@ import java.util.List;
 public class MessageController {
     private final MessageService messageService;
 
-    @MessageMapping("/chat/team/{teamId}")
+    @MessageMapping("/chat.team.{teamId}")
     public void sendTeamMessage(@Payload MessageRequestDto messageRequestDto,
                                 @DestinationVariable Long teamId){
 
@@ -31,7 +31,7 @@ public class MessageController {
         messageService.sendTeamMessage(teamId, messageRequestDto.getContent());
     }
 
-    @MessageMapping("/chat/period/{periodId}")
+    @MessageMapping("/chat.period.{periodId}")
     public void sendPeriodMessage(@Payload MessageRequestDto messageRequestDto,
                                   @DestinationVariable Long periodId) {
 
