@@ -23,14 +23,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketAuthInterceptor webSocketAuthInterceptor; // 인증정보 보안 컨텍스트에 세팅
     private final WebSocketSecurityContextChannelInterceptor securityContextChannelInterceptor; // 보안 컨텍스트에 있는걸 쓰레드 컨텍트스 홀더에 셍팅 및 지춤
 
-    @Value("${spring.rabbitmq.host}")
-    private String host;
-    @Value("${spring.rabbitmq.port}")
-    private int port;
-    @Value("${spring.rabbitmq.username}")
-    private String username;
-    @Value("${spring.rabbitmq.password}")
-    private String password;
 
     // 메시지 브로커 app인걸 라우팅
     @Override
@@ -38,10 +30,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         log.debug("STOMP Broker Relay 설정 중");
         registry.setPathMatcher(new AntPathMatcher("/"));
         registry.enableStompBrokerRelay("/topic", "/queue", "/exchange", "/amq/queue","/chat")
-                .setRelayHost(host)
-                .setRelayPort(port)
-                .setClientLogin(username)
-                .setClientPasscode(password)
+                .setRelayHost("localhost")
+                .setRelayPort(61613)
+                .setClientLogin("guest")
+                .setClientPasscode("guest")
                 .setSystemHeartbeatSendInterval(10000)
                 .setSystemHeartbeatReceiveInterval(10000);
         registry.setApplicationDestinationPrefixes("/app");
