@@ -47,6 +47,17 @@ spring:
 #    password: ${RABBITMQ_PASSWORD}
 #    port: ${RABBITMQ_PORT}
 
+fcm:
+  project-id: ${FCM_PROJECT_ID}
+  private-key-id: ${FCM_PRIVATE_KEY_ID}
+  private-key: ${FCM_PRIVATE_KEY}
+  client-email: ${FCM_CLIENT_EMAIL}
+  client-id: ${FCM_CLIENT_ID}
+  auth-uri: ${FCM_AUTH_URI}
+  token-uri: ${FCM_TOKEN_URI}
+  auth-provider-x509-cert-url: ${FCM_AUTH_PROVIDER_X509_CERT_URL}
+  client-x509-cert-url: ${FCM_CLIENT_X509_CERT_URL}
+  universe-domain: ${FCM_UNIVERSE_DOMAIN}
 
 jwt:
   secret:
@@ -59,8 +70,6 @@ jwt:
 server:
   port: 8080
 
-fcm:
-  firebase_config_path: firebase-service-account.json
 
 logging:
   level:
