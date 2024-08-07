@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation("com.slack.api:slack-api-client:1.40.3")
 
@@ -31,7 +32,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'javax.mail:mail:1.4.7'
 
-    implementation 'io.projectreactor.netty:reactor-netty:1.1.7'
 
     // Spring Context Support
     implementation 'org.springframework:spring-context-support:5.3.9'
@@ -75,6 +75,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Reactor Netty 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'io.projectreactor.netty:reactor-netty-http'
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 

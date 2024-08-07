@@ -49,14 +49,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
 
-      - name: Create Firebase service account JSON file
-        id: create-json
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: "firebase-service-account.json"
-          json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          dir: 'src/main/resources/'
-
   deploy-to-ec2:
     needs: build-and-docker-push
     runs-on: ubuntu-latest
@@ -91,7 +83,7 @@ jobs:
                 -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
                 -e FCM_PROJECT_ID=${{ secrets.FCM_PROJECT_ID }} \
                 -e FCM_PRIVATE_KEY_ID=${{ secrets.FCM_PRIVATE_KEY_ID }} \
-                -e FCM_PRIVATE_KEY=${{ secrets.FCM_PRIVATE_KEY }} \
+                -e FCM_PRIVATE_KEY="${{ secrets.FCM_PRIVATE_KEY }}" \
                 -e FCM_CLIENT_EMAIL=${{ secrets.FCM_CLIENT_EMAIL }} \
                 -e FCM_CLIENT_ID=${{ secrets.FCM_CLIENT_ID }} \
                 -e FCM_AUTH_URI=${{ secrets.FCM_AUTH_URI }} \
@@ -101,5 +93,3 @@ jobs:
                 -e FCM_UNIVERSE_DOMAIN=${{ secrets.FCM_UNIVERSE_DOMAIN }} \
                 -e SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} \
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-            
-            

@@ -6,7 +6,6 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -50,22 +49,27 @@ public class FCMInitializer {
             // Replace \n with actual newline characters
             String formattedPrivateKey = privateKey.replace("\\n", "\n");
 
-            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
-                    new ByteArrayInputStream((
-                            "{" +
-                                    "\"type\": \"service_account\"," +
-                                    "\"project_id\": \"" + projectId + "\"," +
-                                    "\"private_key_id\": \"" + privateKeyId + "\"," +
-                                    "\"private_key\": \"" + formattedPrivateKey + "\"," +
-                                    "\"client_email\": \"" + clientEmail + "\"," +
-                                    "\"client_id\": \"" + clientId + "\"," +
-                                    "\"auth_uri\": \"" + authUri + "\"," +
-                                    "\"token_uri\": \"" + tokenUri + "\"," +
-                                    "\"auth_provider_x509_cert_url\": \"" + authProviderX509CertUrl + "\"," +
-                                    "\"client_x509_cert_url\": \"" + clientX509CertUrl + "\"" +
-                                    "}")
-                            .getBytes())
+            String jsonCredentials = String.format(
+                    "{"
+                            + "\"type\": \"service_account\","
+                            + "\"project_id\": \"%s\","
+                            + "\"private_key_id\": \"%s\","
+                            + "\"private_key\": \"%s\","
+                            + "\"client_email\": \"%s\","
+                            + "\"client_id\": \"%s\","
+                            + "\"auth_uri\": \"%s\","
+                            + "\"token_uri\": \"%s\","
+                            + "\"auth_provider_x509_cert_url\": \"%s\","
+                            + "\"client_x509_cert_url\": \"%s\""
+                            + "}",
+                    projectId, privateKeyId, formattedPrivateKey, clientEmail, clientId, authUri, tokenUri,
+                    authProviderX509CertUrl, clientX509CertUrl
             );
+
+            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
+                    new ByteArrayInputStream(jsonCredentials.getBytes())
+            );
+
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(googleCredentials)
                     .build();
