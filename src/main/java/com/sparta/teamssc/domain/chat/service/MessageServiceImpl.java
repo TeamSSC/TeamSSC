@@ -35,6 +35,7 @@ public class MessageServiceImpl implements MessageService {
 
     private final RabbitTemplate rabbitTemplate;
 
+
     @Transactional
     public void sendTeamMessage(Long teamId, String content) {
 
