@@ -21,6 +21,7 @@ public class FCMServiceImpl implements FCMService {
                 .setToken(requestDto.getTargetToken())
                 .build();
 
+
         try {
             // FirebaseMessaging 인스턴스로 메시지 전송
             FirebaseMessaging.getInstance().send(message);
