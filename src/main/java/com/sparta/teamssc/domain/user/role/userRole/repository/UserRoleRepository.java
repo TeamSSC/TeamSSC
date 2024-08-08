@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
-    @Query("DELETE FROM UserRole UR WHERE UR.user = :userId AND UR.role = :roleId")
+    @Query("DELETE FROM UserRole UR WHERE UR.user.id = :userId AND UR.role.id = :roleId")
     void deleteByRole(@Param("userId")Long userId, @Param("role")Long roleId);
 }
