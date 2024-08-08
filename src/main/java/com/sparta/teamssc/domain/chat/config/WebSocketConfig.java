@@ -28,7 +28,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         log.debug("STOMP Broker Relay 설정 중");
-        registry.setPathMatcher(new AntPathMatcher("."));
+        registry.setPathMatcher(new AntPathMatcher("/"));
         registry.enableStompBrokerRelay("/topic", "/queue", "/exchange", "/amq/queue","/chat")
                 .setRelayHost("teamssc.site")
                 .setRelayPort(61613)
