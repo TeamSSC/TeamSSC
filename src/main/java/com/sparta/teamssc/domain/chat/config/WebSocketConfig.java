@@ -30,10 +30,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         log.debug("STOMP Broker Relay 설정 중");
         registry.setPathMatcher(new AntPathMatcher("/"));
         registry.enableStompBrokerRelay("/topic", "/queue", "/exchange", "/amq/queue","/chat")
-                .setRelayHost("localhost")
+                .setRelayHost("teamssc.site")
                 .setRelayPort(61613)
                 .setClientLogin("guest")
                 .setClientPasscode("guest")
+                .setVirtualHost("/")
                 .setSystemHeartbeatSendInterval(10000)
                 .setSystemHeartbeatReceiveInterval(10000);
         registry.setApplicationDestinationPrefixes("/app");
