@@ -66,6 +66,7 @@ public class ManagerServiceImpl implements ManagerService{
 
     //매니저 권한 부여
     @Override
+    @Transactional
     public void approveManager(ApproveManagerRequestDto approveManagerRequestDto) {
 
         User user = userService.getUserByEmail(approveManagerRequestDto.getUserEmail());
@@ -77,6 +78,9 @@ public class ManagerServiceImpl implements ManagerService{
         }
 
         userRoleService.userRoleAdd(user,"manager");
+
+        // role 1 : 매니저권한 부여 후 유저 권한 삭제
+        userRoleService.userRoleDelete(user.getId(), 1L);
     }
 
 }
