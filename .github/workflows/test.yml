@@ -1,50 +1,33 @@
+name: Build, Docker Push, and Deploy
+
 on:
   push:
-    # 배열로 여러 브랜치를 넣을 수 있다.
     branches: [ main, feat/* ]
-    # github pull request 생성시
   pull_request:
     branches:
-      - main # -로 여러 브랜치를 명시하는 것도 가능
+      - main
 
 env:
   DOCKER_IMAGE_TAG_NAME: team-ssc
 
 jobs:
   build-and-docker-push:
-    runs-on: ubuntu-latest # 실행환경
+    runs-on: ubuntu-latest
 
-    # 실행 스텝 지정
     steps:
       - uses: actions/checkout@v3
 
-      # java version 지정
-      - name: Set up JDK 17 with AdoptOp
+      - name: Set up JDK 17 with AdoptOpenJDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
 
-      # 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Build
       - name: Build with Gradle
         run: ./gradlew clean build
-
-      #      직접 사용
-      #      # Docker Image 빌드
-      #      - name: Build the Docker image
-      #        run: docker build . --file docker/Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-      #
-      #      # Docker 로큰
-      #      - name: Login to Docker Hub using Access Token
-      #        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      #
-      #      # 이미지 푸시
-      #      - name: Push the Docker image
-      #        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -58,7 +41,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -66,8 +49,16 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
 
+      - name: Create Firebase service account JSON file
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "firebase-service-account.json"
+          json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          dir: 'src/main/resources/'
+
   deploy-to-ec2:
-    needs: build-and-docker-push # 위의 build-and-docker-push이 끝나고 실행
+    needs: build-and-docker-push
     runs-on: ubuntu-latest
 
     steps:
@@ -84,11 +75,7 @@ jobs:
               sudo docker stop $CONTAINER_ID
               sudo docker rm $CONTAINER_ID
             fi
-            
-            sudo lsof -i :8080 -t | xargs -r sudo kill -9
-            sudo systemctl restart docker
 
-            # 여기서의 환경 변수도 여러분 상황에 맞게 작성하시면 됩니다!!!
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
             sudo docker run -d -p 8080:8080 \
                 -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
@@ -102,4 +89,17 @@ jobs:
                 -e S3_SECRET=${{ secrets.S3_SECRET }} \
                 -e S3_REGION=${{ secrets.S3_REGION }} \
                 -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
+                -e FCM_PROJECT_ID=${{ secrets.FCM_PROJECT_ID }} \
+                -e FCM_PRIVATE_KEY_ID=${{ secrets.FCM_PRIVATE_KEY_ID }} \
+                -e FCM_PRIVATE_KEY="${{ secrets.FCM_PRIVATE_KEY }}" \
+                -e FCM_CLIENT_EMAIL=${{ secrets.FCM_CLIENT_EMAIL }} \
+                -e FCM_CLIENT_ID=${{ secrets.FCM_CLIENT_ID }} \
+                -e FCM_AUTH_URI=${{ secrets.FCM_AUTH_URI }} \
+                -e FCM_TOKEN_URI=${{ secrets.FCM_TOKEN_URI }} \
+                -e FCM_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FCM_AUTH_PROVIDER_X509_CERT_URL }} \
+                -e FCM_CLIENT_X509_CERT_URL=${{ secrets.FCM_CLIENT_X509_CERT_URL }} \
+                -e FCM_UNIVERSE_DOMAIN=${{ secrets.FCM_UNIVERSE_DOMAIN }} \
+                -e SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} \
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
+            
+            

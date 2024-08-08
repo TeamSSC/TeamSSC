@@ -19,15 +19,14 @@ spring:
 
   datasource:
 #    url: jdbc:mysql://localhost:3306/teamSSC
-#    url: jdbc:mysql://43.202.54.250:3306/teamSSC
+#    url: jdbc:mysql://3.38.181.152:3306/teamSSC
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
-      database-platform: org.hibernate.dialect.MySQLDialect
 
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
     properties:
@@ -35,6 +34,20 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
+
+
+fcm:
+  project-id: ${FCM_PROJECT_ID}
+  private-key-id: ${FCM_PRIVATE_KEY_ID}
+  private-key: ${FCM_PRIVATE_KEY}
+  client-email: ${FCM_CLIENT_EMAIL}
+  client-id: ${FCM_CLIENT_ID}
+  auth-uri: ${FCM_AUTH_URI}
+  token-uri: ${FCM_TOKEN_URI}
+  auth-provider-x509-cert-url: ${FCM_AUTH_PROVIDER_X509_CERT_URL}
+  client-x509-cert-url: ${FCM_CLIENT_X509_CERT_URL}
+  universe-domain: ${FCM_UNIVERSE_DOMAIN}
+
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
@@ -46,12 +59,18 @@ jwt:
 server:
   port: 8080
 
-fcm:
-  firebase_config_path: firebase-service-account.json
 
 logging:
   level:
-    org.springframework: DEBUG
+    org.springframework.messaging: DEBUG
+    org.springframework.amqp: DEBUG
+    org.springframework.web.socket: DEBUG
+    com.sparta.teamssc: DEBUG
+
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL}
 
 secret:
   admin-key: ${ADMIN_SECRET_KEY}
