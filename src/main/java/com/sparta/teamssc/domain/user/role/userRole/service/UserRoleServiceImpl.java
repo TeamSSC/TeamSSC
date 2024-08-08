@@ -5,6 +5,7 @@ import com.sparta.teamssc.domain.user.role.service.RoleService;
 import com.sparta.teamssc.domain.user.role.userRole.entity.UserRole;
 import com.sparta.teamssc.domain.user.role.userRole.repository.UserRoleRepository;
 import com.sparta.teamssc.domain.user.user.entity.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +30,9 @@ public class UserRoleServiceImpl implements UserRoleService {
         userRoleRepository.save(userRole);
     }
 
-//    @Override
-//    public void userRoleDelete(Long userId, Long roleId){
-//
-//        userRoleRepository.deleteByRole(userId, roleId);
-//
-//    }
+    @Override
+    @Transactional
+    public void userRoleDelete(Long userId, Long roleId) {
+        userRoleRepository.deleteByRole(userId, roleId);
+    }
 }
