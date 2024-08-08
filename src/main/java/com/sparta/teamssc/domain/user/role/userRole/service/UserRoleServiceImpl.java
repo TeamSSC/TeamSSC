@@ -8,6 +8,8 @@ import com.sparta.teamssc.domain.user.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
@@ -16,14 +18,21 @@ public class UserRoleServiceImpl implements UserRoleService {
     private final RoleService roleService;
 
     @Override
-    public void userRoleAdd(User user,String name) {
+    public void userRoleAdd(User user,String role) {
 
-        Role role = roleService.findRoleByName(name);
+        Role findRole = roleService.findRoleByName(role);
 
         UserRole userRole = UserRole.builder()
                 .user(user)
-                .role(role)
+                .role(findRole)
                 .build();
         userRoleRepository.save(userRole);
+    }
+
+    @Override
+    public void userRoleDelete(Long userId, Long roleId){
+
+        userRoleRepository.deleteByRole(userId, roleId);
+
     }
 }

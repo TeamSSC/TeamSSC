@@ -106,7 +106,7 @@ public class KakaoServiceImpl implements KakaoService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", "7cf9695ccd3477922a5d6ddef0793d97");
 //        body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
-        body.add("redirect_uri", "http://localhost:3000");
+        body.add("redirect_uri", "https://team-ssc.vercel.app/");
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
@@ -199,10 +199,11 @@ public class KakaoServiceImpl implements KakaoService {
                         .kakaoId(kakaoId)
                         .profileImage(kakaoUserInfo.getImageUrl())
                         .build();
+
+                userRoleService.userRoleAdd(kakaoUser, "user");
             }
 
             userRepository.save(kakaoUser);
-            userRoleService.userRoleAdd(kakaoUser, "user");
 
         }
         return kakaoUser;
