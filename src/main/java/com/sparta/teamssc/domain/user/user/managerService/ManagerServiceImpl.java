@@ -80,7 +80,8 @@ public class ManagerServiceImpl implements ManagerService{
         userRoleService.userRoleAdd(user,"manager");
 
         // role 1 : 매니저권한 부여 후 유저 권한 삭제
-        userRoleService.userRoleDelete(user.getId(), 1L);
+//        userRoleService.userRoleDelete(user.getId(), 1L);
+
     }
 
 }
