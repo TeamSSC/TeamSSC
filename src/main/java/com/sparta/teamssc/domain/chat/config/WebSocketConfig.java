@@ -43,7 +43,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // STOMP 엔드포인트를 등록
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws/init")
+          registry.addEndpoint("/wss/init")
                 .setAllowedOriginPatterns("*");        // .withSockJS();
     }
 

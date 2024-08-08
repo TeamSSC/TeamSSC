@@ -29,10 +29,10 @@ public class UserRoleServiceImpl implements UserRoleService {
         userRoleRepository.save(userRole);
     }
 
-    @Override
-    public void userRoleDelete(Long userId, Long roleId){
-
-        userRoleRepository.deleteByRole(userId, roleId);
-
-    }
+//    @Override
+//    public void userRoleDelete(Long userId, Long roleId){
+//
+//        userRoleRepository.deleteByRole(userId, roleId);
+//
+//    }
 }
