@@ -199,10 +199,11 @@ public class KakaoServiceImpl implements KakaoService {
                         .kakaoId(kakaoId)
                         .profileImage(kakaoUserInfo.getImageUrl())
                         .build();
+
+                userRoleService.userRoleAdd(kakaoUser, "user");
             }
 
             userRepository.save(kakaoUser);
-            userRoleService.userRoleAdd(kakaoUser, "user");
 
         }
         return kakaoUser;
