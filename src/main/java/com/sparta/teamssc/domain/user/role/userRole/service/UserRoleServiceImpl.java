@@ -30,9 +30,11 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    public void userRoleDelete(Long userId, Long roleId){
+    public void userRoleDelete(User user, String role){
 
-        userRoleRepository.deleteByRole(userId, roleId);
+        Role findRole = roleService.findRoleByName(role);
+
+        userRoleRepository.deleteByRole(user, findRole);
 
     }
 }
