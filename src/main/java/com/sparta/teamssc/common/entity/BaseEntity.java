@@ -17,6 +17,7 @@ public abstract class BaseEntity {
     private LocalDateTime createAt;
 
     // 엔티티 마지막 수정 시점 저장
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
 
     // 한국 시간대에서 현재 시간을 가져오는 메서드
@@ -26,15 +27,15 @@ public abstract class BaseEntity {
         return nowInKorea.toLocalDateTime();
     }
 
-    // 엔티티가 저장되기전
+    // 엔티티가 저장되기 전
     @PrePersist
     protected void onCreate() {
-        this.createAt = LocalDateTime.now();
+        this.createAt = nowInKorea();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updateAt = LocalDateTime.now();
+        this.updateAt = nowInKorea();
     }
 
     // Getter 추가
