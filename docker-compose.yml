@@ -9,6 +9,11 @@ services:
       - "15672:15672" # RabbitMQ 관리 UI 포트
       - "61613:61613" # STOMP over TCP
       - "15674:15674" # WebSocket용 STOMP
+
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq # RabbitMQ 데이터 디렉토리
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf # RabbitMQ 설정 파일
+      -
     networks:
       - mynetwork
 
