@@ -70,7 +70,7 @@ logging:
 
   rabbitmq:
     host: localhost
-    port: 5672
+    port: 15674
     username: guest
     password: guest
     virtual-host: /
