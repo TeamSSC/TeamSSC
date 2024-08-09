@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613" # STOMP over TCP
+      - "61614:61614" # STOMP over SSL
+    volumes:
+      - ./config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - mynetwork
+    restart: unless-stopped # 컨테이너가 중지되면 자동으로 재시작
+
+
+  app:
+    image: ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE_TAG_NAME}:latest
+    container_name: springboot-app
+    ports:
+      - "8080:8080" # Spring Boot application port
+    env_file:
+      - .env
+    networks:
+      - mynetwork
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped # 컨테이너가 중지되면 자동으로 재시작
+
+networks:
+    mynetwork:
+      driver: bridge
