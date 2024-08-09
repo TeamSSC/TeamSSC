@@ -69,37 +69,11 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "status=running" --filter "publish=8080")
+            # Stop and remove existing containers if running
+            sudo docker-compose down
 
-            if [ ! -z "$CONTAINER_ID" ]; then
-              sudo docker stop $CONTAINER_ID
-              sudo docker rm $CONTAINER_ID
-            fi
-            
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-            sudo docker run -d -p 8080:8080 \
-                -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
-                -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-                -e DB_URL=${{ secrets.DB_URL }} \
-                -e ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }} \
-                -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-                -e EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }} \
-                -e EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} \
-                -e S3_ACCESS=${{ secrets.S3_ACCESS }} \
-                -e S3_SECRET=${{ secrets.S3_SECRET }} \
-                -e S3_REGION=${{ secrets.S3_REGION }} \
-                -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
-                -e FCM_PROJECT_ID=${{ secrets.FCM_PROJECT_ID }} \
-                -e FCM_PRIVATE_KEY_ID=${{ secrets.FCM_PRIVATE_KEY_ID }} \
-                -e FCM_PRIVATE_KEY="${{ secrets.FCM_PRIVATE_KEY }}" \
-                -e FCM_CLIENT_EMAIL=${{ secrets.FCM_CLIENT_EMAIL }} \
-                -e FCM_CLIENT_ID=${{ secrets.FCM_CLIENT_ID }} \
-                -e FCM_AUTH_URI=${{ secrets.FCM_AUTH_URI }} \
-                -e FCM_TOKEN_URI=${{ secrets.FCM_TOKEN_URI }} \
-                -e FCM_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FCM_AUTH_PROVIDER_X509_CERT_URL }} \
-                -e FCM_CLIENT_X509_CERT_URL=${{ secrets.FCM_CLIENT_X509_CERT_URL }} \
-                -e FCM_UNIVERSE_DOMAIN=${{ secrets.FCM_UNIVERSE_DOMAIN }} \
-                -e SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} \
-                ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-            
-            
+            # Pull latest Docker image
+            sudo docker-compose pull
+
+            # Start containers
+            sudo docker-compose up -d

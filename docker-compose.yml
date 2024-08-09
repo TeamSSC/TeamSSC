@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ default port
+      - "15672:15672" # RabbitMQ Management UI
+      - "61613:61613" # STOMP over TCP
+      - "61614:61614" # STOMP over SSL
+    volumes:
+      - /etc/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - mynetwork
+
+  app:
+    image: ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE_TAG_NAME}:latest
+    container_name: app
+    ports:
+      - "8080:8080" # Your application port
+    env_file:
+      - .env
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
