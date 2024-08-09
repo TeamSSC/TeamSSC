@@ -10,7 +10,7 @@ services:
       - "61613:61613" # STOMP over TCP
       - "61614:61614" # STOMP over SSL
     volumes:
-      - /etc/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
     networks:
       - mynetwork
 

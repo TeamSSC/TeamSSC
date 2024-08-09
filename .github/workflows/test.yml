@@ -69,11 +69,23 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Stop and remove existing containers if running
+            # EC2 인스턴스에 docker-compose.yml 파일이 복사될 경로 정의
+            REMOTE_PATH=/home/${{ secrets.EC2_USER }}/app
+
+            # 경로가 존재하지 않으면 디렉터리를 생성
+            mkdir -p $REMOTE_PATH
+
+            # 프로젝트의 최상단에 있는 docker-compose.yml 파일을 EC2 인스턴스로 복사
+            scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:$REMOTE_PATH/docker-compose.yml
+            
+            # EC2 인스턴스에서 docker-compose.yml 파일이 위치한 디렉터리로 이동
+            cd $REMOTE_PATH
+            
+            # 실행 중인 기존 컨테이너를 중지하고 제거
             sudo docker-compose down
-
-            # Pull latest Docker image
+            
+            # 최신 Docker 이미지를 가져옴
             sudo docker-compose pull
-
-            # Start containers
+            
+            # 컨테이너를 다시 시작
             sudo docker-compose up -d
