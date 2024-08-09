@@ -69,7 +69,7 @@ logging:
     com.sparta.teamssc: DEBUG
 
   rabbitmq:
-    host: teamssc.site
+    host: localhost
     port: 5672
     username: guest
     password: guest
