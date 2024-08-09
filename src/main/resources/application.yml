@@ -36,6 +36,7 @@ spring:
         use_sql_comments: true
 
 
+
 fcm:
   project-id: ${FCM_PROJECT_ID}
   private-key-id: ${FCM_PRIVATE_KEY_ID}
@@ -67,6 +68,12 @@ logging:
     org.springframework.web.socket: DEBUG
     com.sparta.teamssc: DEBUG
 
+  rabbitmq:
+    host: localhost
+    port: 15674
+    username: guest
+    password: guest
+    virtual-host: /
 
 slack:
   webhook:
