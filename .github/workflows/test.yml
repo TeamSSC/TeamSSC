@@ -29,33 +29,19 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-
-      - name: Create Firebase service account JSON file
-        id: create-json
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: "firebase-service-account.json"
-          json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          dir: 'src/main/resources/'
 
   deploy-to-ec2:
     needs: build-and-docker-push
@@ -69,37 +55,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "status=running" --filter "publish=8080")
-
-            if [ ! -z "$CONTAINER_ID" ]; then
-              sudo docker stop $CONTAINER_ID
-              sudo docker rm $CONTAINER_ID
-            fi
-            
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-            sudo docker run -d -p 8080:8080 \
-                -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
-                -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-                -e DB_URL=${{ secrets.DB_URL }} \
-                -e ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }} \
-                -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-                -e EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }} \
-                -e EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} \
-                -e S3_ACCESS=${{ secrets.S3_ACCESS }} \
-                -e S3_SECRET=${{ secrets.S3_SECRET }} \
-                -e S3_REGION=${{ secrets.S3_REGION }} \
-                -e S3_BUCKETNAME=${{ secrets.S3_BUCKETNAME }} \
-                -e FCM_PROJECT_ID=${{ secrets.FCM_PROJECT_ID }} \
-                -e FCM_PRIVATE_KEY_ID=${{ secrets.FCM_PRIVATE_KEY_ID }} \
-                -e FCM_PRIVATE_KEY="${{ secrets.FCM_PRIVATE_KEY }}" \
-                -e FCM_CLIENT_EMAIL=${{ secrets.FCM_CLIENT_EMAIL }} \
-                -e FCM_CLIENT_ID=${{ secrets.FCM_CLIENT_ID }} \
-                -e FCM_AUTH_URI=${{ secrets.FCM_AUTH_URI }} \
-                -e FCM_TOKEN_URI=${{ secrets.FCM_TOKEN_URI }} \
-                -e FCM_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FCM_AUTH_PROVIDER_X509_CERT_URL }} \
-                -e FCM_CLIENT_X509_CERT_URL=${{ secrets.FCM_CLIENT_X509_CERT_URL }} \
-                -e FCM_UNIVERSE_DOMAIN=${{ secrets.FCM_UNIVERSE_DOMAIN }} \
-                -e SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} \
-                ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-            
-            
+            cd /home/ubuntu/your-project-directory  # docker-compose.yml 파일이 있는 디렉터리로 이동
+            sudo docker-compose down
+            sudo docker-compose pull
+            sudo docker-compose up -d
