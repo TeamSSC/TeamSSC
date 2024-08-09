@@ -62,6 +62,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: List files in the current directory
+        run: ls -l
+
       - name: Check for docker-compose.yml
         run: ls -l docker-compose.yml
 
