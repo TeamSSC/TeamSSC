@@ -31,7 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setPathMatcher(new AntPathMatcher("/"));
         registry.enableStompBrokerRelay("/topic", "/queue", "/exchange", "/amq/queue","/chat")
                 .setRelayHost("teamssc.site")//("localhost")
-                .setRelayPort(61614)
+                .setRelayPort(61613)
                 .setClientLogin("guest")
                 .setClientPasscode("guest")
                 .setVirtualHost("/")
