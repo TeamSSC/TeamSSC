@@ -1,32 +1,27 @@
 version: '3.8'
+
 services:
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:management
+    container_name: rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672:5672"   # RabbitMQ의 기본 포트
+      - "15672:15672" # RabbitMQ 관리 UI 포트
       - "61613:61613" # STOMP over TCP
-      - "61614:61614" # STOMP over SSL
-    volumes:
-      - ./config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - "15674:15674" # WebSocket용 STOMP
     networks:
       - mynetwork
-    restart: unless-stopped # 컨테이너가 중지되면 자동으로 재시작
-
 
   app:
     image: ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE_TAG_NAME}:latest
-    container_name: springboot-app
+    container_name: app
     ports:
-      - "8080:8080" # Spring Boot application port
+      - "8080:8080" # 애플리케이션 포트
     env_file:
-      - .env
+      - .env # .env 파일에서 환경 변수를 가져옵니다
     networks:
       - mynetwork
-    depends_on:
-      - rabbitmq
-    restart: unless-stopped # 컨테이너가 중지되면 자동으로 재시작
 
 networks:
-    mynetwork:
-      driver: bridge
+  mynetwork:
+    driver: bridge

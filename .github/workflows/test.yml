@@ -1,8 +1,6 @@
 name: Build, Docker Push, and Deploy
 
 on:
-  push:
-    branches: [ main, feat/* ]
   pull_request:
     branches:
       - main
@@ -29,56 +27,24 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE_TAG_NAME }}:latest
-
-      - name: Create Firebase service account JSON file
-        id: create-json
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: "firebase-service-account.json"
-          json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          dir: 'src/main/resources/'
 
   deploy-to-ec2:
     needs: build-and-docker-push
     runs-on: ubuntu-latest
-
     steps:
-      - name: List files in the current directory
-        run: ls -l
-
-      - name: Check for docker-compose.yml
-        run: sudo ls -l docker-compose.yml
-
-      - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@v0.1.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: docker-compose.yml
-          target: /home/${{ secrets.EC2_USER }}/docker-compose.yml
-          port: 22
-          timeout: 30s
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -86,7 +52,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd /home/${{ secrets.EC2_USER }}
-            sudo docker-compose -f docker-compose.yml down
-            sudo docker-compose -f docker-compose.yml pull
-            sudo docker-compose -f docker-compose.yml up -d
+            sudo docker-compose down
+            sudo docker-compose pull
+            sudo docker-compose up -d
