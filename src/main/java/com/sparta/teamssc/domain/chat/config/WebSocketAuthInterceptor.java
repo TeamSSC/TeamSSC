@@ -96,8 +96,15 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 } catch (Exception e) {
                     log.error("WebSocket 메시지 전송 실패: 토큰 처리 중 에러", e);
                 }
-            } else {
+            }
+            else {
                 log.warn("WebSocket 메시지 전송 시 토큰이 제공되지 않음");
+            }
+            try {
+                return message;
+            } finally {
+                log.info("preSend 처리 후 SecurityContextHolder 정리");
+                SecurityContextHolder.clearContext();
             }
         }
 
