@@ -25,7 +25,7 @@ public class MessageListener {
             log.error("Received message with null or empty content: {}", message);
             return; // 메시지 처리를 중단
         }
-        
+
         // 받은 메시지를 데이터베이스에 저장
         messageRepository.save(message);
 
