@@ -33,7 +33,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         // STOMP 연결 요청
         if (StompCommand.CONNECT == accessor.getCommand()) {
             // 연결 전에 기존 SecurityContext를 초기화
-            //SecurityContextHolder.clearContext();
+            SecurityContextHolder.clearContext();
 
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
