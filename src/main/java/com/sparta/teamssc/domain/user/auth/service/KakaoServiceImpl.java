@@ -184,6 +184,9 @@ public class KakaoServiceImpl implements KakaoService {
                 // 기존 회원정보에 카카오 Id 추가
                 kakaoUser = kakaoUser.kakaoIdUpdate(kakaoId);
 
+                userRepository.save(kakaoUser);
+
+                return kakaoUser;
             } else {
 
                 // 신규 회원가입
@@ -199,12 +202,11 @@ public class KakaoServiceImpl implements KakaoService {
                         .kakaoId(kakaoId)
                         .profileImage(kakaoUserInfo.getImageUrl())
                         .build();
+                userRepository.save(kakaoUser);
 
                 userRoleService.userRoleAdd(kakaoUser, "user");
+                return kakaoUser;
             }
-
-            userRepository.save(kakaoUser);
-
         }
         return kakaoUser;
     }

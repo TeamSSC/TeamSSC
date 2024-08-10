@@ -125,6 +125,7 @@ public class UserServiceImpl implements UserService {
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .username(user.getUsername())
+                    .userStatus(user.getStatus())
                     .build();
         }
 
@@ -135,6 +136,7 @@ public class UserServiceImpl implements UserService {
                 .periodId(user.getPeriod().getId())
                 .period(user.getPeriod().getPeriod())
                 .trackName(user.getPeriod().getTrack().getName())
+                .userStatus(user.getStatus())
                 .fcmToken(user.getFcmToken())
                 .build();
     }
