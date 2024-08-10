@@ -53,7 +53,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/boards/*").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("MANAGER")
-                                .requestMatchers("/ws/**").permitAll()
+                                .requestMatchers("/wss/**").permitAll()
                                 .requestMatchers("/app/**").permitAll()
                                 .anyRequest().permitAll()
                 );
