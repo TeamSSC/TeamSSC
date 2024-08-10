@@ -9,6 +9,8 @@ services:
       - "15672:15672" # RabbitMQ 관리 UI 포트
       - "61613:61613" # STOMP over TCP
       - "15674:15674" # WebSocket용 STOMP
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - mynetwork
 
@@ -21,7 +23,8 @@ services:
       - .env # .env 파일에서 환경 변수를 가져옵니다
     networks:
       - mynetwork
-
+volumes:
+  rabbitmq_data:
 networks:
   mynetwork:
     driver: bridge

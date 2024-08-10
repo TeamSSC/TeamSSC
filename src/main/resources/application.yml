@@ -68,12 +68,6 @@ logging:
     org.springframework.web.socket: DEBUG
     com.sparta.teamssc: DEBUG
 
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
-    virtual-host: /
 
 slack:
   webhook:
