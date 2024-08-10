@@ -14,8 +14,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 5MB
-      max-request-size: 10MB
+      max-file-size: 100MB
+      max-request-size: 100MB
 
   datasource:
 #    url: jdbc:mysql://localhost:3306/teamSSC
@@ -69,8 +69,8 @@ logging:
     com.sparta.teamssc: DEBUG
 
   rabbitmq:
-    host: localhost
-    port: 15674
+    host: rabbitmq
+    port: 5672
     username: guest
     password: guest
     virtual-host: /
