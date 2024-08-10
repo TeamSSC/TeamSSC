@@ -1,8 +1,6 @@
 name: Build, Docker Push, and Deploy
 
 on:
-  push:
-    branches: [ main, feat/* ]
   pull_request:
     branches:
       - main
@@ -54,10 +52,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            export DOCKER_IMAGE_TAG_NAME=${{ env.DOCKER_IMAGE_TAG_NAME }}
-            echo "DOCKERHUB_USERNAME is set to: $DOCKERHUB_USERNAME"
-            echo "DOCKER_IMAGE_TAG_NAME is set to: $DOCKER_IMAGE_TAG_NAME"
-            sudo DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME DOCKER_IMAGE_TAG_NAME=$DOCKER_IMAGE_TAG_NAME docker-compose down
-            sudo DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME DOCKER_IMAGE_TAG_NAME=$DOCKER_IMAGE_TAG_NAME docker-compose pull
-            sudo DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME DOCKER_IMAGE_TAG_NAME=$DOCKER_IMAGE_TAG_NAME docker-compose up -d
+            sudo docker-compose down
+            sudo docker-compose pull
+            sudo docker-compose up -d
