@@ -22,7 +22,7 @@ public class MessageListener {
 
         // 메시지 필드 검증
         if (message.getContent() == null || message.getContent().isEmpty()) {
-            log.error("Received message with null or empty content: {}", message);
+            log.error("널값인 메시지: {}", message);
             return; // 메시지 처리를 중단
         }
 
