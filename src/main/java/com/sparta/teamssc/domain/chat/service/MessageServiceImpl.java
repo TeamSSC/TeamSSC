@@ -56,6 +56,7 @@ public class MessageServiceImpl implements MessageService {
         // 메시지를 RabbitMQ로 발행
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
         log.info("팀Message 보내기 RabbitMQ: {}", message);
+        log.info("메시지를 보낸 사람 이름: {}", user.getUsername());
     }
 
     @Transactional
