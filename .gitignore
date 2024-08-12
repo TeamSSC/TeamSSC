@@ -9,10 +9,11 @@ build/
 .apt_generated
 .classpath
 .factorypath
-.project
+.projectccc
 .settings
 .springBeans
 .sts4-cache
+.env
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
@@ -25,7 +26,6 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-.env
 
 ### NetBeans ###
 /nbproject/private/
