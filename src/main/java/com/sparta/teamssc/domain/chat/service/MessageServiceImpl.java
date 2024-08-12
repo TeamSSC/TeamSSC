@@ -53,6 +53,7 @@ public class MessageServiceImpl implements MessageService {
                 .roomType(RoomType.TEAM)
                 .build();
 
+        log.info("1111111111보낸내용: {}", content);
 
         // 메시지를 RabbitMQ로 발행
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
@@ -75,6 +76,7 @@ public class MessageServiceImpl implements MessageService {
                 .roomId(periodId)
                 .roomType(RoomType.PERIOD)
                 .build();
+        log.info("1111111111보낸내용: {}", content);
 
         // 메시지를 RabbitMQ로 발행
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
