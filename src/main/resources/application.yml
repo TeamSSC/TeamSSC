@@ -60,6 +60,12 @@ jwt:
 server:
   port: 8080
 
+websocket:
+  relay-host: ${RABBITMQ_HOST}
+  relay-port: ${RABBITMQ_PORT}
+  client-id: ${RABBITMQ_ID}
+  client-password: ${RABBITMQ_PASSWORD}
+  virtual-host: ${RABBITMQ_VIRTUAL}
 
 logging:
   level:
