@@ -4,7 +4,6 @@ import com.sparta.teamssc.domain.period.dto.PeriodRequestDto;
 import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
 import com.sparta.teamssc.domain.period.dto.PeriodUpdateRequestDto;
 import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.period.entity.PeriodStatus;
 import com.sparta.teamssc.domain.period.repository.PeriodRepository;
 import com.sparta.teamssc.domain.track.entity.Track;
 import com.sparta.teamssc.domain.track.service.TrackServiceImpl;
@@ -28,7 +27,7 @@ public class PeriodServiceImpl implements PeriodService {
 
         Track track = trackService.searchTrack(periodRequestDto.getTrackId());
 
-                Period period = Period.builder()
+        Period period = Period.builder()
                 .track(track)
                 .period(periodRequestDto.getPeriod())
                 .status(periodRequestDto.getStatus())
@@ -88,7 +87,7 @@ public class PeriodServiceImpl implements PeriodService {
     //트랙에 대한 기수 조회
     @Override
     @Transactional
-    public List<PeriodResponseDto> getTrackByPeriod(Long trackId){
+    public List<PeriodResponseDto> getTrackByPeriod(Long trackId) {
         return periodRepository.findPeriodDetailsByTrackId(trackId);
     }
 
