@@ -12,7 +12,7 @@ import java.security.Principal;
 import java.util.List;
 
 public interface MessageService {
-    void sendTeamMessage(Long teamId, String content);
+    void sendTeamMessage(Long teamId, String content,StompHeaderAccessor accessor);
      void sendPeriodMessage(Long periodId, String content, StompHeaderAccessor accessor);
 
     List<Message> getMessagesForTeam(Long teamId);

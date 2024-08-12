@@ -28,10 +28,11 @@ public class MessageController {
 
     @MessageMapping("/chat.team.{teamId}")
     public void sendTeamMessage(@Payload MessageRequestDto messageRequestDto,
-                                @DestinationVariable Long teamId){
+                                @DestinationVariable Long teamId,
+                                StompHeaderAccessor stompHeaderAccessor){
 
 
-        messageService.sendTeamMessage(teamId, messageRequestDto.getContent());
+        messageService.sendTeamMessage(teamId, messageRequestDto.getContent(), stompHeaderAccessor);
     }
 
     @MessageMapping("/chat.period.{periodId}")

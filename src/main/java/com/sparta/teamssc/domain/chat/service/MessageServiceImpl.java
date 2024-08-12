@@ -41,76 +41,61 @@ public class MessageServiceImpl implements MessageService {
 
 
     @Transactional
-    public void sendTeamMessage(Long teamId, String content) {
-
-        User user = getCurrentUser();
-
-        if (!teamService.isUserInTeam(user.getId(), teamId)) {
-            throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
-        }
-
-        Message message = Message.builder()
-                .content(content)
-                .sender(user.getUsername())
-                .roomId(teamId)
-                .roomType(RoomType.TEAM)
-                .build();
-
-
-        // 메시지를 RabbitMQ로 발행
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
-        log.info("팀Message 보내기 RabbitMQ: {}", message);
+    public void sendTeamMessage(Long teamId, String content, StompHeaderAccessor accessor) {
+        sendMessage(teamId, content, RoomType.TEAM, accessor, user -> teamService.isUserInTeam(user.getId(), teamId));
     }
 
     @Transactional
     public void sendPeriodMessage(Long periodId, String content, StompHeaderAccessor accessor) {
-        // WebSocket 세션의 SecurityContext
+        sendMessage(periodId, content, RoomType.PERIOD, accessor, user -> periodService.isUserInPeriod(user.getId(), periodId));
+    }
+
+    private void sendMessage(Long roomId, String content, RoomType roomType, StompHeaderAccessor accessor, java.util.function.Predicate<User> isUserInRoom) {
+        SecurityContext securityContext = getSecurityContextFromAccessor(accessor);
+        User user = authenticateAndRetrieveUser(securityContext);
+        validateUserInRoom(user, isUserInRoom);
+
+        Message messageToSend = buildMessage(content, user, roomId, roomType);
+
+        sendToRabbitMQ(messageToSend);
+    }
+
+    private SecurityContext getSecurityContextFromAccessor(StompHeaderAccessor accessor) {
         SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
         if (securityContext == null) {
             throw new IllegalStateException("WebSocket 세션에서 SecurityContext를 찾을 수 없습니다.");
         }
-        // 현재 스레드의 SecurityContext를 저장해두기
-        SecurityContext originalContext = SecurityContextHolder.getContext();
-        try {
-            // SecurityContextHolder에 설정하지 않고, 직접 사용
-            Authentication authentication = securityContext.getAuthentication();
+        return securityContext;
+    }
 
-            if (authentication == null) {
-                throw new IllegalStateException("SecurityContext에 인증 정보가 없습니다.");
-            }
-            // 현재 사용자
-            String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-            User user = userService.getUserByEmail(username);
-
-            if (!periodService.isUserInPeriod(user.getId(), periodId)) {
-                throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
-            }
-            log.info("기수Message 보내기 RabbitMQ: {}", content);
-            log.info("기수 보낸사람: {}", user.getUsername());
-            log.info("기수 보낸사람이메일: {}", user.getEmail());
-            log.info("기수 originalContext정보: {}", originalContext);
-
-            Message messageToSend = Message.builder()
-                    .content(content)
-                    .sender(user.getUsername())
-                    .roomId(periodId)
-                    .roomType(RoomType.PERIOD)
-                    .build();
-
-            // 메시지를 RabbitMQ로 발행
-            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, messageToSend);
-        } finally {
-            // 작업이 끝난 후 SecurityContext를 복원
-            SecurityContextHolder.setContext(originalContext);
-            log.info("작업이 끝난 후 복원 정보: {}", originalContext.getAuthentication());
-
-            // 원래의 보안 컨텍스트가 없다면 완전히 초기화
-            if (originalContext == null) {
-                log.info("보안 컨텍스트 없음: {}", originalContext.getAuthentication());
-
-                SecurityContextHolder.clearContext();
-            }
+    private User authenticateAndRetrieveUser(SecurityContext securityContext) {
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("SecurityContext에 인증 정보가 없습니다.");
         }
+
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return userService.getUserByEmail(username);
+    }
+
+    //Predicate 사용, test메서드로 참 거짓
+    private void validateUserInRoom(User user, java.util.function.Predicate<User> isUserInRoom) {
+        if (!isUserInRoom.test(user)) {
+            throw new IllegalArgumentException("사용자가 해당 룸에 속해 있지 않습니다.");
+        }
+    }
+
+    private Message buildMessage(String content, User user, Long roomId, RoomType roomType) {
+        return Message.builder()
+                .content(content)
+                .sender(user.getUsername())
+                .roomId(roomId)
+                .roomType(roomType)
+                .build();
+    }
+
+    private void sendToRabbitMQ(Message message) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
     }
 
     // 팀 메시지을 불러오기
@@ -118,13 +103,7 @@ public class MessageServiceImpl implements MessageService {
     @Transactional(readOnly = true)
     public List<Message> getMessagesForTeam(Long teamId) {
 
-        User user = getCurrentUser();
-
-        if (!teamService.isUserInTeam(user.getId(), teamId)) {
-            throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
-        }
-
-        return messageRepository.findByRoomIdAndRoomType(teamId, RoomType.TEAM);
+        return getMessages(teamId, RoomType.TEAM);
     }
 
     // 기수 메시지 불러오기
@@ -132,12 +111,18 @@ public class MessageServiceImpl implements MessageService {
     @Transactional(readOnly = true)
     public List<Message> getMessagesForPeriod(Long periodId) {
 
-        User user = getCurrentUser();
+        return getMessages(periodId, RoomType.PERIOD);
+    }
 
-        if (!periodService.isUserInPeriod(user.getId(), periodId) && !isManager(user)) {
+    private List<Message> getMessages(Long roomId, RoomType roomType) {
+        User user = getCurrentUser();
+        if (roomType == RoomType.TEAM && !teamService.isUserInTeam(user.getId(), roomId)) {
+            throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
+        } else if (roomType == RoomType.PERIOD && !periodService.isUserInPeriod(user.getId(), roomId) && !isManager(user)) {
             throw new IllegalArgumentException("사용자가 해당 기수에 속해 있지 않거나 관리자 권한이 없습니다.");
         }
-        return messageRepository.findByRoomIdAndRoomType(periodId, RoomType.PERIOD);
+
+        return messageRepository.findByRoomIdAndRoomType(roomId, roomType);
     }
 
     @Override
