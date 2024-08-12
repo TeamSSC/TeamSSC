@@ -76,8 +76,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 log.warn("SEND/SUBSCRIBE 명령 처리 중 SecurityContext를 찾을 수 없음");
             }
         }
-        log.info("2 preSend: 현재 SecurityContextHolder: {}", SecurityContextHolder.getContext().getAuthentication());
-
         return message;
     }
 }
