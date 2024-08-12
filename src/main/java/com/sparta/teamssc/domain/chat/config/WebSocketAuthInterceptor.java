@@ -68,45 +68,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 log.warn("WebSocket 연결 실패: 토큰이 제공되지 않음");
             }
         }
-        // 메시지 전송 이거나 구독 요청
-        else if (StompCommand.SEND == accessor.getCommand() || StompCommand.SUBSCRIBE == accessor.getCommand()) {
-            // 여기서도 매번 인증 정보를 설정하도록 보장
-            if (token != null && token.startsWith("Bearer ")) {
-                token = token.substring(7);
-                try {
-                    // 토큰에서 사용자 이름 가져오기
-                    String username = JwtUtil.getUsernameFromToken(token);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                    if (JwtUtil.validateToken(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authentication =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                        securityContext.setAuthentication(authentication);
-                        SecurityContextHolder.setContext(securityContext);
-
-                        accessor.setUser(authentication);
-                        accessor.getSessionAttributes().put("SPRING_SECURITY_CONTEXT", securityContext);
-
-                        log.info("SEND/SUBSCRIBE 명령 처리 중 인증 정보 유지: {}", securityContext.getAuthentication());
-                    } else {
-                        log.warn("WebSocket 메시지 전송 실패: 유효하지 않은 토큰");
-                    }
-                } catch (Exception e) {
-                    log.error("WebSocket 메시지 전송 실패: 토큰 처리 중 에러", e);
-                }
-            }
-            else {
-                log.warn("WebSocket 메시지 전송 시 토큰이 제공되지 않음");
-            }
-            try {
-                return message;
-            } finally {
-                log.info("preSend 처리 후 SecurityContextHolder 정리");
-                SecurityContextHolder.clearContext();
-            }
-        }
 
         log.info("preSend: 현재 SecurityContextHolder: {}", SecurityContextHolder.getContext().getAuthentication());
 
