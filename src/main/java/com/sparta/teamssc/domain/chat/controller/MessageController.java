@@ -9,7 +9,9 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class MessageController {
     private final MessageService messageService;
 
@@ -36,7 +39,13 @@ public class MessageController {
                                   @DestinationVariable Long periodId,
                                   Principal principal) {
         if (principal == null) {
-            throw new IllegalStateException("Principal이 널값이라 인증 실패임");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null) {
+                principal = (Principal) authentication.getPrincipal();
+                log.info("Fallback으로 SecurityContext에서 Principal을 가져옴: {}", principal.getName());
+            } else {
+                throw new IllegalStateException("Principal이 null이고 SecurityContext에서도 인증 정보를 찾을 수 없습니다.");
+            }
         }
 
         messageService.sendPeriodMessage(periodId, messageRequestDto.getContent(),principal);

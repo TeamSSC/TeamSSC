@@ -8,10 +8,12 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.concurrent.DelegatingSecurityContextRunnable;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -70,8 +72,17 @@ public class SecurityConfig {
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(50);
         executor.initialize();
-        return executor;
+        return new TaskExecutor() {
+            @Override
+            public void execute(Runnable task) {
+                // 현재의 SecurityContext 사용자 인증 정보를 가져오고
+                SecurityContext context = SecurityContextHolder.getContext();
+                // 이 SecurityContext를 유지하면서 작업을 실행하도록 감싸기
+                executor.execute(new DelegatingSecurityContextRunnable(task, context));
+            }
+        };
     }
+
     //보안 컨텍스트 스레드 간에 전파
     @Bean
     public ExecutorService delegatingSecurityContextExecutorService() {
