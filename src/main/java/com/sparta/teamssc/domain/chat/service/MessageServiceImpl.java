@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -61,25 +62,33 @@ public class MessageServiceImpl implements MessageService {
     @Transactional
     public void sendPeriodMessage(Long periodId, String content) {
 
-        User user = getCurrentUser();
+        SecurityContext originalContext = SecurityContextHolder.getContext();
+        try {
+            User user = getCurrentUser();
 
-        if (!periodService.isUserInPeriod(user.getId(), periodId)) {
-            throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
+
+            if (!periodService.isUserInPeriod(user.getId(), periodId)) {
+                throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
+            }
+
+            log.info("기수Message 보내기 RabbitMQ: {}", content);
+            log.info("기수 보낸사람: {}", user.getUsername());
+            log.info("기수 보낸사람이메일: {}", user.getEmail());
+            log.info("기수 originalContext정보: {}",originalContext);
+
+            Message message = Message.builder()
+                    .content(content)
+                    .sender(user.getUsername())
+                    .roomId(periodId)
+                    .roomType(RoomType.PERIOD)
+                    .build();
+
+            // 메시지를 RabbitMQ로 발행
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
+        } finally {
+            // 작업이 끝난 후 SecurityContext를 복원
+            SecurityContextHolder.setContext(originalContext);
         }
-
-        Message message = Message.builder()
-                .content(content)
-                .sender(user.getUsername())
-                .roomId(periodId)
-                .roomType(RoomType.PERIOD)
-                .build();
-
-        // 메시지를 RabbitMQ로 발행
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
-
-
-        log.info("기수Message 보내기 RabbitMQ: {}", message);
-        log.info("기수 보낸사람: {}", user.getUsername());
     }
 
     // 팀 메시지을 불러오기
