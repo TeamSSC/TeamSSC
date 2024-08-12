@@ -61,9 +61,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Transactional
-    public void sendPeriodMessage(Long periodId, String content, Principal principal) {
-        String username = principal.getName();
-        User user = userService.getUserByEmail(username);
+    public void sendPeriodMessage(Long periodId, String content, User user) {
+        String username = user.getUsername();
 
         log.info("1111111111보낸사람: {}", user.getEmail());
 
@@ -73,12 +72,12 @@ public class MessageServiceImpl implements MessageService {
 
         Message message = Message.builder()
                 .content(content)
-                .sender(user.getUsername())
+                .sender(username)
                 .roomId(periodId)
                 .roomType(RoomType.PERIOD)
                 .build();
         log.info("1111111111보낸내용: {}", content);
-        log.info("1111111111보낸내용: {}", user.getUsername());
+        log.info("1111111111보낸내용: {}", username);
 
 
         // 메시지를 RabbitMQ로 발행

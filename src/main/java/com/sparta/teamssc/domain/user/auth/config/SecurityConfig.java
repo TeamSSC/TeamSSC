@@ -29,6 +29,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -65,22 +66,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public TaskExecutor taskExecutor() {
+    public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // 기본이 10개고 최대 20 대기가 50으로
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(50);
         executor.initialize();
-        return new TaskExecutor() {
-            @Override
-            public void execute(Runnable task) {
-                // 현재의 SecurityContext 사용자 인증 정보를 가져오고
-                SecurityContext context = SecurityContextHolder.getContext();
-                // 이 SecurityContext를 유지하면서 작업을 실행하도록 감싸기
-                executor.execute(new DelegatingSecurityContextRunnable(task, context));
-            }
-        };
+
+        return new DelegatingSecurityContextExecutor(executor);
     }
 
     //보안 컨텍스트 스레드 간에 전파

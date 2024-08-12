@@ -3,13 +3,13 @@ package com.sparta.teamssc.domain.chat.controller;
 import com.sparta.teamssc.domain.chat.dto.MessageRequestDto;
 import com.sparta.teamssc.domain.chat.entity.Message;
 import com.sparta.teamssc.domain.chat.service.MessageService;
+import com.sparta.teamssc.domain.user.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -36,19 +36,10 @@ public class MessageController {
 
     @MessageMapping("/chat.period.{periodId}")
     public void sendPeriodMessage(@Payload MessageRequestDto messageRequestDto,
-                                  @DestinationVariable Long periodId,
-                                  Principal principal) {
-        if (principal == null) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null) {
-                principal = (Principal) authentication.getPrincipal();
-                log.info("Fallback으로 SecurityContext에서 Principal을 가져옴: {}", principal.getName());
-            } else {
-                throw new IllegalStateException("Principal이 null이고 SecurityContext에서도 인증 정보를 찾을 수 없습니다.");
-            }
-        }
-
-        messageService.sendPeriodMessage(periodId, messageRequestDto.getContent(),principal);
+                                  @DestinationVariable Long periodId) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("aaaaaaaaaaaa보낸사람: {}", user.getEmail());
+        messageService.sendPeriodMessage(periodId, messageRequestDto.getContent(), user);
     }
 
     // 새로운 API: 특정 팀의 모든 메시지를 불러오기
