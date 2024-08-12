@@ -64,7 +64,6 @@ public class MessageServiceImpl implements MessageService {
 
     @Transactional
     public void sendPeriodMessage(Long periodId, String content, StompHeaderAccessor accessor) {
-
         // WebSocket 세션의 SecurityContext
         SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
         if (securityContext == null) {
@@ -80,7 +79,8 @@ public class MessageServiceImpl implements MessageService {
                 throw new IllegalStateException("SecurityContext에 인증 정보가 없습니다.");
             }
             // 현재 사용자
-            User user = (User) authentication.getPrincipal();
+            String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+            User user = userService.getUserByEmail(username);
 
             if (!periodService.isUserInPeriod(user.getId(), periodId)) {
                 throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
@@ -104,6 +104,12 @@ public class MessageServiceImpl implements MessageService {
             SecurityContextHolder.setContext(originalContext);
             log.info("작업이 끝난 후 복원 정보: {}", originalContext.getAuthentication());
 
+            // 원래의 보안 컨텍스트가 없다면 완전히 초기화
+            if (originalContext == null) {
+                log.info("보안 컨텍스트 없음: {}", originalContext.getAuthentication());
+
+                SecurityContextHolder.clearContext();
+            }
         }
     }
 
