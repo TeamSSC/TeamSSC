@@ -40,6 +40,7 @@ public class MessageServiceImpl implements MessageService {
     public void sendTeamMessage(Long teamId, String content) {
 
         User user = getCurrentUser();
+        log.info("1111111111보낸사람: {}", user.getEmail());
 
         if (!teamService.isUserInTeam(user.getId(), teamId)) {
             throw new IllegalArgumentException("사용자가 해당 팀에 속해 있지 않습니다.");
@@ -62,6 +63,7 @@ public class MessageServiceImpl implements MessageService {
     public void sendPeriodMessage(Long periodId, String content) {
 
         User user = getCurrentUser();
+        log.info("1111111111보낸사람: {}", user.getEmail());
 
         if (!periodService.isUserInPeriod(user.getId(), periodId)) {
             throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");

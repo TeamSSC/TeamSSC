@@ -56,7 +56,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                         accessor.setUser(authentication);
                         accessor.getSessionAttributes().put("SPRING_SECURITY_CONTEXT", securityContext);
 
-                        log.info("1 WebSocket 연결 성공: 사용자명 - {}", username);
+                        log.info("11111111 WebSocket 연결 성공: 사용자명 - {}", username);
                     } else {
                         log.warn("WebSocket 연결 실패: 유효하지 않은 토큰");
                     }

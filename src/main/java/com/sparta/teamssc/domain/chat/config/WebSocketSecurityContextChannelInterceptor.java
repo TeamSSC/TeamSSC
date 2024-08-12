@@ -19,6 +19,7 @@ public class WebSocketSecurityContextChannelInterceptor implements ChannelInterc
 
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
+        // 세션에서 SecurityContext 복원
         SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes()
                 .get("SPRING_SECURITY_CONTEXT");
 
