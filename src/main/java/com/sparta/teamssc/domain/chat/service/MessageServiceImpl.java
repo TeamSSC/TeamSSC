@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,23 +62,36 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Transactional
-    public void sendPeriodMessage(Long periodId, String content) {
+    public void sendPeriodMessage(Long periodId, String content, org.springframework.messaging.Message<?> message) {
 
+        // StompHeaderAccessor로 WebSocket 메시지의 헤더에 접근
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        // WebSocket 세션의 SecurityContext
+        SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
+        if (securityContext == null) {
+            throw new IllegalStateException("WebSocket 세션에서 SecurityContext를 찾을 수 없습니다.");
+        }
+        // 현재 스레드의 SecurityContext를 저장해두기
         SecurityContext originalContext = SecurityContextHolder.getContext();
         try {
-            User user = getCurrentUser();
+            // SecurityContextHolder에 설정하지 않고, 직접 사용
+            Authentication authentication = securityContext.getAuthentication();
 
+            if (authentication == null) {
+                throw new IllegalStateException("SecurityContext에 인증 정보가 없습니다.");
+            }
+            // 현재 사용자
+            User user = (User) authentication.getPrincipal();
 
             if (!periodService.isUserInPeriod(user.getId(), periodId)) {
                 throw new IllegalArgumentException("사용자가 해당 기간에 속해 있지 않습니다.");
             }
-
             log.info("기수Message 보내기 RabbitMQ: {}", content);
             log.info("기수 보낸사람: {}", user.getUsername());
             log.info("기수 보낸사람이메일: {}", user.getEmail());
-            log.info("기수 originalContext정보: {}",originalContext);
+            log.info("기수 originalContext정보: {}", originalContext);
 
-            Message message = Message.builder()
+            Message messageToSend = Message.builder()
                     .content(content)
                     .sender(user.getUsername())
                     .roomId(periodId)
@@ -84,10 +99,12 @@ public class MessageServiceImpl implements MessageService {
                     .build();
 
             // 메시지를 RabbitMQ로 발행
-            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, messageToSend);
         } finally {
             // 작업이 끝난 후 SecurityContext를 복원
             SecurityContextHolder.setContext(originalContext);
+            log.info("작업이 끝난 후 복원 정보: {}", originalContext.getAuthentication());
+
         }
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface MessageService {
     void sendTeamMessage(Long teamId, String content);
-     void sendPeriodMessage(Long periodId, String content);
+     void sendPeriodMessage(Long periodId, String content, org.springframework.messaging.Message<?> message);
 
     List<Message> getMessagesForTeam(Long teamId);
     List<Message> getMessagesForPeriod(Long periodId);
