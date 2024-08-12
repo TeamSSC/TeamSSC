@@ -19,6 +19,26 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${websocket.relay-host}")
+    private String relayHost;
+
+    @Value("${websocket.relay-port}")
+    private int relayPort;
+
+    @Value("${websocket.client-id}")
+    private String clientId;
+
+    @Value("${websocket.client-password}")
+    private String clientPassword;
+
+    @Value("${websocket.virtual-host}")
+    private String virtualHost;
+
+    @Value("${websocket.endpoint}")
+    private String webSocketEndpoint;
+
+    @Value("${websocket.allowed-origins}")
+    private String[] allowedOrigins;
 
     private final WebSocketAuthInterceptor webSocketAuthInterceptor; // 인증정보 보안 컨텍스트에 세팅
     private final WebSocketSecurityContextChannelInterceptor securityContextChannelInterceptor; // 보안 컨텍스트에 있는걸 쓰레드 컨텍트스 홀더에 셍팅 및 지춤
@@ -29,12 +49,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         log.debug("STOMP Broker Relay 설정 중");
         registry.setPathMatcher(new AntPathMatcher("/"));
-        registry.enableStompBrokerRelay("/topic", "/queue", "/exchange", "/amq/queue","/chat")
-                .setRelayHost("rabbitmq")//("localhost")
-                .setRelayPort(61613)
-                .setClientLogin("guest")
-                .setClientPasscode("guest")
-                .setVirtualHost("/")
+        registry.enableStompBrokerRelay("/topic", "/queue", "/exchange", "/amq/queue", "/chat")
+                .setRelayHost(relayHost)//("localhost")
+                .setRelayPort(relayPort)
+                .setClientLogin(clientId)
+                .setClientPasscode(clientPassword)
+                .setVirtualHost(virtualHost)
                 .setSystemHeartbeatSendInterval(10000)
                 .setSystemHeartbeatReceiveInterval(10000);
         registry.setApplicationDestinationPrefixes("/app");
@@ -43,8 +63,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // STOMP 엔드포인트를 등록
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-          registry.addEndpoint("/wss/init")
-                .setAllowedOriginPatterns("*");        // .withSockJS();
+        registry.addEndpoint(webSocketEndpoint)
+                .setAllowedOriginPatterns(allowedOrigins);        // .withSockJS();
     }
 
     // 클라이언트 인바운드 채널에 인터셉터 (인증정보랑 컨텍스트 홀더 세팅 관련 인터셉트)

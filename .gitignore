@@ -9,11 +9,10 @@ build/
 .apt_generated
 .classpath
 .factorypath
-.projectccc
+.project
 .settings
 .springBeans
 .sts4-cache
-.env
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
@@ -44,3 +43,5 @@ src/main/resources/firebase-service-account.json
 src/main/.DS_Store
 
 .DS_Store
+
+.env
