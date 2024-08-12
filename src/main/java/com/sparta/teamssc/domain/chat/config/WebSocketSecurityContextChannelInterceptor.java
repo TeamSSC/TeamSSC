@@ -25,6 +25,8 @@ public class WebSocketSecurityContextChannelInterceptor implements ChannelInterc
 
         if (securityContext != null) {
             SecurityContextHolder.setContext(securityContext);
+            accessor.setUser(securityContext.getAuthentication());
+
             log.info("preSend: SecurityContext: {}", securityContext.getAuthentication());
         } else {
             log.warn("preSend: SecurityContext 찾을수 없다.");

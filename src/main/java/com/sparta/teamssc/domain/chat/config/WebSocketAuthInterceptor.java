@@ -71,7 +71,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
             if (securityContext != null) {
                 SecurityContextHolder.setContext(securityContext);
-                accessor.setUser(securityContext.getAuthentication());
 
                 log.info("SEND/SUBSCRIBE 명령 처리 중 인증 정보 유지: {}", securityContext.getAuthentication());
             } else {
