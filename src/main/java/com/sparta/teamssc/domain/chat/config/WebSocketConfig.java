@@ -53,7 +53,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(webSocketAuthInterceptor, securityContextChannelInterceptor);
     }
 
-    // // 클라이언트 아웃바인드 채널에 인터셉터
+    // 클라이언트 아웃바인드 채널에 인터셉터
     @Override
     public void configureClientOutboundChannel(ChannelRegistration registration) {
         registration.taskExecutor().corePoolSize(10); //스레드 풀 크기를 설정해서 병렬 처리
