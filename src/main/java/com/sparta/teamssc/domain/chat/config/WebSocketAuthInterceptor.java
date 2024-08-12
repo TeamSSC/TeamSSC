@@ -56,8 +56,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                         accessor.setUser(authentication);
                         accessor.getSessionAttributes().put("SPRING_SECURITY_CONTEXT", securityContext);
 
-                        log.info("WebSocket 연결 성공: 사용자명 - {}", username);
-                        log.info("SecurityContextHolder에 설정된 인증 정보: {}", SecurityContextHolder.getContext().getAuthentication());
+                        log.info("1 WebSocket 연결 성공: 사용자명 - {}", username);
                     } else {
                         log.warn("WebSocket 연결 실패: 유효하지 않은 토큰");
                     }
@@ -67,9 +66,17 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             } else {
                 log.warn("WebSocket 연결 실패: 토큰이 제공되지 않음");
             }
+        } else if (StompCommand.SEND == accessor.getCommand() || StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            // SecurityContextHolder에 이미 설정된 인증 정보를 사용
+            SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
+            if (securityContext != null) {
+                SecurityContextHolder.setContext(securityContext);
+                log.info("SEND/SUBSCRIBE 명령 처리 중 인증 정보 유지: {}", securityContext.getAuthentication());
+            } else {
+                log.warn("SEND/SUBSCRIBE 명령 처리 중 SecurityContext를 찾을 수 없음");
+            }
         }
-
-        log.info("preSend: 현재 SecurityContextHolder: {}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("2 preSend: 현재 SecurityContextHolder: {}", SecurityContextHolder.getContext().getAuthentication());
 
         return message;
     }
