@@ -35,6 +35,9 @@ public class MessageController {
     public void sendPeriodMessage(@Payload MessageRequestDto messageRequestDto,
                                   @DestinationVariable Long periodId,
                                   Principal principal) {
+        if (principal == null) {
+            throw new IllegalStateException("Principal이 널값이라 인증 실패임");
+        }
 
         messageService.sendPeriodMessage(periodId, messageRequestDto.getContent(),principal);
     }
