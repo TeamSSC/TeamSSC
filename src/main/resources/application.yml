@@ -66,7 +66,7 @@ websocket:
   client-id: ${RABBITMQ_ID}
   client-password: ${RABBITMQ_PASSWORD}
   virtual-host: ${RABBITMQ_VIRTUAL}
-  endpoint: ${ RABBITMQ_ENDPOINT }
+  endpoint: ${RABBITMQ_ENDPOINT}
   allowed-origins: ${RABBITMQ_ALLOWED}
 
 
