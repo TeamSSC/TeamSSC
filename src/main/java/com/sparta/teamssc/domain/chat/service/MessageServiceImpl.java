@@ -61,9 +61,10 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Transactional
-    public void sendPeriodMessage(Long periodId, String content) {
+    public void sendPeriodMessage(Long periodId, String content, Principal principal) {
+        String username = principal.getName();
+        User user = userService.getUserByEmail(username);
 
-        User user = getCurrentUser();
         log.info("1111111111보낸사람: {}", user.getEmail());
 
         if (!periodService.isUserInPeriod(user.getId(), periodId)) {

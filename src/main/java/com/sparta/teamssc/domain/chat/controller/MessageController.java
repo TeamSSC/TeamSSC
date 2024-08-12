@@ -33,9 +33,10 @@ public class MessageController {
 
     @MessageMapping("/chat.period.{periodId}")
     public void sendPeriodMessage(@Payload MessageRequestDto messageRequestDto,
-                                  @DestinationVariable Long periodId) {
+                                  @DestinationVariable Long periodId,
+                                  Principal principal) {
 
-        messageService.sendPeriodMessage(periodId, messageRequestDto.getContent());
+        messageService.sendPeriodMessage(periodId, messageRequestDto.getContent(),principal);
     }
 
     // 새로운 API: 특정 팀의 모든 메시지를 불러오기
