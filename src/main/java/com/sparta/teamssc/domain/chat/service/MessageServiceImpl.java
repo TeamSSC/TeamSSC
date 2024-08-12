@@ -77,6 +77,8 @@ public class MessageServiceImpl implements MessageService {
                 .roomType(RoomType.PERIOD)
                 .build();
         log.info("1111111111보낸내용: {}", content);
+        log.info("1111111111보낸내용: {}", user.getUsername());
+
 
         // 메시지를 RabbitMQ로 발행
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, message);
