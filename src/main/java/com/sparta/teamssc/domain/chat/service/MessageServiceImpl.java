@@ -79,7 +79,7 @@ public class MessageServiceImpl implements MessageService {
 
 
         log.info("기수Message 보내기 RabbitMQ: {}", message);
-
+        log.info("기수 보낸사람: {}", user.getUsername());
     }
 
     // 팀 메시지을 불러오기

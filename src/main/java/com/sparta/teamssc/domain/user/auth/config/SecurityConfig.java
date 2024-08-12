@@ -72,6 +72,7 @@ public class SecurityConfig {
         executor.initialize();
         return executor;
     }
+
     //보안 컨텍스트 스레드 간에 전파
     @Bean
     public ExecutorService delegatingSecurityContextExecutorService() {
