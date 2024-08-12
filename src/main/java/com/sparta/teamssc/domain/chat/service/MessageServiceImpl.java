@@ -11,6 +11,7 @@ import com.sparta.teamssc.rabbitmq.RabbitMQConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -62,10 +63,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Transactional
-    public void sendPeriodMessage(Long periodId, String content, org.springframework.messaging.Message<?> message) {
+    public void sendPeriodMessage(Long periodId, String content, StompHeaderAccessor accessor) {
 
-        // StompHeaderAccessor로 WebSocket 메시지의 헤더에 접근
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         // WebSocket 세션의 SecurityContext
         SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
         if (securityContext == null) {
