@@ -34,6 +34,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${websocket.virtual-host}")
     private String virtualHost;
 
+    @Value("${websocket.endpoint}")
+    private String webSocketEndpoint;
+
+    @Value("${websocket.allowed-origins}")
+    private String[] allowedOrigins;
+
     private final WebSocketAuthInterceptor webSocketAuthInterceptor; // 인증정보 보안 컨텍스트에 세팅
     private final WebSocketSecurityContextChannelInterceptor securityContextChannelInterceptor; // 보안 컨텍스트에 있는걸 쓰레드 컨텍트스 홀더에 셍팅 및 지춤
 
@@ -57,8 +63,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // STOMP 엔드포인트를 등록
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/wss/init")
-                .setAllowedOriginPatterns("*");        // .withSockJS();
+        registry.addEndpoint(webSocketEndpoint)
+                .setAllowedOriginPatterns(allowedOrigins);        // .withSockJS();
     }
 
     // 클라이언트 인바운드 채널에 인터셉터 (인증정보랑 컨텍스트 홀더 세팅 관련 인터셉트)
