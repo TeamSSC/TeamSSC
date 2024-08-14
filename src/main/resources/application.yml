@@ -53,10 +53,10 @@ jwt:
   secret:
     key: ${JWT_SECRET_KEY}
   token:
-    expiration: 100000 #10초
+    expiration: 10000 #10초
   refresh:
     token:
-      expiration: 300000 # 30초
+      expiration: 20000 # 30초
 server:
   port: 8080
 
