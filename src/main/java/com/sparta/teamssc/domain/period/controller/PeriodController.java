@@ -29,10 +29,12 @@ public class PeriodController {
      */
     @PostMapping("/periods")
     public ResponseEntity<ResponseDto<PeriodResponseDto>> createPeriod(@RequestBody PeriodRequestDto periodRequestDto) {
-        periodService.createPeriod(periodRequestDto);
+
+        PeriodResponseDto periodResponseDto = periodService.createPeriod(periodRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<PeriodResponseDto>builder()
                 .message("기수가 생성 되었습니다.")
+                .data(periodResponseDto)
                 .build());
     }
 

@@ -4,6 +4,7 @@ import com.sparta.teamssc.domain.period.dto.PeriodRequestDto;
 import com.sparta.teamssc.domain.period.dto.PeriodResponseDto;
 import com.sparta.teamssc.domain.period.dto.PeriodUpdateRequestDto;
 import com.sparta.teamssc.domain.period.entity.Period;
+import com.sparta.teamssc.domain.period.entity.PeriodStatus;
 import com.sparta.teamssc.domain.period.repository.PeriodRepository;
 import com.sparta.teamssc.domain.track.entity.Track;
 import com.sparta.teamssc.domain.track.service.TrackServiceImpl;
@@ -27,17 +28,21 @@ public class PeriodServiceImpl implements PeriodService {
 
         Track track = trackService.searchTrack(periodRequestDto.getTrackId());
 
+        // fix : 기수 생성 시 기수번호를 사용자에게 입력받지 않고, DB에 저장된 기수를 체크하여 기수 자동증가하도록 변경
+        int periodNumber = periodRepository.findCountByTrack(track) + 1;
+
         Period period = Period.builder()
-                .track(track)
-                .period(periodRequestDto.getPeriod())
-                .status(periodRequestDto.getStatus())
-                .build();
+        .track(track)
+        .period(periodNumber)
+        .status(periodRequestDto.getStatus())
+        .build();
 
         periodRepository.save(period);
 
         return PeriodResponseDto.builder()
                 .id(track.getId())
-                .period(periodRequestDto.getPeriod())
+                .period(periodNumber)
+                .trackName(track.getName())
                 .status(periodRequestDto.getStatus())
                 .build();
     }
@@ -87,7 +92,7 @@ public class PeriodServiceImpl implements PeriodService {
     //트랙에 대한 기수 조회
     @Override
     @Transactional
-    public List<PeriodResponseDto> getTrackByPeriod(Long trackId) {
+    public List<PeriodResponseDto> getTrackByPeriod(Long trackId){
         return periodRepository.findPeriodDetailsByTrackId(trackId);
     }
 
