@@ -55,8 +55,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setClientLogin(clientId)
                 .setClientPasscode(clientPassword)
                 .setVirtualHost(virtualHost)
-                .setSystemHeartbeatSendInterval(10000)
-                .setSystemHeartbeatReceiveInterval(10000);
+                .setSystemHeartbeatSendInterval(5000)
+                .setSystemHeartbeatReceiveInterval(5000);
         registry.setApplicationDestinationPrefixes("/app");
     }
 
