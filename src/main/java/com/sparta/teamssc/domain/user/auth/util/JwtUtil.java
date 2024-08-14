@@ -2,6 +2,9 @@ package com.sparta.teamssc.domain.user.auth.util;
 
 
 import com.sparta.teamssc.domain.user.auth.config.JwtConfig;
+import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
+import com.sparta.teamssc.domain.user.user.entity.User;
+import com.sparta.teamssc.domain.user.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -107,9 +110,34 @@ public class JwtUtil {
      * @param token JWT 토큰
      * @return 현재 시간
      */
-    private static boolean isTokenExpired(String token) {
+    public static boolean isTokenExpired(String token) {
         final Date expiration = extractClaims(token).getExpiration();
         return expiration.before(new Date());
+    }
+
+    public static LoginResponseDto refreshAccessToken(Map<String, String> requestBody, UserRepository userRepository) {
+        String refreshToken = requestBody.get("refreshToken");
+
+        if (validateRefreshToken(refreshToken)) { // 리프레시 토큰 유효성 검사
+            String username = getUsernameFromToken(refreshToken);
+            User user = userRepository.findByEmail(username).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+            List<String> roles = user.getRoles().stream()
+                    .map(userRole -> userRole.getRole().getName())
+                    .collect(Collectors.toList());
+
+            // 새로운 엑세스 토큰과 리프레시 토큰 생성
+            String newAccessToken = createAccessToken(username, roles);
+            String newRefreshToken = createRefreshToken(username, roles);
+
+            return LoginResponseDto.builder()
+                    .accessToken(newAccessToken)
+                    .refreshToken(newRefreshToken)
+                    .username(user.getUsername())
+                    .build();
+        } else {
+            throw new IllegalArgumentException("리프레시 토큰이 유효하지 않습니다.");
+        }
     }
 
     // 사용자 추출

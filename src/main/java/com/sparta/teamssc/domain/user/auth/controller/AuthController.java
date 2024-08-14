@@ -41,8 +41,6 @@ public class AuthController {
                         .build());
     }
 
-    // 로그인
-
     /**
      * 로그인
      *
@@ -84,12 +82,18 @@ public class AuthController {
      */
     @PostMapping("/users/token/refresh")
     public ResponseEntity<ResponseDto<LoginResponseDto>> tokenRefresh(@RequestHeader("refreshToken") String refreshToken) {
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseDto.<LoginResponseDto>builder()
-                        .message("재 로그인 성공했습니다.")
-                        .data(userService.tokenRefresh(refreshToken))
-                        .build());
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseDto.<LoginResponseDto>builder()
+                            .message("재 로그인 성공했습니다.")
+                            .data(userService.tokenRefresh(refreshToken))
+                            .build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ResponseDto.<LoginResponseDto>builder()
+                            .message("재로그인을 해주세요")
+                            .build());
+        }
     }
 
     /**
@@ -113,7 +117,8 @@ public class AuthController {
      * 카카오 로그인
      */
     @GetMapping("/user/kakao/callback")
-    public ResponseEntity<ResponseDto<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<ResponseDto<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse
+            response) throws JsonProcessingException {
 
         LoginResponseDto loginResponseDto = kakaoService.kakaoLogin(code);
 
@@ -126,7 +131,8 @@ public class AuthController {
 
     // 카카오 가입 유저 기수 신청 상태 확인
     @GetMapping("/kakao/users/status")
-    public ResponseEntity<ResponseDto<KakaoUserStatusResponse>> getKakaoUserStatus(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ResponseDto<KakaoUserStatusResponse>> getKakaoUserStatus
+    (@AuthenticationPrincipal UserDetails userDetails) {
 
         KakaoUserStatusResponse kakaoUserStatusResponse = userService.getKakaoUserStatus(userDetails.getUsername());
 

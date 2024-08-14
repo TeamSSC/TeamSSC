@@ -17,6 +17,7 @@ import com.sparta.teamssc.domain.user.user.entity.User;
 import com.sparta.teamssc.domain.user.user.entity.UserStatus;
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
 import com.sparta.teamssc.domain.user.user.repository.userMapping.ProfileCardMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -157,6 +158,7 @@ public class UserServiceImpl implements UserService {
         if (currentToken == null || !JwtUtil.validateRefreshToken(currentToken.getRefreshToken())) {
             throw new IllegalArgumentException("다시 로그인 해주세요."); // 리프레시 토큰이 유효하지 않으면 예외 발생
         }
+
         String email = JwtUtil.getUsernameFromToken(refreshToken);
         User user = getUserByEmail(email);
 
@@ -187,28 +189,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-//    /**
-//     * 이메일 인증: 입력한 인증 코드를 검증
-//     *
-//     * @param email         사용자 이름
-//     * @param verificationCode 입력한 인증 코드
-//     * @return 인증 성공 여부
-//     */
-//    @Override
-//    @Transactional
-//    public boolean verifyEmail(String email, String verificationCode) {
-//        String storedCode = redisTemplate.opsForValue().get(email);
-//        if (storedCode != null && storedCode.equals(verificationCode)) {
-//            Optional<User> userOptional = userRepository.findByEmail(email);
-//            if (userOptional.isPresent()) {
-//                User user = userOptional.get();
-//                user.updateStatus();
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     @Override
     public Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email, String role) {
 
@@ -238,7 +218,6 @@ public class UserServiceImpl implements UserService {
 
     private void inValidEmail(String email) {
 
-
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("중복된 이메일이 존재합니다.");
         }
@@ -262,8 +241,6 @@ public class UserServiceImpl implements UserService {
     public Page<PendSignupResponseDto> findPagedPendList(Pageable pageable, Period period) {
         return userRepository.findPagedPendList(pageable, period);
     }
-
-
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<UserRole> roles) {
         return roles.stream()

@@ -1,5 +1,7 @@
 package com.sparta.teamssc.domain.user.auth.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.teamssc.domain.user.auth.dto.response.LoginResponseDto;
 import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
 
 import com.sparta.teamssc.domain.user.user.repository.UserRepository;
@@ -19,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,18 +55,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             username = JwtUtil.getUsernameFromToken(jwt);
         }
 
-        // JWT 토큰이 유효한 경우
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (JwtUtil.validateToken(jwt, userDetails)) {
+                // 엑세스 토큰이 유효한 경우
                 List<SimpleGrantedAuthority> authorities = JwtUtil.getRolesFromToken(jwt);
-                System.out.println("권한: " + authorities);
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+            } else if (JwtUtil.isTokenExpired(jwt)) {
+                // 엑세스 토큰이 만료된 경우 Json, Java 변환
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> requestBody = mapper.readValue(request.getInputStream(), Map.class);
+                String refreshToken = requestBody.get("refreshToken");
+
+                if (refreshToken != null && JwtUtil.validateRefreshToken(refreshToken)) {
+
+                    // 리프레시 토큰이 유효한 경우 새로운 토큰 발급
+                    LoginResponseDto newTokens = JwtUtil.refreshAccessToken(requestBody, userRepository);
+
+                    response.setContentType("application/json");
+                    response.getWriter().write(mapper.writeValueAsString(newTokens));
+                } else {
+                    // 리프레시 토큰도 만료된 경우 401 에러 반환
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 만료되었습니다. 재로그인이 필요합니다.");
+                    return;
+
+                }
             }
         }
         // 다음 필터로 요청을 전달
