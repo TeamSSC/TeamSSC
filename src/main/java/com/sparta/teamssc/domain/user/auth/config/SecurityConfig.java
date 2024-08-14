@@ -63,15 +63,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public TaskExecutor taskExecutor() {
+    public DelegatingSecurityContextExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // 기본이 10개고 최대 20 대기가 50으로
         executor.setCorePoolSize(10);
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(50);
         executor.initialize();
-        return executor;
+        return new DelegatingSecurityContextExecutor(executor);
     }
+
     //보안 컨텍스트 스레드 간에 전파
     @Bean
     public ExecutorService delegatingSecurityContextExecutorService() {
