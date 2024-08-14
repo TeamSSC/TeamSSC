@@ -187,28 +187,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-//    /**
-//     * 이메일 인증: 입력한 인증 코드를 검증
-//     *
-//     * @param email         사용자 이름
-//     * @param verificationCode 입력한 인증 코드
-//     * @return 인증 성공 여부
-//     */
-//    @Override
-//    @Transactional
-//    public boolean verifyEmail(String email, String verificationCode) {
-//        String storedCode = redisTemplate.opsForValue().get(email);
-//        if (storedCode != null && storedCode.equals(verificationCode)) {
-//            Optional<User> userOptional = userRepository.findByEmail(email);
-//            if (userOptional.isPresent()) {
-//                User user = userOptional.get();
-//                user.updateStatus();
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     @Override
     public Page<ProfileCardMapper> findMemberCards(Pageable pageable, String email, String role) {
 
