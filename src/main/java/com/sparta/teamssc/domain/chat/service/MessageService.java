@@ -1,14 +1,8 @@
 package com.sparta.teamssc.domain.chat.service;
 
-import com.sparta.teamssc.domain.chat.dto.MessageRequestDto;
-import com.sparta.teamssc.domain.chat.dto.MessageResponseDto;
 import com.sparta.teamssc.domain.chat.entity.Message;
-import com.sparta.teamssc.domain.user.user.entity.User;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
-import java.security.Principal;
 import java.util.List;
 
 public interface MessageService {

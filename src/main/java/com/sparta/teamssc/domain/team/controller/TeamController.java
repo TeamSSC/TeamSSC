@@ -6,7 +6,7 @@ import com.sparta.teamssc.domain.team.dto.request.TeamUpdateRequestDto;
 import com.sparta.teamssc.domain.team.dto.response.*;
 import com.sparta.teamssc.domain.team.entity.Section;
 import com.sparta.teamssc.domain.team.service.TeamService;
-import com.sparta.teamssc.domain.weekProgress.service.WeekProgressService;
+import com.sparta.teamssc.domain.track.service.WeekProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

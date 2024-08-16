@@ -3,16 +3,14 @@ package com.sparta.teamssc.domain.chat.service;
 import com.sparta.teamssc.domain.chat.entity.Message;
 import com.sparta.teamssc.domain.chat.entity.RoomType;
 import com.sparta.teamssc.domain.chat.repository.MessageRepository;
-import com.sparta.teamssc.domain.period.service.PeriodService;
+import com.sparta.teamssc.domain.track.service.PeriodService;
 import com.sparta.teamssc.domain.team.service.TeamService;
-import com.sparta.teamssc.domain.user.user.entity.User;
-import com.sparta.teamssc.domain.user.user.service.UserService;
-import com.sparta.teamssc.rabbitmq.RabbitMQConfig;
+import com.sparta.teamssc.domain.user.entity.User;
+import com.sparta.teamssc.domain.user.service.UserService;
+import com.sparta.teamssc.domain.rabbitmq.RabbitMQConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
@@ -22,10 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

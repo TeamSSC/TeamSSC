@@ -1,11 +1,9 @@
 package com.sparta.teamssc.domain.team.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
-import com.sparta.teamssc.domain.period.entity.Period;
-import com.sparta.teamssc.domain.teamProject.entity.TeamProject;
-import com.sparta.teamssc.domain.weekProgress.entity.WeekProgress;
-import com.sparta.teamssc.domain.user.user.entity.User;
-import com.sparta.teamssc.domain.userTeamMatches.entity.UserTeamMatch;
+import com.sparta.teamssc.domain.track.entity.Period;
+import com.sparta.teamssc.domain.track.entity.WeekProgress;
+import com.sparta.teamssc.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
