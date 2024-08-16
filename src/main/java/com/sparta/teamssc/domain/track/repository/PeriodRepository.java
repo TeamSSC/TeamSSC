@@ -14,7 +14,7 @@ public interface PeriodRepository extends JpaRepository<Period, Long> {
 
     Optional<Period> findByIdAndDeletedIsFalse(Long periodId);
 
-    @Query("SELECT new com.sparta.teamssc.domain.period.dto.PeriodResponseDto(p.id, p.period, t.name, p.status) " +
+    @Query("SELECT new com.sparta.teamssc.domain.track.dto.response.PeriodResponseDto(p.id, p.period, t.name, p.status) " +
             "FROM Period p JOIN p.track t " +
             "WHERE t.id = :trackId AND p.deleted = false ")
     List<PeriodResponseDto> findPeriodDetailsByTrackId(@Param("trackId") Long trackId);

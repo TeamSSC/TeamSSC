@@ -4,7 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.teamssc.domain.track.entity.Period;
 import com.sparta.teamssc.domain.user.dto.response.PendSignupResponseDto;
-import com.sparta.teamssc.domain.user.user.entity.QUser;
+import com.sparta.teamssc.domain.user.entity.QUser;
 import com.sparta.teamssc.domain.user.entity.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

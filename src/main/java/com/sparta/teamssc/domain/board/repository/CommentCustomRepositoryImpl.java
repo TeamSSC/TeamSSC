@@ -5,7 +5,7 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.teamssc.domain.board.dto.response.CommentResponseDto;
 import com.sparta.teamssc.domain.board.dto.response.ReplyResponseDto;
-import com.sparta.teamssc.domain.board.comment.entity.QComment;
+import com.sparta.teamssc.domain.board.entity.QComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
