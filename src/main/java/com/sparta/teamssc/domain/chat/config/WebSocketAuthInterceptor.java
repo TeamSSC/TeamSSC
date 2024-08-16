@@ -1,7 +1,7 @@
 package com.sparta.teamssc.domain.chat.config;
 
-import com.sparta.teamssc.domain.user.auth.service.UserDetailsServiceImpl;
-import com.sparta.teamssc.domain.user.auth.util.JwtUtil;
+import com.sparta.teamssc.domain.user.service.impl.UserDetailsServiceImpl;
+import com.sparta.teamssc.domain.user.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;

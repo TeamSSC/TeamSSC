@@ -1,8 +1,8 @@
 package com.sparta.teamssc.domain.track.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
-import com.sparta.teamssc.domain.track.dto.TrackRequestDto;
-import com.sparta.teamssc.domain.track.dto.TrackResponseDto;
+import com.sparta.teamssc.domain.track.dto.request.TrackRequestDto;
+import com.sparta.teamssc.domain.track.dto.response.TrackResponseDto;
 import com.sparta.teamssc.domain.track.service.TrackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

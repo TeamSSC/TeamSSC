@@ -1,7 +1,7 @@
 package com.sparta.teamssc.domain.track.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.teamssc.domain.track.dto.TrackResponseDto;
+import com.sparta.teamssc.domain.track.dto.response.TrackResponseDto;
 import com.sparta.teamssc.domain.track.entity.QTrack;
 import com.sparta.teamssc.domain.track.entity.Track;
 import lombok.RequiredArgsConstructor;

@@ -2,10 +2,9 @@ package com.sparta.teamssc.domain.team.controller;
 
 import com.sparta.teamssc.common.dto.ResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.SimpleTeamNameResponseDto;
-import com.sparta.teamssc.domain.team.dto.response.SimpleTeamResponseDto;
 import com.sparta.teamssc.domain.team.dto.response.TeamMemberResponseDto;
 import com.sparta.teamssc.domain.team.service.TeamService;
-import com.sparta.teamssc.domain.user.user.service.UserService;
+import com.sparta.teamssc.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

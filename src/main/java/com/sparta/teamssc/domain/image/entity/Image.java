@@ -1,7 +1,6 @@
 package com.sparta.teamssc.domain.image.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
-import com.sparta.teamssc.domain.board.boardImage.entity.BoardImage;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

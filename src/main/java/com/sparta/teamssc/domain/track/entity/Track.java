@@ -1,7 +1,6 @@
 package com.sparta.teamssc.domain.track.entity;
 
 import com.sparta.teamssc.common.entity.BaseEntity;
-import com.sparta.teamssc.domain.period.entity.Period;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

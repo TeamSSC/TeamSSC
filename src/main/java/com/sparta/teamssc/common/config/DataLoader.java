@@ -1,7 +1,7 @@
 package com.sparta.teamssc.common.config;
 
-import com.sparta.teamssc.domain.user.role.entity.Role;
-import com.sparta.teamssc.domain.user.role.repository.RoleRepository;
+import com.sparta.teamssc.domain.user.entity.Role;
+import com.sparta.teamssc.domain.user.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
