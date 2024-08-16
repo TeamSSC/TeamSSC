@@ -9,6 +9,7 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.context.SecurityContext;
@@ -36,6 +37,7 @@ public class MessageController {
     }
 
     @MessageMapping("/chat.period.{periodId}")
+    @SendTo("/topic/chat.period.{periodId}")
     public void sendPeriodMessage(@Payload MessageRequestDto messageRequestDto,
                                   @DestinationVariable Long periodId,
                                   StompHeaderAccessor stompHeaderAccessor) {
