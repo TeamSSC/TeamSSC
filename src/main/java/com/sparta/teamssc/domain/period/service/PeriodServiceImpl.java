@@ -28,17 +28,21 @@ public class PeriodServiceImpl implements PeriodService {
 
         Track track = trackService.searchTrack(periodRequestDto.getTrackId());
 
-                Period period = Period.builder()
-                .track(track)
-                .period(periodRequestDto.getPeriod())
-                .status(periodRequestDto.getStatus())
-                .build();
+        // fix : 기수 생성 시 기수번호를 사용자에게 입력받지 않고, DB에 저장된 기수를 체크하여 기수 자동증가하도록 변경
+        int periodNumber = periodRepository.findCountByTrack(track) + 1;
+
+        Period period = Period.builder()
+        .track(track)
+        .period(periodNumber)
+        .status(periodRequestDto.getStatus())
+        .build();
 
         periodRepository.save(period);
 
         return PeriodResponseDto.builder()
                 .id(track.getId())
-                .period(periodRequestDto.getPeriod())
+                .period(periodNumber)
+                .trackName(track.getName())
                 .status(periodRequestDto.getStatus())
                 .build();
     }

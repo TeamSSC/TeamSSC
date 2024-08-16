@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 public class PeriodRequestDto {
     private Long trackId;
-    private int period;
+//    private int period;
     private PeriodStatus status;
 }
