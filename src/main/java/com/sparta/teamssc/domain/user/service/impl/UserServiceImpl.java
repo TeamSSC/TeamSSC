@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                     .username(signupRequestDto.getUsername())
                     .email(email)
                     .password(encodedPassword)
-                    .status(UserStatus.PENDING)
+                    .status(UserStatus.ACTIVE)
                     .period(period)
                     .build();
 
@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
         User user = getUserByEmail(loginRequestDto.getEmail());
 
-        if (user.getStatus() == UserStatus.PENDING) {
+        if (user.getStatus() == UserStatus.ACTIVE) {
             throw new IllegalArgumentException("아직 승인 받지 않은 회원입니다.");
         }
 
