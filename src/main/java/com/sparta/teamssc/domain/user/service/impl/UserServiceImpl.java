@@ -93,9 +93,9 @@ public class UserServiceImpl implements UserService {
 
         User user = getUserByEmail(loginRequestDto.getEmail());
 
-        if (user.getStatus() == UserStatus.ACTIVE) {
-            throw new IllegalArgumentException("아직 승인 받지 않은 회원입니다.");
-        }
+//        if (user.getStatus() == UserStatus.ACTIVE) {
+//            throw new IllegalArgumentException("아직 승인 받지 않은 회원입니다.");
+//        }
 
         if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
