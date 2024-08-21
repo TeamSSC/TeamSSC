@@ -199,7 +199,7 @@ public class KakaoServiceImpl implements KakaoService {
                         .email(email)
                         .password(encodedPassword)
                         .username(kakaoUserInfo.getNickname())
-                        .status(UserStatus.PENDING)
+                        .status(UserStatus.ACTIVE)
                         .kakaoId(kakaoId)
                         .profileImage(kakaoUserInfo.getImageUrl())
                         .build();

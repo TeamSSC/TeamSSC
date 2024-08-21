@@ -34,7 +34,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository{
                 ))
                 .from(qUser)
                 .orderBy(qUser.createAt.desc())
-                .where(qUser.status.eq(UserStatus.PENDING))
+                .where(qUser.status.eq(UserStatus.ACTIVE))
                 .where(qUser.period.eq(period))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
