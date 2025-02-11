@@ -43,3 +43,5 @@ src/main/resources/firebase-service-account.json
 src/main/.DS_Store
 
 .DS_Store
+
+src/main/resources/application.yml

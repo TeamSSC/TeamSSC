@@ -74,6 +74,24 @@ logging:
     username: guest
     password: guest
     virtual-host: /
+    queue:
+      main: chatQueue
+      dlq: deadLetterQueue  # DLQ 추가
+      exchange:
+        name: chatExchange
+      routing:
+        key: chatRoutingKey
+      dlq-routing:
+        key: deadLetterRoutingKey
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      rabbitmq-consumer:
+        failureRateThreshold: 50  # 실패율 50% 초과 시 차단
+        waitDurationInOpenState: 10s  # 10초 후 재시도
+        slidingWindowSize: 10  # 최근 10개 요청 기준으로 실패율 계산
+
 
 slack:
   webhook:

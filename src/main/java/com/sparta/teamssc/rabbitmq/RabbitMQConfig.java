@@ -7,6 +7,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @Slf4j
@@ -22,13 +24,22 @@ public class RabbitMQConfig {
     //교환기
     public static final String DEAD_LETTER_EXCHANGE = "chat-queue-dlx";
 
+    @Bean
+    public RetryTemplate retryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+        FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+        backOffPolicy.setBackOffPeriod(5000); // 5초 후 재시도
+        retryTemplate.setBackOffPolicy(backOffPolicy);
+        return retryTemplate;
+    }
+
     // 일반 큐 설정
     @Bean
     public Queue queue() {
         return QueueBuilder.durable(QUEUE_NAME)
                 .deadLetterExchange(DEAD_LETTER_EXCHANGE)
                 .deadLetterRoutingKey(DEAD_LETTER_QUEUE)
-                .ttl(6000000)
+                .ttl(360000) // 6분
                 .build();
     }
 

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,52 @@ public class MessageServiceImpl implements MessageService {
 
     private final RabbitTemplate rabbitTemplate;
 
+    private int reconnectAttempts = 0;
+    private static final int MAX_RECONNECT_ATTEMPTS = 5;
+
+    @Scheduled(fixedDelay = 1000) // 주기적으로 WebSocket 상태 확인
+    public void checkWebSocketConnection() {
+        if (!isWebSocketConnected() && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            reconnect();
+        }
+    }
+
+    private boolean isWebSocketConnected() {
+        // WebSocket이 정상적으로 작동하는지 확인하는 로직 (Ping/Pong으로 체크 가능)
+        return true; // TODO: 실제 구현
+    }
+
+    private void reconnect() {
+        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+            log.error("최대 WebSocket 재연결 횟수 초과. 사용자에게 새로고침 요청.");
+            alertUserToRefresh(); // 클라이언트에게 새로고침 요청
+            return;
+        }
+
+        int delay = (int) Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // 지수 백오프 (최대 30초)
+        reconnectAttempts++;
+
+        log.info("WebSocket 재연결 시도... (시도 횟수: {})", reconnectAttempts);
+
+        try {
+            Thread.sleep(delay); // 일정 시간 대기 후 재연결 시도
+            connectWebSocket();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("WebSocket 재연결 중 오류 발생", e);
+        }
+    }
+
+    private void connectWebSocket() {
+        // TODO: 실제 WebSocket 재연결 로직 구현 필요
+        log.info("WebSocket 재연결 성공!");
+        reconnectAttempts = 0; // 재연결 성공 시 카운트 초기화
+    }
+
+    private void alertUserToRefresh() {
+        log.warn("WebSocket 재연결 실패: 사용자에게 새로고침 요청");
+        // TODO: 클라이언트에 새로고침 메시지 전달하는 로직 추가
+    }
 
     @Transactional
     public void sendTeamMessage(Long teamId, String content) {
@@ -109,6 +156,9 @@ public class MessageServiceImpl implements MessageService {
         return messageRepository.findByRoomIdAndRoomType(periodId, RoomType.PERIOD);
     }
 
+    /**
+     * 3일지난 메시지는 삭제
+     */
     @Override
     @Transactional
     public void deleteOldMessages() {

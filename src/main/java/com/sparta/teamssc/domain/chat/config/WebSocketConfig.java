@@ -4,8 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -51,6 +56,21 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(webSocketAuthInterceptor, securityContextChannelInterceptor);
+
+        // WebSocket 연결 종료 감지 핸들러
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
+                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+                if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+                    String sessionId = accessor.getSessionId();
+
+                    // 원인을 정확히 알 수 없으므로, 단순 로그 남기고 클라이언트에 재연결 요청 가능
+                    log.warn("WebSocket 연결 종료 감지 - 세션 ID: {}", sessionId);
+
+                }
+            }
+        });
     }
 
     // // 클라이언트 아웃바인드 채널에 인터셉터

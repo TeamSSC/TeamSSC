@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    //팀생성시 에러
+    //팀 생성 시 에러
     @ExceptionHandler(InvalidWeekProgressException.class)
     public ResponseEntity<ResponseDto<Object>> handleInvalidRequestException(InvalidWeekProgressException ex) {
         ResponseDto<Object> errorResponse = ResponseDto.<Object>builder()
