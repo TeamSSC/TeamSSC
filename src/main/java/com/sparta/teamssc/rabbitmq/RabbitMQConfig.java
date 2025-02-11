@@ -94,8 +94,9 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public ConnectionFactory connectionFactory() {
+    public ConnectionFactory connectionFactory(RabbitMQConnectionListener connectionListener) {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.addConnectionListener(connectionListener); // Connection Listener 추가
         connectionFactory.setHost("rabbitmq");
         connectionFactory.setPort(5672);
         connectionFactory.setUsername("guest");

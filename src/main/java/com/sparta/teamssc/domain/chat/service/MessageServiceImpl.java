@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.chat.service;
 
+import com.sparta.teamssc.domain.chat.entity.CircuitBreakerState;
 import com.sparta.teamssc.domain.chat.entity.Message;
 import com.sparta.teamssc.domain.chat.entity.RoomType;
 import com.sparta.teamssc.domain.chat.repository.MessageRepository;
@@ -42,7 +43,6 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
 
     private final RabbitTemplate rabbitTemplate;
-
     private static final int MAX_RETRY_ATTEMPTS = 3;
     private static final int HALF_OPEN_ATTEMPT_LIMIT = 2; // HALF_OPEN 상태에서 2개 메시지만 허용
     private static final long OPEN_STATE_DURATION = 10000; // 10초 동안 OPEN 상태 유지
@@ -52,8 +52,6 @@ public class MessageServiceImpl implements MessageService {
     private WebSocketSession session;
     private static final int MAX_FAILURE_BEFORE_DLQ = 5; // DLQ로 이동하는 최대 실패 횟수
 
-
-    public enum CircuitBreakerState { CLOSED, OPEN, HALF_OPEN }
 
     private AtomicInteger failureCount = new AtomicInteger(0);
     private AtomicInteger halfOpenAttemptCount = new AtomicInteger(0);
@@ -120,13 +118,38 @@ public class MessageServiceImpl implements MessageService {
             }
         }
     }
-    private void activateCircuitBreaker() {
+    public void activateCircuitBreaker() {
         log.error("서킷 브레이커 활성화됨: 일정 시간 동안 STOMP 메시지 전송 차단");
         state = CircuitBreakerState.OPEN;
         circuitBreakerOpen.set(true);
         failureCount.set(0);
         scheduleHalfOpenState();
     }
+
+    //  서킷 브레이커 상태를 변경
+    public void setCircuitBreakerState(CircuitBreakerState newState) {
+        log.info("서킷 브레이커 상태 변경: {} → {}", state, newState);
+        this.state = newState;
+    }
+
+    public void resetCircuitBreaker() {
+        log.info("RabbitMQ 브로커 복구! 서킷 브레이커 CLOSED 상태로 변경");
+        state = CircuitBreakerState.CLOSED;
+    }
+
+    public void sendCircuitTestMessage() {
+        if (state == CircuitBreakerState.HALF_OPEN) {
+            log.info(" HALF_OPEN 상태에서 테스트 메시지 전송 중...");
+            try {
+                messagingTemplate.convertAndSend("/topic/circuit-test", "circuit-test");
+                resetCircuitBreaker(); // 테스트 메시지 성공 시 CLOSED 상태로 변경
+            } catch (Exception e) {
+                log.error(" 서킷 테스트 메시지 전송 실패 → OPEN 상태 유지", e);
+                state = CircuitBreakerState.OPEN;
+            }
+        }
+    }
+
     @Scheduled(fixedDelay = OPEN_STATE_DURATION) // 10초 후 HALF_OPEN 상태로 변경
     private void scheduleHalfOpenState() {
         if (state == CircuitBreakerState.OPEN) {

@@ -31,6 +31,7 @@ public class DeadLetterListener {
             return;
         }
 
+
         // 서킷 브레이커를 사용하는 메시지만 서킷 상태 확인
         if (messageDTO.isCircuitBreakerUsed()) {
             if (messageService.getCircuitBreakerState() == MessageServiceImpl.CircuitBreakerState.OPEN) {
