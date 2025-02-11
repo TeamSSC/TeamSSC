@@ -18,7 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +41,20 @@ public class MessageServiceImpl implements MessageService {
 
     private int reconnectAttempts = 0;
     private static final int MAX_RECONNECT_ATTEMPTS = 5;
+    private WebSocketSession session;
+
+
+    @Scheduled(fixedDelay = 10000) // 10초마다 Ping 전송
+    public void sendPing() {
+        if (session != null && session.isOpen()) {
+            try {
+                session.sendMessage(new TextMessage("ping"));
+                log.info("Ping 메시지 전송 완료");
+            } catch (IOException e) {
+                log.error("Ping 전송 실패", e);
+            }
+        }
+    }
 
     @Scheduled(fixedDelay = 1000) // 주기적으로 WebSocket 상태 확인
     public void checkWebSocketConnection() {
