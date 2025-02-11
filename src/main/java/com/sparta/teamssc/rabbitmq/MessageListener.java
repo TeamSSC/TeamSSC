@@ -19,6 +19,13 @@ public class MessageListener {
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
     public void handleMessage(Message message) {
         log.debug("받은 RabbitMQ 메시지: {}", message);
+
+        // 메시지 필드 검증
+        if (message.getContent() == null || message.getContent().isEmpty()) {
+            log.error("널값인 메시지: {}", message);
+            return; // 메시지 처리를 중단
+        }
+
         // 받은 메시지를 데이터베이스에 저장
         messageRepository.save(message);
 

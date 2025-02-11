@@ -1,5 +1,6 @@
 package com.sparta.teamssc.domain.chat.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sparta.teamssc.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @Entity
 @Getter
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Message extends BaseEntity implements Serializable {
 
     @Id
