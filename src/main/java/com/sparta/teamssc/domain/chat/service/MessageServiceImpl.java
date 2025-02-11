@@ -25,12 +25,16 @@ import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MessageServiceImpl implements MessageService {
+
+    private final SimpMessagingTemplate messagingTemplate;
 
     private final MessageRepository messageRepository;
     private final TeamService teamService;
@@ -39,10 +43,107 @@ public class MessageServiceImpl implements MessageService {
 
     private final RabbitTemplate rabbitTemplate;
 
+    private static final int MAX_RETRY_ATTEMPTS = 3;
+    private static final int HALF_OPEN_ATTEMPT_LIMIT = 2; // HALF_OPEN 상태에서 2개 메시지만 허용
+    private static final long OPEN_STATE_DURATION = 10000; // 10초 동안 OPEN 상태 유지
+
     private int reconnectAttempts = 0;
     private static final int MAX_RECONNECT_ATTEMPTS = 5;
     private WebSocketSession session;
+    private static final int MAX_FAILURE_BEFORE_DLQ = 5; // DLQ로 이동하는 최대 실패 횟수
 
+
+    public enum CircuitBreakerState { CLOSED, OPEN, HALF_OPEN }
+
+    private AtomicInteger failureCount = new AtomicInteger(0);
+    private AtomicInteger halfOpenAttemptCount = new AtomicInteger(0);
+    private AtomicBoolean circuitBreakerOpen = new AtomicBoolean(false);
+    private CircuitBreakerState state = CircuitBreakerState.CLOSED;
+
+    public CircuitBreakerState getCircuitBreakerState() {
+        return state;
+    }
+    public void sendMessage(String destination, Object message, boolean isCircuitTest) {
+        switch (state) {
+            case OPEN:
+                log.warn("STOMP 메시지 전송 차단됨 (서킷 브레이커 OPEN 상태)");
+                return;
+
+            case HALF_OPEN:
+                if (!isCircuitTest) {
+                    log.warn("HALF_OPEN 상태에서는 일반 메시지 전송 불가");
+                    return;
+                }
+
+                if (halfOpenAttemptCount.incrementAndGet() > HALF_OPEN_ATTEMPT_LIMIT) {
+                    log.warn("STOMP 테스트 메시지 전송 제한 (서킷 브레이커 HALF_OPEN 상태)");
+                    return;
+                }
+                break;
+
+            default:
+                // CLOSED 상태에서 정상 메시지 전송
+                break;
+        }
+
+        boolean success = false;
+        int attempts = 0;
+        int backoff = 1000; // 초기 백오프 시간 (1초)
+
+        while (attempts < MAX_RETRY_ATTEMPTS) {
+            try {
+                messagingTemplate.convertAndSend(destination, message);
+                success = true;
+                failureCount.set(0); // 성공하면 실패 카운트 초기화
+                state = CircuitBreakerState.CLOSED;
+                log.info("STOMP 메시지 전송 성공: {}", destination);
+                return;
+            } catch (Exception e) {
+                attempts++;
+                log.error("STOMP 메시지 전송 실패 (시도 {}): {}", attempts, destination, e);
+
+                try {
+                    Thread.sleep(backoff);
+                    backoff *= 2; // 지수 백오프 적용 (1초 → 2초 → 4초)
+                } catch (InterruptedException interruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        failureCount.incrementAndGet();
+        if (failureCount.get() >= MAX_RETRY_ATTEMPTS) {
+            if (failureCount.get() >= MAX_FAILURE_BEFORE_DLQ) {
+                moveToDeadLetterQueue(destination, message);
+            } else {
+                activateCircuitBreaker();
+            }
+        }
+    }
+    private void activateCircuitBreaker() {
+        log.error("서킷 브레이커 활성화됨: 일정 시간 동안 STOMP 메시지 전송 차단");
+        state = CircuitBreakerState.OPEN;
+        circuitBreakerOpen.set(true);
+        failureCount.set(0);
+        scheduleHalfOpenState();
+    }
+    @Scheduled(fixedDelay = OPEN_STATE_DURATION) // 10초 후 HALF_OPEN 상태로 변경
+    private void scheduleHalfOpenState() {
+        if (state == CircuitBreakerState.OPEN) {
+            log.info("서킷 브레이커 HALF_OPEN 상태로 전환: 제한된 메시지만 허용");
+            state = CircuitBreakerState.HALF_OPEN;
+            circuitBreakerOpen.set(false);
+            halfOpenAttemptCount.set(0);
+
+            // 서킷 테스트 메시지 전송
+            sendMessage("/topic/circuit-test", "circuit-test", true);
+        }
+    }
+
+    private void moveToDeadLetterQueue(String destination, Object message) {
+        log.error("메시지를 DLQ로 이동: {}", message);
+        rabbitTemplate.convertAndSend("dead-letter-exchange", "dead-letter-routing-key", message);
+    }
 
     @Scheduled(fixedDelay = 10000) // 10초마다 Ping 전송
     public void sendPing() {
