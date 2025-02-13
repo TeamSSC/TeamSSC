@@ -1,5 +1,6 @@
 package com.sparta.teamssc.rabbitmq;
 
+import com.sparta.teamssc.domain.chat.entity.CircuitBreakerState;
 import com.sparta.teamssc.domain.chat.service.MessageServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +41,11 @@ public class RabbitMQConnectionListener implements ConnectionListener {
     // 일정 시간이 지나면 HALF_OPEN 상태로 변경하여 테스트 메시지 전송
     @Scheduled(fixedDelay = OPEN_STATE_DURATION)
     public void checkBrokerRecovery() {
-        if (isBrokerDown.get() && messageService.getCircuitBreakerState() == MessageServiceImpl.CircuitBreakerState.OPEN) {
+        if (isBrokerDown.get() && messageService.getCircuitBreakerState() == CircuitBreakerState.OPEN) {
             log.info(" 브로커 복구 테스트: HALF_OPEN 상태로 전환");
-            messageService.setCircuitBreakerState(MessageServiceImpl.CircuitBreakerState.HALF_OPEN);
+            messageService.setCircuitBreakerState(CircuitBreakerState.HALF_OPEN);
             messageService.sendCircuitTestMessage();
         }
     }
+
 }

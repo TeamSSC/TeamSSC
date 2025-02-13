@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.cloud.firestore.BulkWriter.MAX_RETRY_ATTEMPTS;
 
@@ -24,6 +25,13 @@ public class MessageListener {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageRepository messageRepository;
+
+    private static final int MAX_FAILURE_THRESHOLD = 3; // NACK 최대 허용 횟수
+    private static final long CIRCUIT_BREAKER_TIMEOUT = 15000; // 15초 동안 Consumer 차단
+
+    // 개별 Consumer의 실패 횟수 추적하는 맵
+    private final Map<String, Integer> consumerFailureCount = new ConcurrentHashMap<>();
+    private final Map<String, Long> consumerBlockTime = new ConcurrentHashMap<>();
 
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME, ackMode = "MANUAL")
     public void handleMessage(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag,
@@ -57,6 +65,49 @@ public class MessageListener {
                 channel.basicNack(tag, false, true); // 같은 큐에서 재시도
             }
         }
+    }
+
+    /**
+     * Consumer 메시지 처리 실패 시 NACK 횟수를 증가시키고 서킷 브레이커를 적용하는 메서드
+     */
+    private void handleFailure(String consumerTag, Channel channel, long tag, Message message) throws IOException {
+
+        int failureCount = consumerFailureCount.getOrDefault(consumerTag, 0) + 1;
+        consumerFailureCount.put(consumerTag, failureCount);
+
+        if (failureCount >= MAX_FAILURE_THRESHOLD) {
+            log.error("Consumer [{}]가 최대 실패 횟수 초과! 서킷 브레이커 활성화", consumerTag);
+
+            consumerBlockTime.put(consumerTag, System.currentTimeMillis() + CIRCUIT_BREAKER_TIMEOUT);
+            channel.basicNack(tag, false, false); // DLQ로 이동
+        } else {
+            log.warn("Consumer [{}] 메시지 재처리 시도 ({}회)", consumerTag, failureCount);
+
+            channel.basicNack(tag, false, true); // 같은 큐에서 재시도
+        }
+    }
+
+    /**
+     * Consumer의 실패 횟수를 초기화하여 정상 상태로 되돌리는 메서드
+     */
+    private void resetConsumerFailure(String consumerTag) {
+        consumerFailureCount.remove(consumerTag);
+        consumerBlockTime.remove(consumerTag);
+    }
+
+    /**
+     * 특정 Consumer가 서킷 브레이커로 차단된 상태인지 확인하는 메서드
+     */
+    private boolean isConsumerBlocked(String consumerTag) {
+        Long blockEndTime = consumerBlockTime.get(consumerTag);
+        if (blockEndTime == null) return false;
+
+        if (System.currentTimeMillis() > blockEndTime) {
+            log.info("Consumer [{}] 서킷 브레이커 상태 해제", consumerTag);
+            resetConsumerFailure(consumerTag);
+            return false;
+        }
+        return true;
     }
 
     /**

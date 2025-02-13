@@ -15,12 +15,15 @@ public class MessageDTO {
     private String roomType;
     private int retryCount; // DLQ에서 사용할 재시도 횟수
     private boolean isCircuitBreakerUsed; // 서킷 브레이커 적용 여부
-    public MessageDTO(Message message, int retryCount, boolean isCircuitBreakerUsed) {
+    private String consumerTag; // 개별 Consumer 구분용
+
+    public MessageDTO(Message message, int retryCount, boolean isCircuitBreakerUsed,String consumerTag) {
         this.content = message.getContent();
         this.sender = message.getSender();
         this.roomId = message.getRoomId();
         this.roomType = message.getRoomType().name();
         this.retryCount = retryCount;
         this.isCircuitBreakerUsed = isCircuitBreakerUsed;
+        this.consumerTag = consumerTag;
     }
 }

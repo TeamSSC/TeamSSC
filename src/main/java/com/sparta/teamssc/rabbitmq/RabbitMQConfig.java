@@ -34,7 +34,7 @@ public class RabbitMQConfig {
         return retryTemplate;
     }
 
-    // 일반 큐 설정
+    // 일반 큐로 데드레커 큐 메시지이동 TTL 설정
     @Bean
     public Queue queue() {
         return QueueBuilder.durable(QUEUE_NAME)
