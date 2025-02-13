@@ -137,17 +137,20 @@ public class MessageServiceImpl implements MessageService {
         state = CircuitBreakerState.CLOSED;
     }
 
-    public void sendCircuitTestMessage() {
+    public boolean sendCircuitTestMessage() {
         if (state == CircuitBreakerState.HALF_OPEN) {
             log.info(" HALF_OPEN 상태에서 테스트 메시지 전송 중...");
             try {
                 messagingTemplate.convertAndSend("/topic/circuit-test", "circuit-test");
                 resetCircuitBreaker(); // 테스트 메시지 성공 시 CLOSED 상태로 변경
+                return true;
             } catch (Exception e) {
                 log.error(" 서킷 테스트 메시지 전송 실패 → OPEN 상태 유지", e);
                 state = CircuitBreakerState.OPEN;
+                return false;
             }
         }
+        return false;
     }
 
     @Scheduled(fixedDelay = OPEN_STATE_DURATION) // 10초 후 HALF_OPEN 상태로 변경

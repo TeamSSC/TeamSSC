@@ -30,7 +30,13 @@ public class DeadLetterListener {
 
         log.error("Dead Letter Queue에서 메시지 감지: {}", messageDTO);
 
-        // 최대 재시도 횟수 초과 여부 확인
+        //  브로커 장애로 인해 DLQ로 이동한 경우 즉시 Slack 알림 전송
+        if (messageDTO.isCircuitBreakerUsed()) {
+            log.error("🚨 RabbitMQ 브로커 장애 메시지 감지! Slack 알림 전송");
+            slackNotificationService.sendNotification("⚠️ *RabbitMQ 브로커 장애 발생!* 메시지가 DLQ로 이동되었습니다.");
+        }
+
+        // 개별 Consumer 장애는 기존 로직 유지 (DLQ에서 실행 시 Slack 전송) 최대 재시도 횟수 초과 여부 확인
         if (messageDTO.getRetryCount() >= MAX_DLQ_RETRY_ATTEMPTS) {
             log.error("DLQ 메시지 최대 재시도 횟수 초과. 관리자에게 알림 전송: {}", messageDTO);
             slackNotificationService.sendNotification("⚠️ DLQ 메시지 최대 재시도 초과: " + messageDTO);
