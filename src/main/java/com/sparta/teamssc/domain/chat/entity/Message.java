@@ -30,6 +30,7 @@ public class Message extends BaseEntity implements Serializable {
 
     @Column(nullable = false)
     private RoomType roomType;
+
     @Builder
     public Message(String content, String sender, Long roomId, RoomType roomType) {
         this.content = content;

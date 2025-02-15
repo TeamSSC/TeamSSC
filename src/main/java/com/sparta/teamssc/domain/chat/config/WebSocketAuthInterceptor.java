@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WebSocketAuthInterceptor implements ChannelInterceptor {
     private final UserDetailsServiceImpl userDetailsService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -67,29 +69,14 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 }
             } else {
                 log.warn("WebSocket 연결 실패: 토큰이 제공되지 않음");
+                sendConnectionFailureMessage();
             }
         }
-        // 메시지 전송 이거나 구독 요청
-        else if (StompCommand.SEND == accessor.getCommand() || StompCommand.SUBSCRIBE == accessor.getCommand()) {
-
-            // 세션에서 SecurityContext 가져오기
-            SecurityContext securityContext = (SecurityContext) accessor.getSessionAttributes().get("SPRING_SECURITY_CONTEXT");
-
-            if (securityContext != null) {
-
-                // 현재 스레드의 보안 컨텍스트를 설정
-                SecurityContextHolder.setContext(securityContext);
-
-                // Principal 설정
-                accessor.setUser(securityContext.getAuthentication());
-                log.info("SEND/SUBSCRIBE 명령 처리 중 인증 정보 유지: {}", securityContext.getAuthentication());
-            } else {
-                log.warn("WebSocket 메시지 전송 시 인증 정보가 없습니다.");
-            }
-        }
-
-        log.info("preSend: 현재 SecurityContextHolder: {}", SecurityContextHolder.getContext().getAuthentication());
 
         return message;
+    }
+
+    private void sendConnectionFailureMessage() {
+        messagingTemplate.convertAndSend("/topic/errors", "WebSocket 연결 실패 - 다시 시도해주세요.");
     }
 }

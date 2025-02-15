@@ -34,7 +34,7 @@ public class RabbitMQConfig {
         return retryTemplate;
     }
 
-    // 일반 큐 설정
+    // 일반 큐로 데드레커 큐 메시지이동 TTL 설정
     @Bean
     public Queue queue() {
         return QueueBuilder.durable(QUEUE_NAME)
@@ -94,8 +94,9 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public ConnectionFactory connectionFactory() {
+    public ConnectionFactory connectionFactory(RabbitMQConnectionListener connectionListener) {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.addConnectionListener(connectionListener); // Connection Listener 추가
         connectionFactory.setHost("rabbitmq");
         connectionFactory.setPort(5672);
         connectionFactory.setUsername("guest");
